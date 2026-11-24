@@ -191,6 +191,18 @@ function tiPercent(value):
 endfunction
 
 
+# Make text that does not wrap in a table cell: non-breaking hyphens and spaces
+function tiNoWrap(text):
+    return stringReplace(stringReplace(text, '-', stringFromCharCode(8209)), ' ', stringFromCharCode(160))
+endfunction
+
+
+# Format a range of years so that it does not wrap
+function tiYears(firstYear, lastYear):
+    return tiNoWrap(firstYear + '-' + lastYear)
+endfunction
+
+
 # Format a score - missing is "n/a"
 function tiScore(value):
     return if(value != null, numberToFixed(value, 1), 'n/a')
@@ -266,7 +278,10 @@ function tiIndexPage(args, meta, index):
     line = tiPercent(objectGet(thresholds, 'meaningful_margin'))
     companies = if(index != null, objectGet(index, 'companies'), [])
 
-    # Render the introduction
+    # Render the introduction and what a high rank can mean for a shareholder
+    totals = objectGet(meta, 'totals')
+    screened = objectGet(totals, 'screened')
+    count = objectGet(screened, 'companies')
     documentSetTitle(tiTitle)
     markdownPrint( \
         '', \
@@ -274,15 +289,40 @@ function tiIndexPage(args, meta, index):
         '', \
         'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
         'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is ' + line + ' of revenue.', \
+        'Of ' + tiNumber(objectGet(funnel, 'inFile'), 0) + ' companies in the SEC data, ' + count + ' pass the screen and ' + \
+            objectGet(funnel, 'ranked') + ' are ranked. ' + argsLink(tiArguments, 'How it is computed', {'page': 'method'}, true) + '.', \
         '', \
-        'Of ' + tiNumber(objectGet(funnel, 'inFile'), 0) + ' companies in the SEC data, ' + \
-            tiNumber(objectGet(funnel, 'growth'), 0) + ' are large, current and growing; ' + \
-            objectGet(funnel, 'stockPay') + ' of those pass the screen and ' + objectGet(funnel, 'ranked') + ' are ranked.', \
-        argsLink(tiArguments, 'How it is computed', {'page': 'method'}, true) + '.', \
+        '## What a high rank can mean for a shareholder', \
         '', \
-        '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
-        'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
-        'Screen scores must not be compared with full scores.' \
+        'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the ' + \
+            count + ' companies', \
+        'here recorded ' + tiBillions(objectGet(screened, 'cumSbc')) + ' of stock pay against ' + \
+            tiBillions(objectGet(screened, 'cumFcf')) + ' of free cash flow (' + \
+            argsLink(tiArguments, 'group totals', {'page': 'totals'}, true) + ').', \
+        'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+        '', \
+        '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
+        '  existing share owns a smaller part of the company.', \
+        "- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees' vesting taxes (" + \
+            tiBillions(objectGet(screened, 'buybacks')) + ' and ' + tiBillions(objectGet(screened, 'withholding')) + ' here)', \
+        '  can go to offsetting new shares rather than to owners.', \
+        '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
+        '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
+        "- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder's return depends on", \
+        '  margins improving later, or on the share price alone.', \
+        '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
+        '  when the price is weak, or pay has to move to cash.', \
+        '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
+        "  return does not depend on owner cash as an outside owner's does. This release does not yet measure their grants and sales.", \
+        '', \
+        '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
+        'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
+        'may have accepted it. ' + objectGet(objectGet(meta, 'latest'), 'cleared') + ' of the ' + count + \
+            ' had meaningful owner cash in their latest 12 months, and ' + \
+            (count - objectGet(objectGet(totals, 'notCapitalLed'), 'companies')) + ' are capital-led: their', \
+        'shortfall is mostly investment. Each company page lists what cuts the other way.', \
+        '', \
+        '## The index' \
     )
 
     # Filter the companies
@@ -362,7 +402,7 @@ function tiIndexPage(args, meta, index):
             tiPercent(objectGet(row, 'latestMargin')), \
             tiPercent(objectGet(row, 'sbcRevenue')), \
             tiMoney(objectGet(row, 'revenue')), \
-            objectGet(row, 'firstYear') + '-' + objectGet(row, 'lastYear'), \
+            tiYears(objectGet(row, 'firstYear'), objectGet(row, 'lastYear')), \
             tiRowNotes(row) \
         ]
         if showType:
@@ -387,10 +427,24 @@ function tiIndexPage(args, meta, index):
     endif
 
     # Render the notes legend
+    sensitivity = objectGet(meta, 'sensitivity')
+    moved = 0
+    for entry in sensitivity:
+        moved = moved + if(arrayLength(objectGet(entry, 'changes')), 1, 0)
+    endfor
     markdownPrint( \
         '', \
         '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
         'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+        '', \
+        '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+        'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+        'Screen scores must not be compared with full scores.', \
+        '', \
+        '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in ' + moved + \
+            ' of ' + arrayLength(sensitivity) + ' tests.', \
+        'Read a rank as a rough position, not a precise one. ' + argsLink(tiArguments, 'Data and limits', {'page': 'data'}, true) + \
+            ' lists every change.', \
         '', \
         '**Notes**', \
         '' \
@@ -510,9 +564,9 @@ function tiCompanyScore(meta, cik, company):
         tiTable(['Part', 'Input', 'Points'], ['l', 'r', 'r'], [ \
             ['Years with owner cash under ' + line + ' of revenue', objectGet(row, 'lowYears') + ' of ' + objectGet(row, 'years'), \
                 tiScore(objectGet(row, 'p1Years')) + ' of 10'], \
-            ['Cumulative owner-cash margin, ' + objectGet(row, 'firstYear') + '-' + objectGet(row, 'lastYear'), \
+            ['Cumulative owner-cash margin, ' + tiYears(objectGet(row, 'firstYear'), objectGet(row, 'lastYear')), \
                 tiPercent(objectGet(row, 'cumMargin')), tiScore(objectGet(row, 'p1Cum')) + ' of 8'], \
-            [if(isTTM, 'Owner-cash margin, 12 months to ', 'Owner-cash margin, fiscal year to ') + objectGet(row, 'latestEnd'), \
+            [if(isTTM, 'Owner-cash margin, 12 months to ', 'Owner-cash margin, fiscal year to ') + tiNoWrap(objectGet(row, 'latestEnd')), \
                 tiPercent(objectGet(row, 'latestMargin')), tiScore(objectGet(row, 'p1Latest')) + ' of 7'] \
         ]) \
     )
@@ -565,24 +619,14 @@ endfunction
 function tiCompanyYears(meta, cik, company):
     row = objectGet(company, 'row')
     thresholds = objectGet(meta, 'thresholds')
-    line = tiPercent(objectGet(thresholds, 'meaningful_margin'))
 
     # Render the yearly chart
     years = objectGet(company, 'years')
-    chartData = []
-    for year in years:
-        arrayPush(chartData, {'Fiscal year': numberParseInt(objectGet(year, 'fy')), 'Owner-cash margin (%)': objectGet(year, 'margin') * 100})
-    endfor
+    chart = tiYearsChart(years, objectGet(thresholds, 'meaningful_margin'))
     markdownPrint('', '## Year by year', '')
-    dataLineChart(chartData, { \
-        'title': 'Owner cash as a percent of revenue', \
-        'width': 720, \
-        'height': 300, \
-        'x': 'Fiscal year', \
-        'y': ['Owner-cash margin (%)'], \
-        'precision': 0, \
-        'yLines': [{'value': objectGet(thresholds, 'meaningful_margin') * 100, 'label': line}] \
-    })
+    dataLineChart(objectGet(chart, 'data'), objectGet(chart, 'model'))
+    markdownPrint(if(objectGet(chart, 'clipped'), \
+        'The chart stops at ' + tiChartLimit + '% above and below zero. At least one year is beyond that; the table has every figure.', ''))
 
     # Render the yearly table
     yearRows = []
@@ -599,7 +643,7 @@ function tiCompanyYears(meta, cik, company):
         endfor
         arrayPush(yearRows, [ \
             objectGet(year, 'fy'), \
-            objectGet(year, 'end'), \
+            tiNoWrap(objectGet(year, 'end')), \
             tiFact(cik, objectGet(year, 'rev')), \
             tiFact(cik, objectGet(year, 'ocf')), \
             if(arrayLength(capexFacts), arrayJoin(capexFacts, ' + '), 'n/a'), \
@@ -619,8 +663,8 @@ function tiCompanyYears(meta, cik, company):
             arrayPush(ttmSources, '[' + (ixAccn + 1) + '](' + tiFilingURL(cik, accn) + ')')
         endfor
         arrayPush(yearRows, [ \
-            '**12 months**', \
-            objectGet(ttm, 'end'), \
+            '**' + tiNoWrap('12 months') + '**', \
+            tiNoWrap(objectGet(ttm, 'end')), \
             tiMoney(objectGet(ttm, 'rev')), \
             tiMoney(objectGet(ttm, 'ocf')), \
             tiMoney(objectGet(ttm, 'capex')), \
@@ -665,6 +709,37 @@ function tiCompanyYears(meta, cik, company):
             markdownPrint('- ' + objectGet(note, 'text'))
         endif
     endfor
+endfunction
+
+
+# The percent, above and below zero, at which the yearly chart stops
+tiChartLimit = 50
+
+
+# Create the yearly owner-cash margin chart's data and model. The chart stops at the chart limit, so that one
+# extreme year does not flatten the rest; "clipped" is true if any year is beyond it.
+function tiYearsChart(years, meaningfulMargin):
+    data = []
+    clipped = false
+    for year in years:
+        margin = objectGet(year, 'margin') * 100
+        clipped = clipped || mathAbs(margin) > tiChartLimit
+        arrayPush(data, {'Fiscal year': numberParseInt(objectGet(year, 'fy')), 'Owner-cash margin (%)': margin})
+    endfor
+    model = { \
+        'title': 'Owner cash as a percent of revenue', \
+        'width': 720, \
+        'height': 300, \
+        'x': 'Fiscal year', \
+        'y': ['Owner-cash margin (%)'], \
+        'precision': 0, \
+        'yLines': [{'value': meaningfulMargin * 100, 'label': tiPercent(meaningfulMargin)}] \
+    }
+    if clipped:
+        objectSet(model, 'yMin', -tiChartLimit)
+        objectSet(model, 'yMax', tiChartLimit)
+    endif
+    return {'data': data, 'model': model, 'clipped': clipped}
 endfunction
 
 
@@ -1096,8 +1171,9 @@ function tiDataPage(meta):
         '- **The cost line** cannot be built for ' + objectGet(cost, 'missingAll') + ' companies (' + objectGet(cost, 'missing') + \
             ' of those that pass the screen) because of inconsistent tagging. They are unranked.', \
         '- **Latest 12 months** fall back to the latest fiscal year when a quarterly figure is missing or tagged differently.', \
-        "- **Industry codes** are the SEC's and are coarse. Brokers and insurance agents are excluded along with asset", \
-        '  managers and insurers. Some real-estate and payment companies are not excluded.', \
+        "- **Industry codes** are the SEC's and are coarse. Securities brokers are excluded along with asset managers, because", \
+        '  they hold customer money. Insurance agents and brokers are not excluded: they are not insurers. Some real-estate and', \
+        '  payment companies are not excluded.', \
         '- **Restated years.** Each year uses its most recently filed value. When a company restates recent years for a', \
         '  business it has left, older years are not restated, so the two can sit side by side.', \
         '- **Foreign companies** that file financial data with the SEC in US dollars are included.', \

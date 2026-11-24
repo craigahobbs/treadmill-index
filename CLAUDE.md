@@ -38,7 +38,8 @@ Local Makefile:
 
 - Latest 12 months are computed (fiscal year + year-to-date - prior year-to-date, one tag for all three periods); the latest fiscal year is the fallback and is flagged.
 - A missing cost line leaves the company unranked with P1 alone. The cost line uses the definition's three methods only; the prototype's fourth (the OperatingExpenses tag) is used only by `PROTOTYPE_OPTIONS`.
-- Industries are excluded by SIC code (score.py SIC_EXCLUSIONS). Brokers (62xx) and insurance agents (6411) are excluded with asset managers and insurers; that is a judgment call the owner has not reviewed.
+- Industries are excluded by SIC code (score.py SIC_EXCLUSIONS). Securities brokers (62xx) are excluded with asset managers because they hold customer money. Insurance agents and brokers (6411) are not excluded: they are not insurers. The owner left both calls to the assistant on 2026-11-24.
+- Averaging the cost change over four-, five- and six-year windows was tested on 2026-11-24 and did not steady the top ten (names replaced across the 24 threshold moves: 18 with one window, 17 averaged), so P2b is unchanged. Ranks 3 to 14 sit within about four points; the index page says to read ranks as rough positions.
 - Excluded industries have inputs but no scores in the data files.
 - Capital-led flag, one-off-year P1, sensitivity test, group totals and pre-publish checks are implemented.
 - "Still filing" is the latest fiscal year ending within 548 days of the latest filing date in the data, not a fixed date.
@@ -65,12 +66,12 @@ Local Makefile:
 
 - Tested on real data: stage 1 (P1 and P2b) across the market, including SIC exclusions, the capital-led flag, latest-12-month figures and the sensitivity test.
 - Never run: P2a, P3, P4, founding-age check, predecessor combining, split adjustment, long history. Their point scales are judgment and will need tuning.
-- The application has not been looked at in a browser. Its renders are covered by unit tests only.
+- The index and company pages have been checked as static renders (`bare -l` output, screenshot of the HTML file). The live application in MarkdownUp (navigation, the find box) has not been looked at in a browser.
 
 ## Waiting on the owner
 
 - A User-Agent with a contact address for SEC requests (`SEC_USER_AGENT`). www.sec.gov refuses bulk files, filing indexes and the insider-transaction data sets without one; data.sec.gov accepts a generic client name. Phase 3 cannot start without it.
-- The open decisions in docs/plan.md, and whether brokers and insurance agents belong in the excluded industries.
+- The open decisions in docs/plan.md.
 - Curated data for phase 4 (headcount, earnings-release measures, founding years). Each item needs a date and a source.
 - A license, a corrections contact, and a lawyer's read of the methodology page before launch.
 

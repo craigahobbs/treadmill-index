@@ -40,13 +40,33 @@ async function testMain_index():
                 '', \
                 'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
                 'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                'Of 10 companies in the SEC data, 5 pass the screen and 4 are ranked. [How it is computed](#var.vPage=\'method\').', \
                 '', \
-                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
-                '[How it is computed](#var.vPage=\'method\').', \
+                '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
-                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
-                'Screen scores must not be compared with full scores.' \
+                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
+                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '', \
+                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
+                '  existing share owns a smaller part of the company.', \
+                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
+                '  can go to offsetting new shares rather than to owners.', \
+                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
+                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
+                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
+                '  margins improving later, or on the share price alone.', \
+                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
+                '  when the price is weak, or pay has to move to cash.', \
+                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
+                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
+                '', \
+                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
+                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
+                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                'shortfall is mostly investment. Each company page lists what cuts the other way.', \
+                '', \
+                '## The index' \
             ] \
         ], \
         [ \
@@ -96,11 +116,11 @@ async function testMain_index():
                 [ \
                     '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes |', \
                     '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
-                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | 2019-2025 | O F S |', \
-                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019-2025 |  |', \
-                    '| 3 | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\') |  | 32.6 | 18.6 | 9.8 | -2.0% | -2.0% | 12.0% | $2,000M | 2019-2025 | C |', \
-                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | 2019-2025 |  |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019-2025 | F N X |' \
+                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | 2019‑2025 | O F S |', \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019‑2025 |  |', \
+                    '| 3 | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\') |  | 32.6 | 18.6 | 9.8 | -2.0% | -2.0% | 12.0% | $2,000M | 2019‑2025 | C |', \
+                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | 2019‑2025 |  |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019‑2025 | F N X |' \
                 ] \
             ] \
         ], \
@@ -110,6 +130,13 @@ async function testMain_index():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.', \
+                '', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\') lists every change.', \
                 '', \
                 '**Notes**', \
                 '' \
@@ -216,13 +243,33 @@ async function testMain_indexAll():
                 '', \
                 'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
                 'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                'Of 10 companies in the SEC data, 5 pass the screen and 4 are ranked. [How it is computed](#var.vPage=\'method\').', \
                 '', \
-                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
-                '[How it is computed](#var.vPage=\'method\').', \
+                '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
-                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
-                'Screen scores must not be compared with full scores.' \
+                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
+                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '', \
+                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
+                '  existing share owns a smaller part of the company.', \
+                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
+                '  can go to offsetting new shares rather than to owners.', \
+                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
+                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
+                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
+                '  margins improving later, or on the share price alone.', \
+                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
+                '  when the price is weak, or pay has to move to cash.', \
+                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
+                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
+                '', \
+                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
+                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
+                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                'shortfall is mostly investment. Each company page lists what cuts the other way.', \
+                '', \
+                '## The index' \
             ] \
         ], \
         [ \
@@ -272,9 +319,9 @@ async function testMain_indexAll():
                 [ \
                     '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes | Type |', \
                     '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
-                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\') | BURN | 50.0 | 25.0 | 13.0 | -13.0% | -13.0% | 12.0% | $2,000M | 2019-2025 |  | Cash burner |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019-2025 | F N X | Stock pay |', \
-                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | 2019-2025 | O F S | Stock pay |' \
+                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\') | BURN | 50.0 | 25.0 | 13.0 | -13.0% | -13.0% | 12.0% | $2,000M | 2019‑2025 |  | Cash burner |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019‑2025 | F N X | Stock pay |', \
+                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | 2019‑2025 | O F S | Stock pay |' \
                 ] \
             ] \
         ], \
@@ -288,6 +335,13 @@ async function testMain_indexAll():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.', \
+                '', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\') lists every change.', \
                 '', \
                 '**Notes**', \
                 '' \
@@ -396,13 +450,33 @@ async function testMain_indexShowAll():
                 '', \
                 'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
                 'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                'Of 10 companies in the SEC data, 5 pass the screen and 4 are ranked. [How it is computed](#var.vPage=\'method\').', \
                 '', \
-                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
-                '[How it is computed](#var.vPage=\'method\').', \
+                '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
-                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
-                'Screen scores must not be compared with full scores.' \
+                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
+                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '', \
+                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
+                '  existing share owns a smaller part of the company.', \
+                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
+                '  can go to offsetting new shares rather than to owners.', \
+                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
+                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
+                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
+                '  margins improving later, or on the share price alone.', \
+                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
+                '  when the price is weak, or pay has to move to cash.', \
+                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
+                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
+                '', \
+                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
+                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
+                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                'shortfall is mostly investment. Each company page lists what cuts the other way.', \
+                '', \
+                '## The index' \
             ] \
         ], \
         [ \
@@ -452,15 +526,15 @@ async function testMain_indexShowAll():
                 [ \
                     '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes | Type |', \
                     '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
-                    '|  | [Bank Co](#var.vCik=5&var.vPage=\'company\') | BANK | n/a | n/a | n/a | -10.0% | -10.0% | 20.0% | $2,000M | 2019-2025 |  | Excluded industry |', \
-                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\') | BURN | 50.0 | 25.0 | 13.0 | -13.0% | -13.0% | 12.0% | $2,000M | 2019-2025 |  | Cash burner |', \
-                    '| 3 | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\') |  | 32.6 | 18.6 | 9.8 | -2.0% | -2.0% | 12.0% | $2,000M | 2019-2025 | C | Stock pay |', \
-                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\') | CASH | 0.0 | 0.0 | 0.0 | 8.0% | 8.0% | 2.0% | $2,000M | 2019-2025 |  | Cash generative |', \
-                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | 2019-2025 |  | Stock pay |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019-2025 | F N X | Stock pay |', \
-                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | 2019-2025 | O F S | Stock pay |', \
-                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019-2025 |  | Stock pay |', \
-                    '|  | [Thin Co](#var.vCik=7&var.vPage=\'company\') | THIN | 30.9 | 15.4 | 13.0 | 0.6% | 0.6% | 1.9% | $2,000M | 2019-2025 |  | Thin margin |' \
+                    '|  | [Bank Co](#var.vCik=5&var.vPage=\'company\') | BANK | n/a | n/a | n/a | -10.0% | -10.0% | 20.0% | $2,000M | 2019‑2025 |  | Excluded industry |', \
+                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\') | BURN | 50.0 | 25.0 | 13.0 | -13.0% | -13.0% | 12.0% | $2,000M | 2019‑2025 |  | Cash burner |', \
+                    '| 3 | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\') |  | 32.6 | 18.6 | 9.8 | -2.0% | -2.0% | 12.0% | $2,000M | 2019‑2025 | C | Stock pay |', \
+                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\') | CASH | 0.0 | 0.0 | 0.0 | 8.0% | 8.0% | 2.0% | $2,000M | 2019‑2025 |  | Cash generative |', \
+                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | 2019‑2025 |  | Stock pay |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019‑2025 | F N X | Stock pay |', \
+                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | 2019‑2025 | O F S | Stock pay |', \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019‑2025 |  | Stock pay |', \
+                    '|  | [Thin Co](#var.vCik=7&var.vPage=\'company\') | THIN | 30.9 | 15.4 | 13.0 | 0.6% | 0.6% | 1.9% | $2,000M | 2019‑2025 |  | Thin margin |' \
                 ] \
             ] \
         ], \
@@ -470,6 +544,13 @@ async function testMain_indexShowAll():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.', \
+                '', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\') lists every change.', \
                 '', \
                 '**Notes**', \
                 '' \
@@ -578,13 +659,33 @@ async function testMain_indexFind():
                 '', \
                 'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
                 'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                'Of 10 companies in the SEC data, 5 pass the screen and 4 are ranked. [How it is computed](#var.vPage=\'method\').', \
                 '', \
-                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
-                '[How it is computed](#var.vPage=\'method\').', \
+                '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
-                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
-                'Screen scores must not be compared with full scores.' \
+                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
+                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '', \
+                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
+                '  existing share owns a smaller part of the company.', \
+                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
+                '  can go to offsetting new shares rather than to owners.', \
+                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
+                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
+                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
+                '  margins improving later, or on the share price alone.', \
+                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
+                '  when the price is weak, or pay has to move to cash.', \
+                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
+                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
+                '', \
+                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
+                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
+                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                'shortfall is mostly investment. Each company page lists what cuts the other way.', \
+                '', \
+                '## The index' \
             ] \
         ], \
         [ \
@@ -641,10 +742,10 @@ async function testMain_indexFind():
                 [ \
                     '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes | Type |', \
                     '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019-2025 | F N X | Stock pay |', \
-                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019-2025 |  | Stock pay |', \
-                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | 2019-2025 |  | Stock pay |', \
-                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\') | CASH | 0.0 | 0.0 | 0.0 | 8.0% | 8.0% | 2.0% | $2,000M | 2019-2025 |  | Cash generative |' \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019‑2025 | F N X | Stock pay |', \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019‑2025 |  | Stock pay |', \
+                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | 2019‑2025 |  | Stock pay |', \
+                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\') | CASH | 0.0 | 0.0 | 0.0 | 8.0% | 8.0% | 2.0% | $2,000M | 2019‑2025 |  | Cash generative |' \
                 ] \
             ] \
         ], \
@@ -654,6 +755,13 @@ async function testMain_indexFind():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.', \
+                '', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\') lists every change.', \
                 '', \
                 '**Notes**', \
                 '' \
@@ -756,13 +864,33 @@ async function testMain_indexFindTicker():
                 '', \
                 'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
                 'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                'Of 10 companies in the SEC data, 5 pass the screen and 4 are ranked. [How it is computed](#var.vPage=\'method\').', \
                 '', \
-                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
-                '[How it is computed](#var.vPage=\'method\').', \
+                '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
-                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
-                'Screen scores must not be compared with full scores.' \
+                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
+                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '', \
+                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
+                '  existing share owns a smaller part of the company.', \
+                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
+                '  can go to offsetting new shares rather than to owners.', \
+                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
+                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
+                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
+                '  margins improving later, or on the share price alone.', \
+                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
+                '  when the price is weak, or pay has to move to cash.', \
+                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
+                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
+                '', \
+                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
+                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
+                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                'shortfall is mostly investment. Each company page lists what cuts the other way.', \
+                '', \
+                '## The index' \
             ] \
         ], \
         [ \
@@ -815,7 +943,7 @@ async function testMain_indexFindTicker():
                 [ \
                     '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes |', \
                     '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
-                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019-2025 |  |' \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019‑2025 |  |' \
                 ] \
             ] \
         ], \
@@ -825,6 +953,13 @@ async function testMain_indexFindTicker():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.', \
+                '', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\') lists every change.', \
                 '', \
                 '**Notes**', \
                 '' \
@@ -929,13 +1064,33 @@ async function testMain_indexNoMatch():
                 '', \
                 'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
                 'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                'Of 10 companies in the SEC data, 5 pass the screen and 4 are ranked. [How it is computed](#var.vPage=\'method\').', \
                 '', \
-                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
-                '[How it is computed](#var.vPage=\'method\').', \
+                '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
-                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
-                'Screen scores must not be compared with full scores.' \
+                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
+                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '', \
+                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
+                '  existing share owns a smaller part of the company.', \
+                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
+                '  can go to offsetting new shares rather than to owners.', \
+                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
+                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
+                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
+                '  margins improving later, or on the share price alone.', \
+                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
+                '  when the price is weak, or pay has to move to cash.', \
+                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
+                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
+                '', \
+                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
+                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
+                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                'shortfall is mostly investment. Each company page lists what cuts the other way.', \
+                '', \
+                '## The index' \
             ] \
         ], \
         [ \
@@ -995,6 +1150,13 @@ async function testMain_indexNoMatch():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.', \
+                '', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\') lists every change.', \
                 '', \
                 '**Notes**', \
                 '' \
@@ -1099,13 +1261,33 @@ async function testMain_indexUnknownArgs():
                 '', \
                 'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
                 'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                'Of 10 companies in the SEC data, 5 pass the screen and 4 are ranked. [How it is computed](#var.vPage=\'method\').', \
                 '', \
-                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
-                '[How it is computed](#var.vPage=\'method\').', \
+                '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
-                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
-                'Screen scores must not be compared with full scores.' \
+                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
+                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '', \
+                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
+                '  existing share owns a smaller part of the company.', \
+                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
+                '  can go to offsetting new shares rather than to owners.', \
+                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
+                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
+                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
+                '  margins improving later, or on the share price alone.', \
+                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
+                '  when the price is weak, or pay has to move to cash.', \
+                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
+                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
+                '', \
+                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
+                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
+                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                'shortfall is mostly investment. Each company page lists what cuts the other way.', \
+                '', \
+                '## The index' \
             ] \
         ], \
         [ \
@@ -1158,6 +1340,13 @@ async function testMain_indexUnknownArgs():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.', \
+                '', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\') lists every change.', \
                 '', \
                 '**Notes**', \
                 '' \
@@ -1258,13 +1447,33 @@ async function testMain_indexFailed():
                 '', \
                 'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
                 'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                'Of 10 companies in the SEC data, 5 pass the screen and 4 are ranked. [How it is computed](#var.vPage=\'method\').', \
                 '', \
-                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
-                '[How it is computed](#var.vPage=\'method\').', \
+                '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
-                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
-                'Screen scores must not be compared with full scores.' \
+                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
+                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '', \
+                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
+                '  existing share owns a smaller part of the company.', \
+                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
+                '  can go to offsetting new shares rather than to owners.', \
+                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
+                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
+                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
+                '  margins improving later, or on the share price alone.', \
+                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
+                '  when the price is weak, or pay has to move to cash.', \
+                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
+                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
+                '', \
+                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
+                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
+                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                'shortfall is mostly investment. Each company page lists what cuts the other way.', \
+                '', \
+                '## The index' \
             ] \
         ], \
         [ \
@@ -1317,6 +1526,13 @@ async function testMain_indexFailed():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.', \
+                '', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\') lists every change.', \
                 '', \
                 '**Notes**', \
                 '' \
@@ -1478,8 +1694,8 @@ async function testMain_company():
                     '| Part | Input | Points |', \
                     '| :-- | --: | --: |', \
                     '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
-                    '| Cumulative owner-cash margin, 2019-2025 | -2.0% | 3.7 of 8 |', \
-                    '| Owner-cash margin, 12 months to 2026-09-30 | -2.0% | 4.9 of 7 |' \
+                    '| Cumulative owner-cash margin, 2019‑2025 | -2.0% | 3.7 of 8 |', \
+                    '| Owner-cash margin, 12 months to 2026‑09‑30 | -2.0% | 4.9 of 7 |' \
                 ] \
             ] \
         ], \
@@ -1512,19 +1728,23 @@ async function testMain_company():
         testChartCall(data, 'data/company/1.json'), \
         [ \
             'markdownPrint', \
+            [''] \
+        ], \
+        [ \
+            'markdownPrint', \
             [ \
                 '', \
                 [ \
                     '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
-                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$20M | -2.0% | n/a | n/a |  |', \
-                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | $110M | -$22M | -2.0% | n/a | n/a |  |', \
-                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$25M | -2.0% | n/a | n/a |  |', \
-                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$28M | -2.0% | n/a | n/a |  |', \
-                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$32M | -2.0% | n/a | n/a |  |', \
-                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | n/a | n/a |  |', \
-                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$40M | -2.0% | n/a | n/a |  |', \
-                    '| **12 months** | 2026-09-30 | $2,150M | $258M | $43M | $258M | $215M | -$43M | -2.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/1/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/1/000000000125000030/0000000001-25-000030-index.htm) |' \
+                    '| 2019 | 2019‑12‑31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$20M | -2.0% | n/a | n/a |  |', \
+                    '| 2020 | 2020‑12‑31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | $110M | -$22M | -2.0% | n/a | n/a |  |', \
+                    '| 2021 | 2021‑12‑31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$25M | -2.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022‑12‑31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$28M | -2.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023‑12‑31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$32M | -2.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | n/a | n/a |  |', \
+                    '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$40M | -2.0% | n/a | n/a |  |', \
+                    '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $258M | $215M | -$43M | -2.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/1/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/1/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
                 'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
@@ -1620,8 +1840,8 @@ async function testMain_companyOneOff():
                     '| Part | Input | Points |', \
                     '| :-- | --: | --: |', \
                     '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
-                    '| Cumulative owner-cash margin, 2019-2025 | -4.0% | 4.8 of 8 |', \
-                    '| Owner-cash margin, fiscal year to 2025-12-31 | -4.0% | 6.3 of 7 |' \
+                    '| Cumulative owner-cash margin, 2019‑2025 | -4.0% | 4.8 of 8 |', \
+                    '| Owner-cash margin, fiscal year to 2025‑12‑31 | -4.0% | 6.3 of 7 |' \
                 ] \
             ] \
         ], \
@@ -1668,18 +1888,22 @@ async function testMain_companyOneOff():
         testChartCall(data, 'data/company/6.json'), \
         [ \
             'markdownPrint', \
+            [''] \
+        ], \
+        [ \
+            'markdownPrint', \
             [ \
                 '', \
                 [ \
                     '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
-                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) + [$10M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) | [$130M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) | $90M | -$40M | -4.0% | n/a | n/a | inventory [-$300M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) |', \
-                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) + [$11M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) | [$143M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) | $99M | -$44M | -4.0% | n/a | n/a | inventory [$300M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) |', \
-                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) + [$13M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) | [$163M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) | $113M | -$50M | -4.0% | n/a | n/a |  |', \
-                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) + [$14M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) | [$182M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) | $126M | -$56M | -4.0% | n/a | n/a |  |', \
-                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) + [$16M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) | [$208M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) | $144M | -$64M | -4.0% | n/a | n/a |  |', \
-                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) + [$18M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) | [$234M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) | $162M | -$72M | -4.0% | n/a | n/a |  |', \
-                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) + [$20M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | [$260M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | $180M | -$80M | -4.0% | n/a | n/a |  |' \
+                    '| 2019 | 2019‑12‑31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) + [$10M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) | [$130M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) | $90M | -$40M | -4.0% | n/a | n/a | inventory [-$300M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) |', \
+                    '| 2020 | 2020‑12‑31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) + [$11M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) | [$143M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) | $99M | -$44M | -4.0% | n/a | n/a | inventory [$300M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) |', \
+                    '| 2021 | 2021‑12‑31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) + [$13M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) | [$163M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) | $113M | -$50M | -4.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022‑12‑31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) + [$14M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) | [$182M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) | $126M | -$56M | -4.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023‑12‑31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) + [$16M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) | [$208M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) | $144M | -$64M | -4.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) + [$18M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) | [$234M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) | $162M | -$72M | -4.0% | n/a | n/a |  |', \
+                    '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) + [$20M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | [$260M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | $180M | -$80M | -4.0% | n/a | n/a |  |' \
                 ], \
                 '', \
                 'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
@@ -1795,8 +2019,8 @@ async function testMain_companyCapitalLed():
                     '| Part | Input | Points |', \
                     '| :-- | --: | --: |', \
                     '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
-                    '| Cumulative owner-cash margin, 2019-2025 | -2.0% | 3.7 of 8 |', \
-                    '| Owner-cash margin, 12 months to 2026-09-30 | -2.0% | 4.9 of 7 |' \
+                    '| Cumulative owner-cash margin, 2019‑2025 | -2.0% | 3.7 of 8 |', \
+                    '| Owner-cash margin, 12 months to 2026‑09‑30 | -2.0% | 4.9 of 7 |' \
                 ] \
             ] \
         ], \
@@ -1829,19 +2053,23 @@ async function testMain_companyCapitalLed():
         testChartCall(data, 'data/company/2.json'), \
         [ \
             'markdownPrint', \
+            [''] \
+        ], \
+        [ \
+            'markdownPrint', \
             [ \
                 '', \
                 [ \
                     '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
-                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/2/000000000120000010/0000000001-20-000010-index.htm) | [$400M](https://www.sec.gov/Archives/edgar/data/2/000000000120000010/0000000001-20-000010-index.htm) | [$300M](https://www.sec.gov/Archives/edgar/data/2/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/2/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$20M | -2.0% | n/a | n/a |  |', \
-                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/2/000000000121000010/0000000001-21-000010-index.htm) | [$440M](https://www.sec.gov/Archives/edgar/data/2/000000000121000010/0000000001-21-000010-index.htm) | [$330M](https://www.sec.gov/Archives/edgar/data/2/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/2/000000000121000010/0000000001-21-000010-index.htm) | $110M | -$22M | -2.0% | n/a | n/a |  |', \
-                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm) | [$500M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm) | [$375M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$25M | -2.0% | n/a | n/a |  |', \
-                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/2/000000000123000010/0000000001-23-000010-index.htm) | [$560M](https://www.sec.gov/Archives/edgar/data/2/000000000123000010/0000000001-23-000010-index.htm) | [$420M](https://www.sec.gov/Archives/edgar/data/2/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/2/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$28M | -2.0% | n/a | n/a |  |', \
-                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/2/000000000124000010/0000000001-24-000010-index.htm) | [$640M](https://www.sec.gov/Archives/edgar/data/2/000000000124000010/0000000001-24-000010-index.htm) | [$480M](https://www.sec.gov/Archives/edgar/data/2/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/2/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$32M | -2.0% | n/a | n/a |  |', \
-                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/2/000000000125000010/0000000001-25-000010-index.htm) | [$720M](https://www.sec.gov/Archives/edgar/data/2/000000000125000010/0000000001-25-000010-index.htm) | [$540M](https://www.sec.gov/Archives/edgar/data/2/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/2/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | n/a | n/a |  |', \
-                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm) | [$800M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm) | [$600M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$40M | -2.0% | n/a | n/a |  |', \
-                    '| **12 months** | 2026-09-30 | $2,150M | $860M | $645M | $258M | $215M | -$43M | -2.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/2/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/2/000000000125000030/0000000001-25-000030-index.htm) |' \
+                    '| 2019 | 2019‑12‑31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/2/000000000120000010/0000000001-20-000010-index.htm) | [$400M](https://www.sec.gov/Archives/edgar/data/2/000000000120000010/0000000001-20-000010-index.htm) | [$300M](https://www.sec.gov/Archives/edgar/data/2/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/2/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$20M | -2.0% | n/a | n/a |  |', \
+                    '| 2020 | 2020‑12‑31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/2/000000000121000010/0000000001-21-000010-index.htm) | [$440M](https://www.sec.gov/Archives/edgar/data/2/000000000121000010/0000000001-21-000010-index.htm) | [$330M](https://www.sec.gov/Archives/edgar/data/2/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/2/000000000121000010/0000000001-21-000010-index.htm) | $110M | -$22M | -2.0% | n/a | n/a |  |', \
+                    '| 2021 | 2021‑12‑31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm) | [$500M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm) | [$375M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$25M | -2.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022‑12‑31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/2/000000000123000010/0000000001-23-000010-index.htm) | [$560M](https://www.sec.gov/Archives/edgar/data/2/000000000123000010/0000000001-23-000010-index.htm) | [$420M](https://www.sec.gov/Archives/edgar/data/2/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/2/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$28M | -2.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023‑12‑31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/2/000000000124000010/0000000001-24-000010-index.htm) | [$640M](https://www.sec.gov/Archives/edgar/data/2/000000000124000010/0000000001-24-000010-index.htm) | [$480M](https://www.sec.gov/Archives/edgar/data/2/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/2/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$32M | -2.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/2/000000000125000010/0000000001-25-000010-index.htm) | [$720M](https://www.sec.gov/Archives/edgar/data/2/000000000125000010/0000000001-25-000010-index.htm) | [$540M](https://www.sec.gov/Archives/edgar/data/2/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/2/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | n/a | n/a |  |', \
+                    '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm) | [$800M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm) | [$600M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$40M | -2.0% | n/a | n/a |  |', \
+                    '| **12 months** | 2026‑09‑30 | $2,150M | $860M | $645M | $258M | $215M | -$43M | -2.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/2/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/2/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
                 'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
@@ -1943,8 +2171,8 @@ async function testMain_companyNoCostLine():
                     '| Part | Input | Points |', \
                     '| :-- | --: | --: |', \
                     '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
-                    '| Cumulative owner-cash margin, 2019-2025 | -8.2% | 7.0 of 8 |', \
-                    '| Owner-cash margin, fiscal year to 2025-12-31 | -8.0% | 7.0 of 7 |' \
+                    '| Cumulative owner-cash margin, 2019‑2025 | -8.2% | 7.0 of 8 |', \
+                    '| Owner-cash margin, fiscal year to 2025‑12‑31 | -8.0% | 7.0 of 7 |' \
                 ] \
             ] \
         ], \
@@ -1981,18 +2209,22 @@ async function testMain_companyNoCostLine():
         testChartCall(data, 'data/company/3.json'), \
         [ \
             'markdownPrint', \
+            [''] \
+        ], \
+        [ \
+            'markdownPrint', \
             [ \
                 '', \
                 [ \
                     '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
-                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/3/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/3/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/3/000000000120000010/0000000001-20-000010-index.htm) | [$200M](https://www.sec.gov/Archives/edgar/data/3/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$100M | -10.0% | n/a | n/a |  |', \
-                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/3/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/3/000000000121000010/0000000001-21-000010-index.htm) | n/a | [$220M](https://www.sec.gov/Archives/edgar/data/3/000000000121000010/0000000001-21-000010-index.htm) | $132M | -$88M | -8.0% | n/a | n/a |  |', \
-                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/3/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/3/000000000122000010/0000000001-22-000010-index.htm) | n/a | [$250M](https://www.sec.gov/Archives/edgar/data/3/000000000122000010/0000000001-22-000010-index.htm) | $150M | -$100M | -8.0% | n/a | n/a |  |', \
-                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/3/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/3/000000000123000010/0000000001-23-000010-index.htm) | n/a | [$280M](https://www.sec.gov/Archives/edgar/data/3/000000000123000010/0000000001-23-000010-index.htm) | $168M | -$112M | -8.0% | n/a | n/a |  |', \
-                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/3/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/3/000000000124000010/0000000001-24-000010-index.htm) | n/a | [$320M](https://www.sec.gov/Archives/edgar/data/3/000000000124000010/0000000001-24-000010-index.htm) | $192M | -$128M | -8.0% | n/a | n/a |  |', \
-                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/3/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/3/000000000125000010/0000000001-25-000010-index.htm) | n/a | [$360M](https://www.sec.gov/Archives/edgar/data/3/000000000125000010/0000000001-25-000010-index.htm) | $216M | -$144M | -8.0% | n/a | n/a |  |', \
-                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/3/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/3/000000000126000010/0000000001-26-000010-index.htm) | n/a | [$400M](https://www.sec.gov/Archives/edgar/data/3/000000000126000010/0000000001-26-000010-index.htm) | $240M | -$160M | -8.0% | n/a | n/a |  |' \
+                    '| 2019 | 2019‑12‑31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/3/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/3/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/3/000000000120000010/0000000001-20-000010-index.htm) | [$200M](https://www.sec.gov/Archives/edgar/data/3/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$100M | -10.0% | n/a | n/a |  |', \
+                    '| 2020 | 2020‑12‑31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/3/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/3/000000000121000010/0000000001-21-000010-index.htm) | n/a | [$220M](https://www.sec.gov/Archives/edgar/data/3/000000000121000010/0000000001-21-000010-index.htm) | $132M | -$88M | -8.0% | n/a | n/a |  |', \
+                    '| 2021 | 2021‑12‑31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/3/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/3/000000000122000010/0000000001-22-000010-index.htm) | n/a | [$250M](https://www.sec.gov/Archives/edgar/data/3/000000000122000010/0000000001-22-000010-index.htm) | $150M | -$100M | -8.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022‑12‑31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/3/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/3/000000000123000010/0000000001-23-000010-index.htm) | n/a | [$280M](https://www.sec.gov/Archives/edgar/data/3/000000000123000010/0000000001-23-000010-index.htm) | $168M | -$112M | -8.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023‑12‑31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/3/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/3/000000000124000010/0000000001-24-000010-index.htm) | n/a | [$320M](https://www.sec.gov/Archives/edgar/data/3/000000000124000010/0000000001-24-000010-index.htm) | $192M | -$128M | -8.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/3/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/3/000000000125000010/0000000001-25-000010-index.htm) | n/a | [$360M](https://www.sec.gov/Archives/edgar/data/3/000000000125000010/0000000001-25-000010-index.htm) | $216M | -$144M | -8.0% | n/a | n/a |  |', \
+                    '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/3/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/3/000000000126000010/0000000001-26-000010-index.htm) | n/a | [$400M](https://www.sec.gov/Archives/edgar/data/3/000000000126000010/0000000001-26-000010-index.htm) | $240M | -$160M | -8.0% | n/a | n/a |  |' \
                 ], \
                 '', \
                 'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
@@ -2112,8 +2344,8 @@ async function testMain_companyCashGenerative():
                     '| Part | Input | Points |', \
                     '| :-- | --: | --: |', \
                     '| Years with owner cash under 3.0% of revenue | 0 of 7 | 0.0 of 10 |', \
-                    '| Cumulative owner-cash margin, 2019-2025 | 8.0% | 0.0 of 8 |', \
-                    '| Owner-cash margin, 12 months to 2026-09-30 | 8.0% | 0.0 of 7 |' \
+                    '| Cumulative owner-cash margin, 2019‑2025 | 8.0% | 0.0 of 8 |', \
+                    '| Owner-cash margin, 12 months to 2026‑09‑30 | 8.0% | 0.0 of 7 |' \
                 ] \
             ] \
         ], \
@@ -2153,19 +2385,23 @@ async function testMain_companyCashGenerative():
         testChartCall(data, 'data/company/4.json'), \
         [ \
             'markdownPrint', \
+            [''] \
+        ], \
+        [ \
+            'markdownPrint', \
             [ \
                 '', \
                 [ \
                     '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
-                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/4/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/4/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/4/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/4/000000000120000010/0000000001-20-000010-index.htm) | $100M | $80M | 8.0% | n/a | n/a |  |', \
-                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/4/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/4/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/4/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/4/000000000121000010/0000000001-21-000010-index.htm) | $110M | $88M | 8.0% | n/a | n/a |  |', \
-                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) | $125M | $100M | 8.0% | n/a | n/a |  |', \
-                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/4/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/4/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/4/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/4/000000000123000010/0000000001-23-000010-index.htm) | $140M | $112M | 8.0% | n/a | n/a |  |', \
-                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/4/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/4/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/4/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/4/000000000124000010/0000000001-24-000010-index.htm) | $160M | $128M | 8.0% | n/a | n/a |  |', \
-                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | $180M | $144M | 8.0% | [$100M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | n/a |  |', \
-                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | $200M | $160M | 8.0% | [$150M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) |  |', \
-                    '| **12 months** | 2026-09-30 | $2,150M | $258M | $43M | $43M | $215M | $172M | 8.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/4/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/4/000000000125000030/0000000001-25-000030-index.htm) |' \
+                    '| 2019 | 2019‑12‑31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/4/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/4/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/4/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/4/000000000120000010/0000000001-20-000010-index.htm) | $100M | $80M | 8.0% | n/a | n/a |  |', \
+                    '| 2020 | 2020‑12‑31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/4/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/4/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/4/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/4/000000000121000010/0000000001-21-000010-index.htm) | $110M | $88M | 8.0% | n/a | n/a |  |', \
+                    '| 2021 | 2021‑12‑31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) | $125M | $100M | 8.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022‑12‑31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/4/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/4/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/4/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/4/000000000123000010/0000000001-23-000010-index.htm) | $140M | $112M | 8.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023‑12‑31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/4/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/4/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/4/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/4/000000000124000010/0000000001-24-000010-index.htm) | $160M | $128M | 8.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | $180M | $144M | 8.0% | [$100M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | n/a |  |', \
+                    '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | $200M | $160M | 8.0% | [$150M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) |  |', \
+                    '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $43M | $215M | $172M | 8.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/4/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/4/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
                 'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
@@ -2249,19 +2485,23 @@ async function testMain_companyExcluded():
         testChartCall(data, 'data/company/5.json'), \
         [ \
             'markdownPrint', \
+            [''] \
+        ], \
+        [ \
+            'markdownPrint', \
             [ \
                 '', \
                 [ \
                     '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
-                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/5/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/5/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/5/000000000120000010/0000000001-20-000010-index.htm) | [$200M](https://www.sec.gov/Archives/edgar/data/5/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$100M | -10.0% | n/a | n/a |  |', \
-                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/5/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/5/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/5/000000000121000010/0000000001-21-000010-index.htm) | [$220M](https://www.sec.gov/Archives/edgar/data/5/000000000121000010/0000000001-21-000010-index.htm) | $110M | -$110M | -10.0% | n/a | n/a |  |', \
-                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/5/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/5/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/5/000000000122000010/0000000001-22-000010-index.htm) | [$250M](https://www.sec.gov/Archives/edgar/data/5/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$125M | -10.0% | n/a | n/a |  |', \
-                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/5/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/5/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/5/000000000123000010/0000000001-23-000010-index.htm) | [$280M](https://www.sec.gov/Archives/edgar/data/5/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$140M | -10.0% | n/a | n/a |  |', \
-                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/5/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/5/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/5/000000000124000010/0000000001-24-000010-index.htm) | [$320M](https://www.sec.gov/Archives/edgar/data/5/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$160M | -10.0% | n/a | n/a |  |', \
-                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/5/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/5/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/5/000000000125000010/0000000001-25-000010-index.htm) | [$360M](https://www.sec.gov/Archives/edgar/data/5/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$180M | -10.0% | n/a | n/a |  |', \
-                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/5/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/5/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/5/000000000126000010/0000000001-26-000010-index.htm) | [$400M](https://www.sec.gov/Archives/edgar/data/5/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$200M | -10.0% | n/a | n/a |  |', \
-                    '| **12 months** | 2026-09-30 | $2,150M | $258M | $43M | $430M | $215M | -$215M | -10.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/5/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/5/000000000125000030/0000000001-25-000030-index.htm) |' \
+                    '| 2019 | 2019‑12‑31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/5/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/5/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/5/000000000120000010/0000000001-20-000010-index.htm) | [$200M](https://www.sec.gov/Archives/edgar/data/5/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$100M | -10.0% | n/a | n/a |  |', \
+                    '| 2020 | 2020‑12‑31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/5/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/5/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/5/000000000121000010/0000000001-21-000010-index.htm) | [$220M](https://www.sec.gov/Archives/edgar/data/5/000000000121000010/0000000001-21-000010-index.htm) | $110M | -$110M | -10.0% | n/a | n/a |  |', \
+                    '| 2021 | 2021‑12‑31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/5/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/5/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/5/000000000122000010/0000000001-22-000010-index.htm) | [$250M](https://www.sec.gov/Archives/edgar/data/5/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$125M | -10.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022‑12‑31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/5/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/5/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/5/000000000123000010/0000000001-23-000010-index.htm) | [$280M](https://www.sec.gov/Archives/edgar/data/5/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$140M | -10.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023‑12‑31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/5/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/5/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/5/000000000124000010/0000000001-24-000010-index.htm) | [$320M](https://www.sec.gov/Archives/edgar/data/5/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$160M | -10.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/5/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/5/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/5/000000000125000010/0000000001-25-000010-index.htm) | [$360M](https://www.sec.gov/Archives/edgar/data/5/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$180M | -10.0% | n/a | n/a |  |', \
+                    '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/5/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/5/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/5/000000000126000010/0000000001-26-000010-index.htm) | [$400M](https://www.sec.gov/Archives/edgar/data/5/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$200M | -10.0% | n/a | n/a |  |', \
+                    '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $430M | $215M | -$215M | -10.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/5/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/5/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
                 'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
@@ -2357,8 +2597,8 @@ async function testMain_companyNoIndustryName():
                     '| Part | Input | Points |', \
                     '| :-- | --: | --: |', \
                     '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
-                    '| Cumulative owner-cash margin, 2019-2025 | 0.6% | 2.4 of 8 |', \
-                    '| Owner-cash margin, 12 months to 2026-09-30 | 0.6% | 3.1 of 7 |' \
+                    '| Cumulative owner-cash margin, 2019‑2025 | 0.6% | 2.4 of 8 |', \
+                    '| Owner-cash margin, 12 months to 2026‑09‑30 | 0.6% | 3.1 of 7 |' \
                 ] \
             ] \
         ], \
@@ -2398,19 +2638,23 @@ async function testMain_companyNoIndustryName():
         testChartCall(data, 'data/company/7.json'), \
         [ \
             'markdownPrint', \
+            [''] \
+        ], \
+        [ \
+            'markdownPrint', \
             [ \
                 '', \
                 [ \
                     '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
-                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/7/000000000120000010/0000000001-20-000010-index.htm) | [$45M](https://www.sec.gov/Archives/edgar/data/7/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/7/000000000120000010/0000000001-20-000010-index.htm) | [$19M](https://www.sec.gov/Archives/edgar/data/7/000000000120000010/0000000001-20-000010-index.htm) | $25M | $6M | 0.6% | n/a | n/a |  |', \
-                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/7/000000000121000010/0000000001-21-000010-index.htm) | [$50M](https://www.sec.gov/Archives/edgar/data/7/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/7/000000000121000010/0000000001-21-000010-index.htm) | [$21M](https://www.sec.gov/Archives/edgar/data/7/000000000121000010/0000000001-21-000010-index.htm) | $28M | $7M | 0.6% | n/a | n/a |  |', \
-                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm) | [$56M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm) | [$24M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm) | $31M | $8M | 0.6% | n/a | n/a |  |', \
-                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/7/000000000123000010/0000000001-23-000010-index.htm) | [$63M](https://www.sec.gov/Archives/edgar/data/7/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/7/000000000123000010/0000000001-23-000010-index.htm) | [$27M](https://www.sec.gov/Archives/edgar/data/7/000000000123000010/0000000001-23-000010-index.htm) | $35M | $8M | 0.6% | n/a | n/a |  |', \
-                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/7/000000000124000010/0000000001-24-000010-index.htm) | [$72M](https://www.sec.gov/Archives/edgar/data/7/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/7/000000000124000010/0000000001-24-000010-index.htm) | [$30M](https://www.sec.gov/Archives/edgar/data/7/000000000124000010/0000000001-24-000010-index.htm) | $40M | $10M | 0.6% | n/a | n/a |  |', \
-                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/7/000000000125000010/0000000001-25-000010-index.htm) | [$81M](https://www.sec.gov/Archives/edgar/data/7/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/7/000000000125000010/0000000001-25-000010-index.htm) | [$34M](https://www.sec.gov/Archives/edgar/data/7/000000000125000010/0000000001-25-000010-index.htm) | $45M | $11M | 0.6% | n/a | n/a |  |', \
-                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm) | [$90M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm) | [$38M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm) | $50M | $12M | 0.6% | n/a | n/a |  |', \
-                    '| **12 months** | 2026-09-30 | $2,150M | $97M | $43M | $41M | $54M | $13M | 0.6% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/7/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/7/000000000125000030/0000000001-25-000030-index.htm) |' \
+                    '| 2019 | 2019‑12‑31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/7/000000000120000010/0000000001-20-000010-index.htm) | [$45M](https://www.sec.gov/Archives/edgar/data/7/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/7/000000000120000010/0000000001-20-000010-index.htm) | [$19M](https://www.sec.gov/Archives/edgar/data/7/000000000120000010/0000000001-20-000010-index.htm) | $25M | $6M | 0.6% | n/a | n/a |  |', \
+                    '| 2020 | 2020‑12‑31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/7/000000000121000010/0000000001-21-000010-index.htm) | [$50M](https://www.sec.gov/Archives/edgar/data/7/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/7/000000000121000010/0000000001-21-000010-index.htm) | [$21M](https://www.sec.gov/Archives/edgar/data/7/000000000121000010/0000000001-21-000010-index.htm) | $28M | $7M | 0.6% | n/a | n/a |  |', \
+                    '| 2021 | 2021‑12‑31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm) | [$56M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm) | [$24M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm) | $31M | $8M | 0.6% | n/a | n/a |  |', \
+                    '| 2022 | 2022‑12‑31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/7/000000000123000010/0000000001-23-000010-index.htm) | [$63M](https://www.sec.gov/Archives/edgar/data/7/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/7/000000000123000010/0000000001-23-000010-index.htm) | [$27M](https://www.sec.gov/Archives/edgar/data/7/000000000123000010/0000000001-23-000010-index.htm) | $35M | $8M | 0.6% | n/a | n/a |  |', \
+                    '| 2023 | 2023‑12‑31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/7/000000000124000010/0000000001-24-000010-index.htm) | [$72M](https://www.sec.gov/Archives/edgar/data/7/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/7/000000000124000010/0000000001-24-000010-index.htm) | [$30M](https://www.sec.gov/Archives/edgar/data/7/000000000124000010/0000000001-24-000010-index.htm) | $40M | $10M | 0.6% | n/a | n/a |  |', \
+                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/7/000000000125000010/0000000001-25-000010-index.htm) | [$81M](https://www.sec.gov/Archives/edgar/data/7/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/7/000000000125000010/0000000001-25-000010-index.htm) | [$34M](https://www.sec.gov/Archives/edgar/data/7/000000000125000010/0000000001-25-000010-index.htm) | $45M | $11M | 0.6% | n/a | n/a |  |', \
+                    '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm) | [$90M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm) | [$38M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm) | $50M | $12M | 0.6% | n/a | n/a |  |', \
+                    '| **12 months** | 2026‑09‑30 | $2,150M | $97M | $43M | $41M | $54M | $13M | 0.6% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/7/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/7/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
                 'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
@@ -2506,8 +2750,8 @@ async function testMain_companyNoIndustry():
                     '| Part | Input | Points |', \
                     '| :-- | --: | --: |', \
                     '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
-                    '| Cumulative owner-cash margin, 2019-2025 | -13.0% | 8.0 of 8 |', \
-                    '| Owner-cash margin, 12 months to 2026-09-30 | -13.0% | 7.0 of 7 |' \
+                    '| Cumulative owner-cash margin, 2019‑2025 | -13.0% | 8.0 of 8 |', \
+                    '| Owner-cash margin, 12 months to 2026‑09‑30 | -13.0% | 7.0 of 7 |' \
                 ] \
             ] \
         ], \
@@ -2547,19 +2791,23 @@ async function testMain_companyNoIndustry():
         testChartCall(data, 'data/company/8.json'), \
         [ \
             'markdownPrint', \
+            [''] \
+        ], \
+        [ \
+            'markdownPrint', \
             [ \
                 '', \
                 [ \
                     '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
-                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/8/000000000120000010/0000000001-20-000010-index.htm) | [$10M](https://www.sec.gov/Archives/edgar/data/8/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/8/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/8/000000000120000010/0000000001-20-000010-index.htm) | -$10M | -$130M | -13.0% | n/a | n/a |  |', \
-                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/8/000000000121000010/0000000001-21-000010-index.htm) | [$11M](https://www.sec.gov/Archives/edgar/data/8/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/8/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/8/000000000121000010/0000000001-21-000010-index.htm) | -$11M | -$143M | -13.0% | n/a | n/a |  |', \
-                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm) | [$13M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm) | -$13M | -$163M | -13.0% | n/a | n/a |  |', \
-                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/8/000000000123000010/0000000001-23-000010-index.htm) | [$14M](https://www.sec.gov/Archives/edgar/data/8/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/8/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/8/000000000123000010/0000000001-23-000010-index.htm) | -$14M | -$182M | -13.0% | n/a | n/a |  |', \
-                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/8/000000000124000010/0000000001-24-000010-index.htm) | [$16M](https://www.sec.gov/Archives/edgar/data/8/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/8/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/8/000000000124000010/0000000001-24-000010-index.htm) | -$16M | -$208M | -13.0% | n/a | n/a |  |', \
-                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/8/000000000125000010/0000000001-25-000010-index.htm) | [$18M](https://www.sec.gov/Archives/edgar/data/8/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/8/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/8/000000000125000010/0000000001-25-000010-index.htm) | -$18M | -$234M | -13.0% | n/a | n/a |  |', \
-                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm) | -$20M | -$260M | -13.0% | n/a | n/a |  |', \
-                    '| **12 months** | 2026-09-30 | $2,150M | $22M | $43M | $258M | -$22M | -$280M | -13.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/8/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/8/000000000125000030/0000000001-25-000030-index.htm) |' \
+                    '| 2019 | 2019‑12‑31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/8/000000000120000010/0000000001-20-000010-index.htm) | [$10M](https://www.sec.gov/Archives/edgar/data/8/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/8/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/8/000000000120000010/0000000001-20-000010-index.htm) | -$10M | -$130M | -13.0% | n/a | n/a |  |', \
+                    '| 2020 | 2020‑12‑31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/8/000000000121000010/0000000001-21-000010-index.htm) | [$11M](https://www.sec.gov/Archives/edgar/data/8/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/8/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/8/000000000121000010/0000000001-21-000010-index.htm) | -$11M | -$143M | -13.0% | n/a | n/a |  |', \
+                    '| 2021 | 2021‑12‑31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm) | [$13M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm) | -$13M | -$163M | -13.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022‑12‑31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/8/000000000123000010/0000000001-23-000010-index.htm) | [$14M](https://www.sec.gov/Archives/edgar/data/8/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/8/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/8/000000000123000010/0000000001-23-000010-index.htm) | -$14M | -$182M | -13.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023‑12‑31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/8/000000000124000010/0000000001-24-000010-index.htm) | [$16M](https://www.sec.gov/Archives/edgar/data/8/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/8/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/8/000000000124000010/0000000001-24-000010-index.htm) | -$16M | -$208M | -13.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/8/000000000125000010/0000000001-25-000010-index.htm) | [$18M](https://www.sec.gov/Archives/edgar/data/8/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/8/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/8/000000000125000010/0000000001-25-000010-index.htm) | -$18M | -$234M | -13.0% | n/a | n/a |  |', \
+                    '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm) | -$20M | -$260M | -13.0% | n/a | n/a |  |', \
+                    '| **12 months** | 2026‑09‑30 | $2,150M | $22M | $43M | $258M | -$22M | -$280M | -13.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/8/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/8/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
                 'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
@@ -3108,7 +3356,7 @@ async function testMain_method():
                     '| ...and both pillars of the screen score can be built (ranked) | 4 |' \
                 ], \
                 '', \
-                '**Excluded industries**, by SIC code: drug developer (2834); drug developer (2836); bank (6000-6099); lender (6100-6199); broker or asset manager (6200-6289); insurer (6300-6411); asset manager (6722-6726); REIT (6798); asset manager (6799). Their cash flows include customer money,', \
+                '**Excluded industries**, by SIC code: drug developer (2834); drug developer (2836); bank (6000-6099); lender (6100-6199); broker or asset manager (6200-6289); insurer (6300-6399); asset manager (6722-6726); REIT (6798); asset manager (6799). Their cash flows include customer money,', \
                 'loans or property, so free cash flow does not mean the same thing.', \
                 '', \
                 '**Stock pay is the cause** when cumulative free cash flow is zero or positive, stock pay is at least 2.0% of revenue, and stock pay is at least 50.0% of free cash flow. Without this rule the screen is', \
@@ -3222,7 +3470,7 @@ async function testMain_data():
                 '', \
                 '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
                 '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
-                '  File size 123,456,789 bytes, SHA-256 `bbc886ba1498c48468e20a3a0ac0176bba8d1160c127149369b5f61b385b60d7`.', \
+                '  File size 123,456,789 bytes, SHA-256 `68a424a0706d010ada0039f1e5e9a0af40b7bf7566e7dbe894e47fc22a4e932b`.', \
                 '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
                 '- Method version 1.0.0. A figure cited from this page can be reproduced from the same', \
                 '  SEC file and the same method version.', \
@@ -3252,8 +3500,9 @@ async function testMain_data():
                 '  A year with neither tag counts as zero and is noted.', \
                 '- **The cost line** cannot be built for 1 companies (1 of those that pass the screen) because of inconsistent tagging. They are unranked.', \
                 '- **Latest 12 months** fall back to the latest fiscal year when a quarterly figure is missing or tagged differently.', \
-                '- **Industry codes** are the SEC\'s and are coarse. Brokers and insurance agents are excluded along with asset', \
-                '  managers and insurers. Some real-estate and payment companies are not excluded.', \
+                '- **Industry codes** are the SEC\'s and are coarse. Securities brokers are excluded along with asset managers, because', \
+                '  they hold customer money. Insurance agents and brokers are not excluded: they are not insurers. Some real-estate and', \
+                '  payment companies are not excluded.', \
                 '- **Restated years.** Each year uses its most recently filed value. When a company restates recent years for a', \
                 '  business it has left, older years are not restated, so the two can sit side by side.', \
                 '- **Foreign companies** that file financial data with the SEC in US dollars are included.', \

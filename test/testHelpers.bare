@@ -1,6 +1,7 @@
 include <dataLineChart.bare>
 include <unittest.bare>
 include <unittestMock.bare>
+include '../treadmillIndex.bare'
 
 
 # Load test data files for the systemFetch mock
@@ -17,19 +18,8 @@ endfunction
 # Get the expected chart render call for a test company file
 function testChartCall(data, url):
     company = jsonParse(objectGet(objectGet(data, 'systemFetch'), url))
-    chartData = []
-    for year in objectGet(company, 'years'):
-        arrayPush(chartData, {'Fiscal year': numberParseInt(objectGet(year, 'fy')), 'Owner-cash margin (%)': objectGet(year, 'margin') * 100})
-    endfor
-    return ['elementModelRender', [{'html': 'p', 'elem': dataLineChartElements(chartData, { \
-        'title': 'Owner cash as a percent of revenue', \
-        'width': 720, \
-        'height': 300, \
-        'x': 'Fiscal year', \
-        'y': ['Owner-cash margin (%)'], \
-        'precision': 0, \
-        'yLines': [{'value': 3, 'label': '3.0%'}] \
-    })}]]
+    chart = tiYearsChart(objectGet(company, 'years'), 0.03)
+    return ['elementModelRender', [{'html': 'p', 'elem': dataLineChartElements(objectGet(chart, 'data'), objectGet(chart, 'model'))}]]
 endfunction
 
 

@@ -39,6 +39,7 @@ class TestScore(unittest.TestCase):
         self.assertEqual(sic_exclusion(6282), 'broker or asset manager')
         self.assertEqual(sic_exclusion(6726), 'asset manager')
         self.assertEqual(sic_exclusion(6331), 'insurer')
+        self.assertIsNone(sic_exclusion(6411))
         self.assertEqual(sic_exclusion(6798), 'REIT')
 
 

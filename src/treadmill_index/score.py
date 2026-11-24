@@ -54,7 +54,7 @@ SIC_EXCLUSIONS = (
     (6000, 6099, 'bank'),
     (6100, 6199, 'lender'),
     (6200, 6289, 'broker or asset manager'),
-    (6300, 6411, 'insurer'),
+    (6300, 6399, 'insurer'),
     (6722, 6726, 'asset manager'),
     (6798, 6798, 'REIT'),
     (6799, 6799, 'asset manager')

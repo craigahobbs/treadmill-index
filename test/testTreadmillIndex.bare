@@ -43,6 +43,56 @@ endfunction
 unittestRunTest('testPercent')
 
 
+function testNoWrap():
+    unittestEqual(tiNoWrap('2025-12-31'), '2025' + stringFromCharCode(8209) + '12' + stringFromCharCode(8209) + '31')
+    unittestEqual(tiNoWrap('12 months'), '12' + stringFromCharCode(160) + 'months')
+    unittestEqual(tiNoWrap('n/a'), 'n/a')
+endfunction
+unittestRunTest('testNoWrap')
+
+
+function testYears():
+    unittestEqual(tiYears('2013', '2025'), '2013' + stringFromCharCode(8209) + '2025')
+    unittestEqual(stringLength(tiYears('2013', '2025')), 9)
+endfunction
+unittestRunTest('testYears')
+
+
+function testYearsChart():
+    model = { \
+        'title': 'Owner cash as a percent of revenue', \
+        'width': 720, \
+        'height': 300, \
+        'x': 'Fiscal year', \
+        'y': ['Owner-cash margin (%)'], \
+        'precision': 0, \
+        'yLines': [{'value': 3, 'label': '3.0%'}] \
+    }
+
+    # Every year is within the chart limit
+    unittestDeepEqual( \
+        tiYearsChart([{'fy': '2024', 'margin': -0.5}, {'fy': '2025', 'margin': 0.25}], 0.03), \
+        { \
+            'data': [ \
+                {'Fiscal year': 2024, 'Owner-cash margin (%)': -50}, \
+                {'Fiscal year': 2025, 'Owner-cash margin (%)': 25} \
+            ], \
+            'model': model, \
+            'clipped': false \
+        } \
+    )
+
+    # A year beyond the chart limit, above or below, clips the chart
+    for margin in [2.01, -1.67]:
+        chart = tiYearsChart([{'fy': '2024', 'margin': margin}, {'fy': '2025', 'margin': 0.25}], 0.03)
+        unittestEqual(objectGet(chart, 'clipped'), true)
+        unittestDeepEqual(objectGet(chart, 'model'), objectAssign(objectCopy(model), {'yMin': -50, 'yMax': 50}))
+        unittestEqual(objectGet(arrayGet(objectGet(chart, 'data'), 0), 'Owner-cash margin (%)'), margin * 100)
+    endfor
+endfunction
+unittestRunTest('testYearsChart')
+
+
 function testScore():
     unittestEqual(tiScore(null), 'n/a')
     unittestEqual(tiScore(36.998), '37.0')
