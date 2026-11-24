@@ -8,7 +8,7 @@ This project was planned in an earlier chat session that you cannot see. Everyth
 
 Identify companies that persistently keep free cash flow at zero as potentially a means of avoiding rational valuation, which, for those companies, a rational valuation would be far worse due to being propped up by high costs like sales labor, and then cashing out on the irrational valuation by treadmill-granting and selling shares.
 
-The three parts must hold together: owner cash persistently near zero (P1), revenue held up by costs (P2), insiders granted shares and selling them (P3). Test new work against this: does it show whether cash reached owners, and where it went instead. The intent part is the index's stated view about the pattern; see the rules below before attaching it to anything.
+The three parts must hold together: owner cash persistently near zero (P1), revenue held up by costs (P2), insiders granted shares and selling them (P3). Test new work against this: does it show whether cash reached owners, and where it went instead. The intent part is the index's stated theory about the pattern; see the rules below before attaching it to anything.
 
 ## Read first
 
@@ -76,6 +76,7 @@ Local Makefile:
 
 ## Rules that matter
 
+- What the index is, in the owner's words (2026-11-24): a presentation of public data using a methodology based on a theory. Write the pages so that stays true: figures from filings, a stated method, and the theory named as a theory.
 - Never call a company's conduct fraud, a scam, or misleading unless a court or regulator has. The index measures how owners were treated, not intent. The evidence gathered did not support fraud; what it supports is a governance and disclosure finding.
 - It is not a short list or investment advice. Say so in the app.
 - The index page states the index's theory that some companies keep the pattern going on purpose, at shareholders' expense (owner's decision, 2026-11-24, over the assistant's weaker wording; he chose the word "theory" over "view" the same day). The theory is about the pattern. It is never attached to a named company, and a company page never says or implies it.
