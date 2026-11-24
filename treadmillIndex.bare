@@ -58,7 +58,8 @@ async function tiMain():
         '', \
         '---', \
         '', \
-        'Data as of ' + objectGet(meta, 'dataDate') + ', from SEC filings. Method version ' + objectGet(meta, 'methodVersion') + '.', \
+        'Last updated ' + objectGet(meta, 'built') + ', with SEC filings through ' + objectGet(meta, 'dataDate') + '. Method version ' + \
+            objectGet(meta, 'methodVersion') + '.', \
         'History starts about 2009, when the SEC began collecting financial statements as data.', \
         '', \
         'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -1299,6 +1300,8 @@ function tiMethodPage(meta):
         '- The top of the scale is the line the index uses for owners. A company whose insiders take out ' + \
             tiPercent(objectGet(thresholds, 'insider_full')) + ' of revenue has paid them what would count as meaningful cash had it gone to owners.', \
         '- If the company has no insider filings, it has no score.', \
+        '- What the insider filings cannot settle, such as a sale that two insiders both report, is listed with the other known', \
+        '  limits on the ' + argsLink(tiArguments, 'Data and Limits', {'page': 'data'}, true, argsTopHeaderId) + ' page.', \
         '', \
         '**Score = owner cash + (owner cash / 25) x (costs + insiders)**', \
         '', \
@@ -1415,8 +1418,8 @@ function tiDataPage(meta, builds):
     for build in if(builds != null, builds, []):
         dataDate = objectGet(build, 'dataDate')
         buildDir = 'data/archive/' + dataDate + '/' + objectGet(build, 'methodVersion') + '/'
-        arrayPush(buildLines, '- Data as of **' + dataDate + '**, method version ' + objectGet(build, 'methodVersion') + ', ' + \
-            objectGet(build, 'ranked') + ' ranked: [index.csv](' + buildDir + 'index.csv), [index.json](' + buildDir + \
+        arrayPush(buildLines, '- Data as of **' + dataDate + '**, method version ' + objectGet(build, 'methodVersion') + ', built ' + \
+            objectGet(build, 'built') + ', ' + objectGet(build, 'ranked') + ' ranked: [index.csv](' + buildDir + 'index.csv), [index.json](' + buildDir + \
             'index.json), [meta.json](' + buildDir + 'meta.json)')
     endfor
 
@@ -1432,8 +1435,8 @@ function tiDataPage(meta, builds):
         '  File size ' + tiNumber(objectGet(companyfacts, 'bytes'), 0) + ' bytes, SHA-256 `' + objectGet(companyfacts, 'sha256') + '`.', \
         '- Industry codes, tickers and former names: the [SEC company API](' + objectGet(objectGet(sources, 'submissions'), 'url') + ').', \
         tiDataInsiderSource(sources), \
-        '- Method version ' + objectGet(meta, 'methodVersion') + '. A figure cited from this page can be reproduced from the same', \
-        '  SEC file and the same method version.', \
+        '- Built on ' + objectGet(meta, 'built') + ' with method version ' + objectGet(meta, 'methodVersion') + '. A figure cited from this', \
+        '  page can be reproduced from the same SEC file and the same method version.', \
         '', \
         '## Downloads', \
         '', \
@@ -1445,7 +1448,8 @@ function tiDataPage(meta, builds):
         '  accession number of the SEC filing it came from.', \
         '', \
         'Money is in US dollars. Margins and ratios are fractions (0.03 is 3%). An empty CSV cell, or a JSON null, means the', \
-        'figure is not in the filings. Each build is kept, so a figure cited from an earlier one can be found again:', \
+        'figure is not in the filings. Each build is kept, so a figure cited from an earlier one can be found again. A build is', \
+        'known by its data date and method version: building again with the same two replaces it.', \
         '', \
         if(arrayLength(buildLines), buildLines, 'No builds are listed.'), \
         '', \
@@ -1470,7 +1474,8 @@ function tiDataPage(meta, builds):
         '- **Latest 12 months** fall back to the latest fiscal year when a quarterly figure is missing or tagged differently.', \
         "- **Industry codes** are the SEC's and are coarse. Securities brokers are excluded along with asset managers, because", \
         '  they hold customer money. Insurance agents and brokers are not excluded: they are not insurers. Some real-estate and', \
-        '  payment companies are not excluded.', \
+        "  payment companies are not excluded. Codes and tickers are fetched once and kept, so a company's new ticker or", \
+        '  industry code can lag.', \
         '- **Restated years.** Each year uses the value in the most recently filed annual report that has it, and another', \
         '  filing only if no annual report does. When a company restates recent years for a business it has left, older years', \
         '  are not restated, so the two can sit side by side.', \
@@ -1490,9 +1495,10 @@ function tiDataPage(meta, builds):
         '  of them, is treated as a filing error and left out; the band is wide because prices are not adjusted for stock splits.', \
         '  Transactions filed after the latest data set are not yet counted.', \
         '- **A shared company or partnership.** Two insiders who share one each report its sales. Where the filings name it', \
-        '  and give the same shares held afterward, the sale is counted once, for the insider who filed first. Where they say', \
-        '  only "by trust" or "see footnote", both are counted, because co-founders with equal holdings report equal, separate', \
-        '  sales the same way.', \
+        '  and give the same shares held afterward, the sale is counted once, for the insider who filed first: the table of', \
+        '  who took out the most credits that one insider with all of it. Where they say only "by trust" or "see footnote",', \
+        '  both are counted, because co-founders with equal holdings report equal, separate sales the same way. A shared sale', \
+        '  reported in those words is therefore counted twice.', \
         '- **Insider years are calendar years; company years are fiscal years.** Insider cash-out is set against revenue for the', \
         '  fiscal years with the same labels. Where the fiscal year does not end in December the two periods are up to eight', \
         '  months apart, which overstates the share at a fast-growing company. A calendar year for which the company has no', \
@@ -1519,7 +1525,7 @@ function tiDataPage(meta, builds):
         '## Corrections', \
         '', \
         'If a figure here does not match the linked SEC filing, it is an error in this index. Confirmed errors are corrected in', \
-        'the next build and noted in the change log. Report one at the', \
+        'a timely manner and noted in the change log. Report one at the', \
         '[project repository](https://github.com/craigahobbs/treadmill-index/issues) with the company and the year.' \
     )
 endfunction

@@ -4,6 +4,7 @@
 # pylint: disable=missing-class-docstring, missing-function-docstring, missing-module-docstring
 
 from concurrent.futures import ThreadPoolExecutor
+import datetime
 from io import StringIO
 import json
 import os
@@ -103,7 +104,7 @@ class TestMain(unittest.TestCase):
 
             with open(os.path.join(out_dir, 'meta.json'), 'r', encoding='utf-8') as meta_file:
                 meta = json.load(meta_file)
-            self.assertEqual(meta['dataDate'], '2026-11-05')
+            self.assertEqual((meta['dataDate'], meta['built']), ('2026-11-05', datetime.date.today().isoformat()))
             self.assertEqual(meta['years'], {'first': 2021, 'last': 2025})
             self.assertEqual(meta['sources']['companyfacts']['bytes'], os.path.getsize(zip_path))
             self.assertEqual(len(meta['sources']['companyfacts']['sha256']), 64)

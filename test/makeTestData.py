@@ -7,6 +7,7 @@ Run it with "make test-data" after a change to the data files' content.
 """
 
 from concurrent.futures import ThreadPoolExecutor
+import datetime
 import json
 import os
 import shutil
@@ -147,10 +148,12 @@ def make_test_data(out_dir):
         os.mkdir(os.path.join(raw_dir, 'insider'))
         insider_zips(os.path.join(raw_dir, 'insider'), INSIDER_FILINGS)
         with patch('treadmill_index.extract.ProcessPoolExecutor', ThreadPoolExecutor), \
+             patch('treadmill_index.main.datetime') as mock_datetime, \
              patch('treadmill_index.sec.fetch_url', side_effect=fetch_submission), \
              patch('treadmill_index.output.file_sha256', return_value='0123456789abcdef'), \
              patch('treadmill_index.main.os.path.getsize', return_value=123456789), \
              patch('time.sleep'):
+            mock_datetime.date.today.return_value = datetime.date(2026, 11, 24)
             return main(['--raw', raw_dir, '--out', out_dir, '--processes', '1', '--user-agent', 'test-client/1.0'])
 
 

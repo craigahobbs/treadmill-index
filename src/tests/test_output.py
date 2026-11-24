@@ -522,14 +522,14 @@ class TestOutput(unittest.TestCase):
     def test_build_meta(self):
         records, sics, insiders, results, funnel = screen()
         report = sensitivity(records, sics, DATA_DATE, results, insiders)
-        meta = build_meta(results, funnel, 20609, SOURCES, report)
+        meta = build_meta(results, funnel, 20609, SOURCES, report, '2026-11-24')
         self.assertEqual(sorted(meta), [
-            'buybackShares', 'cost', 'costMethods', 'dataDate', 'excluded', 'funnel', 'insider', 'latest', 'lowFiveYears',
+            'built', 'buybackShares', 'cost', 'costMethods', 'dataDate', 'excluded', 'funnel', 'insider', 'latest', 'lowFiveYears',
             'methodVersion', 'sensitivity', 'sicExclusions', 'sources', 'thresholds', 'totals', 'types', 'years'
         ])
         self.assertEqual(meta['years'], {'first': 2021, 'last': 2025})
         self.assertEqual(meta['methodVersion'], METHOD_VERSION)
-        self.assertEqual(meta['dataDate'], DATA_DATE)
+        self.assertEqual((meta['dataDate'], meta['built']), (DATA_DATE, '2026-11-24'))
         self.assertEqual(meta['sources'], SOURCES)
         self.assertEqual(meta['thresholds'], {**THRESHOLDS, 'prefilter_revenue': 5e8})
         self.assertEqual(meta['sicExclusions'][0], {'first': 2834, 'last': 2834, 'group': 'drug developer'})
@@ -596,7 +596,7 @@ class TestOutput(unittest.TestCase):
             sbc=[120, 132, 150, 168, 192, 216, 100], quarters=False, operating=[50, 55, 62.5, 70, 80, 90, -5]
         )]
         results, funnel = run_screen(records, {}, DATA_DATE, {})
-        meta = build_meta(results, funnel, 1, SOURCES, [])
+        meta = build_meta(results, funnel, 1, SOURCES, [], '2026-11-24')
         self.assertEqual(meta['insider'], {'screened': NO_INSIDERS, 'cashGenerative': NO_INSIDERS})
         self.assertEqual(meta['latest'], {'cleared': 1, 'negative': 0, 'fiscalYearBasis': 1})
         self.assertEqual(meta['cost'], {'allGross': 1, 'missing': 0, 'missingAll': 0})
@@ -606,7 +606,7 @@ class TestOutput(unittest.TestCase):
     def test_write_output(self):
         _, _, _, results, funnel = screen()
         infos = dict.fromkeys(range(1, 7), INFO)
-        meta = build_meta(results, funnel, 20609, SOURCES, [])
+        meta = build_meta(results, funnel, 20609, SOURCES, [], '2026-11-24')
         with TemporaryDirectory() as temp_dir:
             # A file for a company no longer in the index, and a file that is not a company's
             os.makedirs(os.path.join(temp_dir, 'company'))
@@ -653,7 +653,8 @@ class TestOutput(unittest.TestCase):
 
             # Builds with another data date or method version stay in the archive; the same build again replaces itself
             for data_date, version, ranked in (('2026-08-14', '0.9.0', 1), (DATA_DATE, '0.10.0', 3), (DATA_DATE, METHOD_VERSION, 4)):
-                write_archive(temp_dir, {'dataDate': data_date, 'methodVersion': version, 'funnel': {'ranked': ranked}})
+                build_meta_value = {'dataDate': data_date, 'methodVersion': version, 'built': '2026-12-01', 'funnel': {'ranked': ranked}}
+                write_archive(temp_dir, build_meta_value)
             archive_dir = os.path.join(temp_dir, 'archive')
             self.assertEqual(sorted(os.listdir(archive_dir)), ['2026-08-14', DATA_DATE, 'builds.json'])
             self.assertEqual(sorted(os.listdir(os.path.join(archive_dir, DATA_DATE))), ['0.10.0', METHOD_VERSION])
@@ -663,9 +664,9 @@ class TestOutput(unittest.TestCase):
                 self.assertEqual(json.load(meta_file), meta)
             with open(os.path.join(archive_dir, 'builds.json'), 'r', encoding='utf-8') as builds_file:
                 self.assertEqual(json.load(builds_file), [
-                    {'dataDate': DATA_DATE, 'methodVersion': METHOD_VERSION, 'ranked': 4},
-                    {'dataDate': DATA_DATE, 'methodVersion': '0.10.0', 'ranked': 3},
-                    {'dataDate': '2026-08-14', 'methodVersion': '0.9.0', 'ranked': 1}
+                    {'dataDate': DATA_DATE, 'methodVersion': METHOD_VERSION, 'built': '2026-12-01', 'ranked': 4},
+                    {'dataDate': DATA_DATE, 'methodVersion': '0.10.0', 'built': '2026-12-01', 'ranked': 3},
+                    {'dataDate': '2026-08-14', 'methodVersion': '0.9.0', 'built': '2026-12-01', 'ranked': 1}
                 ])
 
         # Nothing is written when a check fails

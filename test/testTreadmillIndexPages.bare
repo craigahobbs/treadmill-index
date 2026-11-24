@@ -185,7 +185,7 @@ async function testMain_index():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -379,7 +379,7 @@ async function testMain_indexAll():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -575,7 +575,7 @@ async function testMain_indexShowAll():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -773,7 +773,7 @@ async function testMain_indexFind():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -957,7 +957,7 @@ async function testMain_indexFindTicker():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -1140,7 +1140,7 @@ async function testMain_indexNoMatch():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -1316,7 +1316,7 @@ async function testMain_indexUnknownArgs():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -1508,7 +1508,7 @@ async function testMain_indexInsiderSort():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -1689,7 +1689,7 @@ async function testMain_indexCapitalLed():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -1861,7 +1861,7 @@ async function testMain_indexFailed():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -2124,7 +2124,7 @@ async function testMain_company():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -2374,7 +2374,7 @@ async function testMain_companyPerson():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -2635,7 +2635,7 @@ async function testMain_companyOneOff():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -2837,7 +2837,7 @@ async function testMain_companyCapitalLed():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -3056,7 +3056,7 @@ async function testMain_companyNoCostLine():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -3286,7 +3286,7 @@ async function testMain_companyNoGrossProfit():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -3498,7 +3498,7 @@ async function testMain_companyNoCashOut():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -3738,7 +3738,7 @@ async function testMain_companyCashGenerative():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -3891,7 +3891,7 @@ async function testMain_companyExcluded():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4091,7 +4091,7 @@ async function testMain_companyNoIndustryName():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4291,7 +4291,7 @@ async function testMain_companyNoIndustry():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4345,7 +4345,7 @@ async function testMain_companyUnknown():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4397,7 +4397,7 @@ async function testMain_companyNoCik():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4531,7 +4531,7 @@ async function testMain_totals():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4654,6 +4654,8 @@ async function testMain_method():
                 '  from SEC Forms 4 and 5.', \
                 '- The top of the scale is the line the index uses for owners. A company whose insiders take out 3.0% of revenue has paid them what would count as meaningful cash had it gone to owners.', \
                 '- If the company has no insider filings, it has no score.', \
+                '- What the insider filings cannot settle, such as a sale that two insiders both report, is listed with the other known', \
+                '  limits on the [Data and Limits](#var.vPage=\'data\'&_top) page.', \
                 '', \
                 '**Score = owner cash + (owner cash / 25) x (costs + insiders)**', \
                 '', \
@@ -4711,7 +4713,7 @@ async function testMain_method():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4758,11 +4760,11 @@ async function testMain_data():
                 '', \
                 '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
                 '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
-                '  File size 123,456,789 bytes, SHA-256 `184cca6f720a33e63252651fd8e8faec7b895ada8e7f208b8227b32963fd4ff4`.', \
+                '  File size 123,456,789 bytes, SHA-256 `1c878b896c160bc143a16f17b8dadd79dd0691bca3dfc1999c9189eec6d8cf50`.', \
                 '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
                 '- Insider transactions: the SEC [insider transactions data sets](https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets), 20 quarterly files from `2021q1_form345.zip` to `2025q4_form345.zip`.', \
-                '- Method version 1.2.0. A figure cited from this page can be reproduced from the same', \
-                '  SEC file and the same method version.', \
+                '- Built on 2026-11-24 with method version 1.2.0. A figure cited from this', \
+                '  page can be reproduced from the same SEC file and the same method version.', \
                 '', \
                 '## Downloads', \
                 '', \
@@ -4774,10 +4776,11 @@ async function testMain_data():
                 '  accession number of the SEC filing it came from.', \
                 '', \
                 'Money is in US dollars. Margins and ratios are fractions (0.03 is 3%). An empty CSV cell, or a JSON null, means the', \
-                'figure is not in the filings. Each build is kept, so a figure cited from an earlier one can be found again:', \
+                'figure is not in the filings. Each build is kept, so a figure cited from an earlier one can be found again. A build is', \
+                'known by its data date and method version: building again with the same two replaces it.', \
                 '', \
                 [ \
-                    '- Data as of **2026-11-05**, method version 1.2.0, 4 ranked: [index.csv](data/archive/2026-11-05/1.2.0/index.csv), [index.json](data/archive/2026-11-05/1.2.0/index.json), [meta.json](data/archive/2026-11-05/1.2.0/meta.json)' \
+                    '- Data as of **2026-11-05**, method version 1.2.0, built 2026-11-24, 4 ranked: [index.csv](data/archive/2026-11-05/1.2.0/index.csv), [index.json](data/archive/2026-11-05/1.2.0/index.json), [meta.json](data/archive/2026-11-05/1.2.0/meta.json)' \
                 ], \
                 '', \
                 '## What Is in the Data', \
@@ -4809,7 +4812,8 @@ async function testMain_data():
                 '- **Latest 12 months** fall back to the latest fiscal year when a quarterly figure is missing or tagged differently.', \
                 '- **Industry codes** are the SEC\'s and are coarse. Securities brokers are excluded along with asset managers, because', \
                 '  they hold customer money. Insurance agents and brokers are not excluded: they are not insurers. Some real-estate and', \
-                '  payment companies are not excluded.', \
+                '  payment companies are not excluded. Codes and tickers are fetched once and kept, so a company\'s new ticker or', \
+                '  industry code can lag.', \
                 '- **Restated years.** Each year uses the value in the most recently filed annual report that has it, and another', \
                 '  filing only if no annual report does. When a company restates recent years for a business it has left, older years', \
                 '  are not restated, so the two can sit side by side.', \
@@ -4829,9 +4833,10 @@ async function testMain_data():
                 '  of them, is treated as a filing error and left out; the band is wide because prices are not adjusted for stock splits.', \
                 '  Transactions filed after the latest data set are not yet counted.', \
                 '- **A shared company or partnership.** Two insiders who share one each report its sales. Where the filings name it', \
-                '  and give the same shares held afterward, the sale is counted once, for the insider who filed first. Where they say', \
-                '  only "by trust" or "see footnote", both are counted, because co-founders with equal holdings report equal, separate', \
-                '  sales the same way.', \
+                '  and give the same shares held afterward, the sale is counted once, for the insider who filed first: the table of', \
+                '  who took out the most credits that one insider with all of it. Where they say only "by trust" or "see footnote",', \
+                '  both are counted, because co-founders with equal holdings report equal, separate sales the same way. A shared sale', \
+                '  reported in those words is therefore counted twice.', \
                 '- **Insider years are calendar years; company years are fiscal years.** Insider cash-out is set against revenue for the', \
                 '  fiscal years with the same labels. Where the fiscal year does not end in December the two periods are up to eight', \
                 '  months apart, which overstates the share at a fast-growing company. A calendar year for which the company has no', \
@@ -4866,7 +4871,7 @@ async function testMain_data():
                 '## Corrections', \
                 '', \
                 'If a figure here does not match the linked SEC filing, it is an error in this index. Confirmed errors are corrected in', \
-                'the next build and noted in the change log. Report one at the', \
+                'a timely manner and noted in the change log. Report one at the', \
                 '[project repository](https://github.com/craigahobbs/treadmill-index/issues) with the company and the year.' \
             ] \
         ], \
@@ -4876,7 +4881,7 @@ async function testMain_data():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4923,11 +4928,11 @@ async function testMain_dataNoBuilds():
                 '', \
                 '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
                 '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
-                '  File size 123,456,789 bytes, SHA-256 `184cca6f720a33e63252651fd8e8faec7b895ada8e7f208b8227b32963fd4ff4`.', \
+                '  File size 123,456,789 bytes, SHA-256 `1c878b896c160bc143a16f17b8dadd79dd0691bca3dfc1999c9189eec6d8cf50`.', \
                 '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
                 '- Insider transactions: the SEC [insider transactions data sets](https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets), 20 quarterly files from `2021q1_form345.zip` to `2025q4_form345.zip`.', \
-                '- Method version 1.2.0. A figure cited from this page can be reproduced from the same', \
-                '  SEC file and the same method version.', \
+                '- Built on 2026-11-24 with method version 1.2.0. A figure cited from this', \
+                '  page can be reproduced from the same SEC file and the same method version.', \
                 '', \
                 '## Downloads', \
                 '', \
@@ -4939,7 +4944,8 @@ async function testMain_dataNoBuilds():
                 '  accession number of the SEC filing it came from.', \
                 '', \
                 'Money is in US dollars. Margins and ratios are fractions (0.03 is 3%). An empty CSV cell, or a JSON null, means the', \
-                'figure is not in the filings. Each build is kept, so a figure cited from an earlier one can be found again:', \
+                'figure is not in the filings. Each build is kept, so a figure cited from an earlier one can be found again. A build is', \
+                'known by its data date and method version: building again with the same two replaces it.', \
                 '', \
                 'No builds are listed.', \
                 '', \
@@ -4972,7 +4978,8 @@ async function testMain_dataNoBuilds():
                 '- **Latest 12 months** fall back to the latest fiscal year when a quarterly figure is missing or tagged differently.', \
                 '- **Industry codes** are the SEC\'s and are coarse. Securities brokers are excluded along with asset managers, because', \
                 '  they hold customer money. Insurance agents and brokers are not excluded: they are not insurers. Some real-estate and', \
-                '  payment companies are not excluded.', \
+                '  payment companies are not excluded. Codes and tickers are fetched once and kept, so a company\'s new ticker or', \
+                '  industry code can lag.', \
                 '- **Restated years.** Each year uses the value in the most recently filed annual report that has it, and another', \
                 '  filing only if no annual report does. When a company restates recent years for a business it has left, older years', \
                 '  are not restated, so the two can sit side by side.', \
@@ -4992,9 +4999,10 @@ async function testMain_dataNoBuilds():
                 '  of them, is treated as a filing error and left out; the band is wide because prices are not adjusted for stock splits.', \
                 '  Transactions filed after the latest data set are not yet counted.', \
                 '- **A shared company or partnership.** Two insiders who share one each report its sales. Where the filings name it', \
-                '  and give the same shares held afterward, the sale is counted once, for the insider who filed first. Where they say', \
-                '  only "by trust" or "see footnote", both are counted, because co-founders with equal holdings report equal, separate', \
-                '  sales the same way.', \
+                '  and give the same shares held afterward, the sale is counted once, for the insider who filed first: the table of', \
+                '  who took out the most credits that one insider with all of it. Where they say only "by trust" or "see footnote",', \
+                '  both are counted, because co-founders with equal holdings report equal, separate sales the same way. A shared sale', \
+                '  reported in those words is therefore counted twice.', \
                 '- **Insider years are calendar years; company years are fiscal years.** Insider cash-out is set against revenue for the', \
                 '  fiscal years with the same labels. Where the fiscal year does not end in December the two periods are up to eight', \
                 '  months apart, which overstates the share at a fast-growing company. A calendar year for which the company has no', \
@@ -5029,7 +5037,7 @@ async function testMain_dataNoBuilds():
                 '## Corrections', \
                 '', \
                 'If a figure here does not match the linked SEC filing, it is an error in this index. Confirmed errors are corrected in', \
-                'the next build and noted in the change log. Report one at the', \
+                'a timely manner and noted in the change log. Report one at the', \
                 '[project repository](https://github.com/craigahobbs/treadmill-index/issues) with the company and the year.' \
             ] \
         ], \
@@ -5039,7 +5047,7 @@ async function testMain_dataNoBuilds():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
+                'Last updated 2026-11-24, with SEC filings through 2026-11-05. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \

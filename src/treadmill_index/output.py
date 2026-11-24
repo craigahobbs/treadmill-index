@@ -435,15 +435,16 @@ def file_sha256(path):
     return digest.hexdigest()
 
 
-def build_meta(results, funnel, companies_in_file, sources, sensitivity_report):
+def build_meta(results, funnel, companies_in_file, sources, sensitivity_report, built):
     """
-    Build meta.json: the as-of date, sources, funnel, thresholds, group totals and sensitivity
+    Build meta.json: the as-of date, the date of the build, sources, funnel, thresholds, group totals and sensitivity
 
     :param list(dict) results: The scored results
     :param dict funnel: The screen funnel
     :param int companies_in_file: The count of companies in the companyfacts file
     :param dict sources: The source files' descriptions - "companyfacts" has "latestFiling", the as-of date
     :param list(dict) sensitivity_report: The sensitivity report
+    :param str built: The date of the build
     :rtype: dict
     """
 
@@ -462,6 +463,7 @@ def build_meta(results, funnel, companies_in_file, sources, sensitivity_report):
     return {
         'methodVersion': METHOD_VERSION,
         'dataDate': data_date,
+        'built': built,
         'years': {'first': first_year, 'last': last_year},
         'sources': sources,
         'thresholds': {**THRESHOLDS, 'prefilter_revenue': PREFILTER_REVENUE},
@@ -539,7 +541,9 @@ def write_archive(out_dir, meta):
     :param dict meta: The meta.json value
     """
 
-    build = {'dataDate': meta['dataDate'], 'methodVersion': meta['methodVersion'], 'ranked': meta['funnel']['ranked']}
+    build = {
+        'dataDate': meta['dataDate'], 'methodVersion': meta['methodVersion'], 'built': meta['built'], 'ranked': meta['funnel']['ranked']
+    }
     build_dir = os.path.join(out_dir, 'archive', build['dataDate'], build['methodVersion'])
     os.makedirs(build_dir, exist_ok=True)
     for name in ARCHIVE_FILES:
