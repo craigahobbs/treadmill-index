@@ -71,24 +71,30 @@ function testYearsChart():
 
     # Every year is within the chart limit
     unittestDeepEqual( \
-        tiYearsChart([{'fy': '2024', 'margin': -0.5}, {'fy': '2025', 'margin': 0.25}], 0.03), \
+        tiYearsChart([{'fy': '2024', 'margin': -1}, {'fy': '2025', 'margin': 0.25}], 0.03), \
         { \
             'data': [ \
-                {'Fiscal year': 2024, 'Owner-cash margin (%)': -50}, \
+                {'Fiscal year': 2024, 'Owner-cash margin (%)': -100}, \
                 {'Fiscal year': 2025, 'Owner-cash margin (%)': 25} \
             ], \
             'model': model, \
-            'clipped': false \
+            'clipped': [] \
         } \
     )
 
-    # A year beyond the chart limit, above or below, clips the chart
-    for margin in [2.01, -1.67]:
-        chart = tiYearsChart([{'fy': '2024', 'margin': margin}, {'fy': '2025', 'margin': 0.25}], 0.03)
-        unittestEqual(objectGet(chart, 'clipped'), true)
-        unittestDeepEqual(objectGet(chart, 'model'), objectAssign(objectCopy(model), {'yMin': -50, 'yMax': 50}))
-        unittestEqual(objectGet(arrayGet(objectGet(chart, 'data'), 0), 'Owner-cash margin (%)'), margin * 100)
-    endfor
+    # Years beyond the chart limit are drawn at the limit and listed with their values
+    unittestDeepEqual( \
+        tiYearsChart([{'fy': '2021', 'margin': -1.671}, {'fy': '2022', 'margin': 2.011}, {'fy': '2023', 'margin': -0.125}], 0.03), \
+        { \
+            'data': [ \
+                {'Fiscal year': 2021, 'Owner-cash margin (%)': -100}, \
+                {'Fiscal year': 2022, 'Owner-cash margin (%)': 100}, \
+                {'Fiscal year': 2023, 'Owner-cash margin (%)': -12.5} \
+            ], \
+            'model': objectAssign(objectCopy(model), {'yMin': -100, 'yMax': 100}), \
+            'clipped': ['2021 (-167%)', '2022 (201%)'] \
+        } \
+    )
 endfunction
 unittestRunTest('testYearsChart')
 

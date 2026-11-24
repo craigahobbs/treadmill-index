@@ -44,36 +44,31 @@ async function testMain_index():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
-                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
-                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
-                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
-                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
-                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
-                'which companies: a real bet on growth looks the same until it pays off.', \
+                '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
+                'growth, and on profit measures that leave stock pay out. At that valuation its insiders are granted shares, and can sell', \
+                'them, every year. The view of this index is that at some companies this is the point: owner cash is kept near zero so', \
+                'that the company is never valued on it, while insiders turn grants into cash at the price that results. A valuation on', \
+                'owner cash, at the costs the company itself reports, would be far lower. Shareholders who take "investing in growth" on', \
+                'trust bear the cost. The numbers cannot say at which companies this is deliberate: a real bet on growth looks the same', \
+                'until it pays off.', \
+                '', \
+                '**How owner cash stays near zero.** Pay and spending are set by management and approved by the board every year. These', \
+                'are the ways the cash goes, each one visible in the filings:', \
+                '', \
+                '- **Stock pay.** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                '  Leaving out the capital-led companies, it was $5.3B against $4.1B.', \
+                '- **Spending that keeps pace with revenue.** Hiring in sales, marketing and development can absorb whatever growth', \
+                '  brings in. 3 of the 4 ranked companies kept operating costs flat or rising as a share of revenue over five years.', \
+                '- **Buybacks that only hold the line.** Free cash flow that does arrive can go to buying back the shares just granted,', \
+                '  and to employees\' vesting taxes ($0.0B and $0.0B here), rather than to owners.', \
+                '', \
+                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
+                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
                 'which way its numbers point. Insider grants and sales are not measured in this release.', \
-                '', \
-                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'Whatever the reason, this is what it costs a shareholder:', \
-                '', \
-                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
-                '  existing share owns a smaller part of the company.', \
-                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
-                '  can go to offsetting new shares rather than to owners.', \
-                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
-                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
-                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
-                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
-                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
-                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
-                '  when the price is weak, or pay has to move to cash.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -260,36 +255,31 @@ async function testMain_indexAll():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
-                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
-                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
-                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
-                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
-                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
-                'which companies: a real bet on growth looks the same until it pays off.', \
+                '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
+                'growth, and on profit measures that leave stock pay out. At that valuation its insiders are granted shares, and can sell', \
+                'them, every year. The view of this index is that at some companies this is the point: owner cash is kept near zero so', \
+                'that the company is never valued on it, while insiders turn grants into cash at the price that results. A valuation on', \
+                'owner cash, at the costs the company itself reports, would be far lower. Shareholders who take "investing in growth" on', \
+                'trust bear the cost. The numbers cannot say at which companies this is deliberate: a real bet on growth looks the same', \
+                'until it pays off.', \
+                '', \
+                '**How owner cash stays near zero.** Pay and spending are set by management and approved by the board every year. These', \
+                'are the ways the cash goes, each one visible in the filings:', \
+                '', \
+                '- **Stock pay.** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                '  Leaving out the capital-led companies, it was $5.3B against $4.1B.', \
+                '- **Spending that keeps pace with revenue.** Hiring in sales, marketing and development can absorb whatever growth', \
+                '  brings in. 3 of the 4 ranked companies kept operating costs flat or rising as a share of revenue over five years.', \
+                '- **Buybacks that only hold the line.** Free cash flow that does arrive can go to buying back the shares just granted,', \
+                '  and to employees\' vesting taxes ($0.0B and $0.0B here), rather than to owners.', \
+                '', \
+                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
+                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
                 'which way its numbers point. Insider grants and sales are not measured in this release.', \
-                '', \
-                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'Whatever the reason, this is what it costs a shareholder:', \
-                '', \
-                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
-                '  existing share owns a smaller part of the company.', \
-                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
-                '  can go to offsetting new shares rather than to owners.', \
-                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
-                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
-                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
-                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
-                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
-                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
-                '  when the price is weak, or pay has to move to cash.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -480,36 +470,31 @@ async function testMain_indexShowAll():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
-                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
-                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
-                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
-                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
-                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
-                'which companies: a real bet on growth looks the same until it pays off.', \
+                '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
+                'growth, and on profit measures that leave stock pay out. At that valuation its insiders are granted shares, and can sell', \
+                'them, every year. The view of this index is that at some companies this is the point: owner cash is kept near zero so', \
+                'that the company is never valued on it, while insiders turn grants into cash at the price that results. A valuation on', \
+                'owner cash, at the costs the company itself reports, would be far lower. Shareholders who take "investing in growth" on', \
+                'trust bear the cost. The numbers cannot say at which companies this is deliberate: a real bet on growth looks the same', \
+                'until it pays off.', \
+                '', \
+                '**How owner cash stays near zero.** Pay and spending are set by management and approved by the board every year. These', \
+                'are the ways the cash goes, each one visible in the filings:', \
+                '', \
+                '- **Stock pay.** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                '  Leaving out the capital-led companies, it was $5.3B against $4.1B.', \
+                '- **Spending that keeps pace with revenue.** Hiring in sales, marketing and development can absorb whatever growth', \
+                '  brings in. 3 of the 4 ranked companies kept operating costs flat or rising as a share of revenue over five years.', \
+                '- **Buybacks that only hold the line.** Free cash flow that does arrive can go to buying back the shares just granted,', \
+                '  and to employees\' vesting taxes ($0.0B and $0.0B here), rather than to owners.', \
+                '', \
+                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
+                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
                 'which way its numbers point. Insider grants and sales are not measured in this release.', \
-                '', \
-                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'Whatever the reason, this is what it costs a shareholder:', \
-                '', \
-                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
-                '  existing share owns a smaller part of the company.', \
-                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
-                '  can go to offsetting new shares rather than to owners.', \
-                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
-                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
-                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
-                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
-                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
-                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
-                '  when the price is weak, or pay has to move to cash.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -702,36 +687,31 @@ async function testMain_indexFind():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
-                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
-                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
-                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
-                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
-                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
-                'which companies: a real bet on growth looks the same until it pays off.', \
+                '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
+                'growth, and on profit measures that leave stock pay out. At that valuation its insiders are granted shares, and can sell', \
+                'them, every year. The view of this index is that at some companies this is the point: owner cash is kept near zero so', \
+                'that the company is never valued on it, while insiders turn grants into cash at the price that results. A valuation on', \
+                'owner cash, at the costs the company itself reports, would be far lower. Shareholders who take "investing in growth" on', \
+                'trust bear the cost. The numbers cannot say at which companies this is deliberate: a real bet on growth looks the same', \
+                'until it pays off.', \
+                '', \
+                '**How owner cash stays near zero.** Pay and spending are set by management and approved by the board every year. These', \
+                'are the ways the cash goes, each one visible in the filings:', \
+                '', \
+                '- **Stock pay.** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                '  Leaving out the capital-led companies, it was $5.3B against $4.1B.', \
+                '- **Spending that keeps pace with revenue.** Hiring in sales, marketing and development can absorb whatever growth', \
+                '  brings in. 3 of the 4 ranked companies kept operating costs flat or rising as a share of revenue over five years.', \
+                '- **Buybacks that only hold the line.** Free cash flow that does arrive can go to buying back the shares just granted,', \
+                '  and to employees\' vesting taxes ($0.0B and $0.0B here), rather than to owners.', \
+                '', \
+                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
+                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
                 'which way its numbers point. Insider grants and sales are not measured in this release.', \
-                '', \
-                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'Whatever the reason, this is what it costs a shareholder:', \
-                '', \
-                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
-                '  existing share owns a smaller part of the company.', \
-                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
-                '  can go to offsetting new shares rather than to owners.', \
-                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
-                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
-                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
-                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
-                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
-                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
-                '  when the price is weak, or pay has to move to cash.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -920,36 +900,31 @@ async function testMain_indexFindTicker():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
-                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
-                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
-                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
-                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
-                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
-                'which companies: a real bet on growth looks the same until it pays off.', \
+                '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
+                'growth, and on profit measures that leave stock pay out. At that valuation its insiders are granted shares, and can sell', \
+                'them, every year. The view of this index is that at some companies this is the point: owner cash is kept near zero so', \
+                'that the company is never valued on it, while insiders turn grants into cash at the price that results. A valuation on', \
+                'owner cash, at the costs the company itself reports, would be far lower. Shareholders who take "investing in growth" on', \
+                'trust bear the cost. The numbers cannot say at which companies this is deliberate: a real bet on growth looks the same', \
+                'until it pays off.', \
+                '', \
+                '**How owner cash stays near zero.** Pay and spending are set by management and approved by the board every year. These', \
+                'are the ways the cash goes, each one visible in the filings:', \
+                '', \
+                '- **Stock pay.** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                '  Leaving out the capital-led companies, it was $5.3B against $4.1B.', \
+                '- **Spending that keeps pace with revenue.** Hiring in sales, marketing and development can absorb whatever growth', \
+                '  brings in. 3 of the 4 ranked companies kept operating costs flat or rising as a share of revenue over five years.', \
+                '- **Buybacks that only hold the line.** Free cash flow that does arrive can go to buying back the shares just granted,', \
+                '  and to employees\' vesting taxes ($0.0B and $0.0B here), rather than to owners.', \
+                '', \
+                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
+                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
                 'which way its numbers point. Insider grants and sales are not measured in this release.', \
-                '', \
-                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'Whatever the reason, this is what it costs a shareholder:', \
-                '', \
-                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
-                '  existing share owns a smaller part of the company.', \
-                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
-                '  can go to offsetting new shares rather than to owners.', \
-                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
-                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
-                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
-                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
-                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
-                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
-                '  when the price is weak, or pay has to move to cash.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -1133,36 +1108,31 @@ async function testMain_indexNoMatch():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
-                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
-                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
-                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
-                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
-                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
-                'which companies: a real bet on growth looks the same until it pays off.', \
+                '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
+                'growth, and on profit measures that leave stock pay out. At that valuation its insiders are granted shares, and can sell', \
+                'them, every year. The view of this index is that at some companies this is the point: owner cash is kept near zero so', \
+                'that the company is never valued on it, while insiders turn grants into cash at the price that results. A valuation on', \
+                'owner cash, at the costs the company itself reports, would be far lower. Shareholders who take "investing in growth" on', \
+                'trust bear the cost. The numbers cannot say at which companies this is deliberate: a real bet on growth looks the same', \
+                'until it pays off.', \
+                '', \
+                '**How owner cash stays near zero.** Pay and spending are set by management and approved by the board every year. These', \
+                'are the ways the cash goes, each one visible in the filings:', \
+                '', \
+                '- **Stock pay.** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                '  Leaving out the capital-led companies, it was $5.3B against $4.1B.', \
+                '- **Spending that keeps pace with revenue.** Hiring in sales, marketing and development can absorb whatever growth', \
+                '  brings in. 3 of the 4 ranked companies kept operating costs flat or rising as a share of revenue over five years.', \
+                '- **Buybacks that only hold the line.** Free cash flow that does arrive can go to buying back the shares just granted,', \
+                '  and to employees\' vesting taxes ($0.0B and $0.0B here), rather than to owners.', \
+                '', \
+                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
+                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
                 'which way its numbers point. Insider grants and sales are not measured in this release.', \
-                '', \
-                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'Whatever the reason, this is what it costs a shareholder:', \
-                '', \
-                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
-                '  existing share owns a smaller part of the company.', \
-                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
-                '  can go to offsetting new shares rather than to owners.', \
-                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
-                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
-                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
-                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
-                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
-                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
-                '  when the price is weak, or pay has to move to cash.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -1343,36 +1313,31 @@ async function testMain_indexUnknownArgs():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
-                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
-                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
-                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
-                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
-                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
-                'which companies: a real bet on growth looks the same until it pays off.', \
+                '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
+                'growth, and on profit measures that leave stock pay out. At that valuation its insiders are granted shares, and can sell', \
+                'them, every year. The view of this index is that at some companies this is the point: owner cash is kept near zero so', \
+                'that the company is never valued on it, while insiders turn grants into cash at the price that results. A valuation on', \
+                'owner cash, at the costs the company itself reports, would be far lower. Shareholders who take "investing in growth" on', \
+                'trust bear the cost. The numbers cannot say at which companies this is deliberate: a real bet on growth looks the same', \
+                'until it pays off.', \
+                '', \
+                '**How owner cash stays near zero.** Pay and spending are set by management and approved by the board every year. These', \
+                'are the ways the cash goes, each one visible in the filings:', \
+                '', \
+                '- **Stock pay.** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                '  Leaving out the capital-led companies, it was $5.3B against $4.1B.', \
+                '- **Spending that keeps pace with revenue.** Hiring in sales, marketing and development can absorb whatever growth', \
+                '  brings in. 3 of the 4 ranked companies kept operating costs flat or rising as a share of revenue over five years.', \
+                '- **Buybacks that only hold the line.** Free cash flow that does arrive can go to buying back the shares just granted,', \
+                '  and to employees\' vesting taxes ($0.0B and $0.0B here), rather than to owners.', \
+                '', \
+                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
+                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
                 'which way its numbers point. Insider grants and sales are not measured in this release.', \
-                '', \
-                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'Whatever the reason, this is what it costs a shareholder:', \
-                '', \
-                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
-                '  existing share owns a smaller part of the company.', \
-                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
-                '  can go to offsetting new shares rather than to owners.', \
-                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
-                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
-                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
-                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
-                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
-                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
-                '  when the price is weak, or pay has to move to cash.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -1542,36 +1507,31 @@ async function testMain_indexFailed():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
-                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
-                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
-                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
-                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
-                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
-                'which companies: a real bet on growth looks the same until it pays off.', \
+                '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
+                'growth, and on profit measures that leave stock pay out. At that valuation its insiders are granted shares, and can sell', \
+                'them, every year. The view of this index is that at some companies this is the point: owner cash is kept near zero so', \
+                'that the company is never valued on it, while insiders turn grants into cash at the price that results. A valuation on', \
+                'owner cash, at the costs the company itself reports, would be far lower. Shareholders who take "investing in growth" on', \
+                'trust bear the cost. The numbers cannot say at which companies this is deliberate: a real bet on growth looks the same', \
+                'until it pays off.', \
+                '', \
+                '**How owner cash stays near zero.** Pay and spending are set by management and approved by the board every year. These', \
+                'are the ways the cash goes, each one visible in the filings:', \
+                '', \
+                '- **Stock pay.** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                '  Leaving out the capital-led companies, it was $5.3B against $4.1B.', \
+                '- **Spending that keeps pace with revenue.** Hiring in sales, marketing and development can absorb whatever growth', \
+                '  brings in. 3 of the 4 ranked companies kept operating costs flat or rising as a share of revenue over five years.', \
+                '- **Buybacks that only hold the line.** Free cash flow that does arrive can go to buying back the shares just granted,', \
+                '  and to employees\' vesting taxes ($0.0B and $0.0B here), rather than to owners.', \
+                '', \
+                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
+                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
                 'which way its numbers point. Insider grants and sales are not measured in this release.', \
-                '', \
-                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'Whatever the reason, this is what it costs a shareholder:', \
-                '', \
-                '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
-                '  existing share owns a smaller part of the company.', \
-                '- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees\' vesting taxes ($0.0B and $0.0B here)', \
-                '  can go to offsetting new shares rather than to owners.', \
-                '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
-                '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
-                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
-                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
-                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
-                '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
-                '  when the price is weak, or pay has to move to cash.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \

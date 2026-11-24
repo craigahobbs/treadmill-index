@@ -295,41 +295,36 @@ function tiIndexPage(args, meta, index):
         '', \
         '## What a high rank can mean for a shareholder', \
         '', \
-        '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
-        'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-        'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
-        'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
-        'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
-        'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
-        'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
-        'which companies: a real bet on growth looks the same until it pays off.', \
+        '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
+        'growth, and on profit measures that leave stock pay out. At that valuation its insiders are granted shares, and can sell', \
+        'them, every year. The view of this index is that at some companies this is the point: owner cash is kept near zero so', \
+        'that the company is never valued on it, while insiders turn grants into cash at the price that results. A valuation on', \
+        'owner cash, at the costs the company itself reports, would be far lower. Shareholders who take "investing in growth" on', \
+        'trust bear the cost. The numbers cannot say at which companies this is deliberate: a real bet on growth looks the same', \
+        'until it pays off.', \
+        '', \
+        '**How owner cash stays near zero.** Pay and spending are set by management and approved by the board every year. These', \
+        'are the ways the cash goes, each one visible in the filings:', \
+        '', \
+        '- **Stock pay.** Together the ' + count + ' companies here recorded ' + tiBillions(objectGet(screened, 'cumSbc')) + \
+            ' of stock pay against ' + tiBillions(objectGet(screened, 'cumFcf')) + ' of free cash flow (' + \
+            argsLink(tiArguments, 'group totals', {'page': 'totals'}, true) + ').', \
+        '  Leaving out the capital-led companies, it was ' + tiBillions(objectGet(rest, 'cumSbc')) + ' against ' + \
+            tiBillions(objectGet(rest, 'cumFcf')) + '.', \
+        '- **Spending that keeps pace with revenue.** Hiring in sales, marketing and development can absorb whatever growth', \
+        '  brings in. ' + objectGet(objectGet(meta, 'cost'), 'full') + ' of the ' + objectGet(funnel, 'ranked') + \
+            ' ranked companies kept operating costs flat or rising as a share of revenue over five years.', \
+        '- **Buybacks that only hold the line.** Free cash flow that does arrive can go to buying back the shares just granted,', \
+        "  and to employees' vesting taxes (" + tiBillions(objectGet(screened, 'buybacks')) + ' and ' + \
+            tiBillions(objectGet(screened, 'withholding')) + ' here), rather than to owners.', \
+        '', \
+        '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
+        'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
         '', \
         '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
         'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
         'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
         'which way its numbers point. Insider grants and sales are not measured in this release.', \
-        '', \
-        'Together the ' + count + ' companies here recorded ' + tiBillions(objectGet(screened, 'cumSbc')) + \
-            ' of stock pay against ' + tiBillions(objectGet(screened, 'cumFcf')) + ' of free cash flow (' + \
-            argsLink(tiArguments, 'group totals', {'page': 'totals'}, true) + ').', \
-        'Whatever the reason, this is what it costs a shareholder:', \
-        '', \
-        '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
-        '  existing share owns a smaller part of the company.', \
-        "- **Buybacks may only hold the line.** Cash spent buying back shares and paying employees' vesting taxes (" + \
-            tiBillions(objectGet(screened, 'buybacks')) + ' and ' + tiBillions(objectGet(screened, 'withholding')) + ' here)', \
-        '  can go to offsetting new shares rather than to owners.', \
-        '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
-        '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-        '  Leaving out the capital-led companies, the group reported ' + tiBillions(objectGet(rest, 'cumFcf')) + \
-            ' of free cash flow and paid ' + tiBillions(objectGet(rest, 'cumSbc')) + ' in stock.', \
-        '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
-        '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
-        '  for owners would support a far lower price. Growth can be bought with spending: ' + \
-            objectGet(objectGet(meta, 'cost'), 'full') + ' of the ' + objectGet(funnel, 'ranked') + ' ranked', \
-        '  companies kept operating costs flat or rising as a share of revenue over five years.', \
-        '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
-        '  when the price is weak, or pay has to move to cash.', \
         '', \
         "**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company's purpose, and not", \
         'a forecast that its shares will fall. ' + objectGet(objectGet(meta, 'latest'), 'cleared') + ' of the ' + count + \
@@ -640,8 +635,9 @@ function tiCompanyYears(meta, cik, company):
     chart = tiYearsChart(years, objectGet(thresholds, 'meaningful_margin'))
     markdownPrint('', '## Year by year', '')
     dataLineChart(objectGet(chart, 'data'), objectGet(chart, 'model'))
-    markdownPrint(if(objectGet(chart, 'clipped'), \
-        'The chart stops at ' + tiChartLimit + '% above and below zero. At least one year is beyond that; the table has every figure.', ''))
+    clipped = objectGet(chart, 'clipped')
+    markdownPrint(if(arrayLength(clipped), \
+        'The chart stops at ' + tiChartLimit + '% above and below zero. Drawn at its edge: ' + arrayJoin(clipped, ', ') + '.', ''))
 
     # Render the yearly table
     yearRows = []
@@ -728,17 +724,21 @@ endfunction
 
 
 # The percent, above and below zero, at which the yearly chart stops
-tiChartLimit = 50
+tiChartLimit = 100
 
 
 # Create the yearly owner-cash margin chart's data and model. The chart stops at the chart limit, so that one
-# extreme year does not flatten the rest; "clipped" is true if any year is beyond it.
+# extreme year does not flatten the rest. A year beyond the limit is drawn at the limit; "clipped" lists those
+# years with their values, for example "2021 (-167%)".
 function tiYearsChart(years, meaningfulMargin):
     data = []
-    clipped = false
+    clipped = []
     for year in years:
         margin = objectGet(year, 'margin') * 100
-        clipped = clipped || mathAbs(margin) > tiChartLimit
+        if mathAbs(margin) > tiChartLimit:
+            arrayPush(clipped, objectGet(year, 'fy') + ' (' + numberToFixed(margin, 0) + '%)')
+            margin = mathSign(margin) * tiChartLimit
+        endif
         arrayPush(data, {'Fiscal year': numberParseInt(objectGet(year, 'fy')), 'Owner-cash margin (%)': margin})
     endfor
     model = { \
@@ -750,7 +750,7 @@ function tiYearsChart(years, meaningfulMargin):
         'precision': 0, \
         'yLines': [{'value': meaningfulMargin * 100, 'label': tiPercent(meaningfulMargin)}] \
     }
-    if clipped:
+    if arrayLength(clipped):
         objectSet(model, 'yMin', -tiChartLimit)
         objectSet(model, 'yMax', tiChartLimit)
     endif
