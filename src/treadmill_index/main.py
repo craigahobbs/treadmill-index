@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 """
 The Treadmill Index build step's command-line script main module
 """
@@ -54,7 +57,8 @@ def build(args):
 
     # Download the insider-transaction data sets?
     if args.download_insider:
-        missing = download_insider(args.raw, args.user_agent, datetime.date.today())
+        # One more year back than the build needs, so that a build early in a year has its five whole years
+        missing = download_insider(args.raw, args.user_agent, datetime.date.today(), THRESHOLDS['insider_years'] + 1)
         if missing:
             print(f'{missing} insider-transaction data sets are missing', file=sys.stderr)
         return 1 if missing else 0
@@ -70,24 +74,23 @@ def build(args):
     infos = load_submissions(ciks, args.raw, args.user_agent)
     sics = {cik: info['sic'] for cik, info in infos.items()}
 
-    # Summarize what insiders took out over the latest whole calendar years, if the data sets are there
+    # Summarize what insiders took out over the latest whole calendar years. A missing data set would leave a year
+    # short, and with it one of the three signs.
     transactions, insider_files = load_insider(args.raw, ciks)
-    insiders = None
-    if insider_files:
-        first_year, last_year = calendar_years(data_date, THRESHOLDS)
-        missing = missing_quarters(insider_files, first_year, last_year)
-        if missing:
-            print(f'The insider-transaction data sets of {", ".join(missing)} are missing: run "make insider-data"', file=sys.stderr)
-            return 1
-        insiders = {}
-        buybacks = {record['cik']: record['buybacks'] for record in records}
-        for cik, cik_transactions in transactions.items():
-            summary = insider_summary(cik_transactions, first_year, last_year, THRESHOLDS, buyback_quarters(buybacks[int(cik)]))
-            if summary is not None:
-                insiders[int(cik)] = summary
+    first_year, last_year = calendar_years(data_date, THRESHOLDS)
+    missing = missing_quarters(insider_files, first_year, last_year)
+    if missing:
+        print(f'The insider-transaction data sets of {", ".join(missing)} are missing: run "make insider-data"', file=sys.stderr)
+        return 1
+    insiders = {}
+    buybacks = {record['cik']: record['buybacks'] for record in records}
+    for cik, cik_transactions in transactions.items():
+        summary = insider_summary(cik_transactions, first_year, last_year, THRESHOLDS, buyback_quarters(buybacks[int(cik)]))
+        if summary is not None:
+            insiders[int(cik)] = summary
 
     # Screen, score and write
-    results, funnel = run_screen(records, sics, data_date, insiders=insiders)
+    results, funnel = run_screen(records, sics, data_date, insiders)
     sources = {
         'companyfacts': {
             'url': 'https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip',

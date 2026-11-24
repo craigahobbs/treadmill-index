@@ -1,14 +1,18 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 """
 The market screen and the three signs of the index, as set out in docs/index-definition.md
 """
 
 import datetime
 
-from .extract import F_ACCN, F_START, F_TAG, F_VAL, parse_date
+from .extract import F_ACCN, F_START, F_TAG, F_VAL, fact_order, parse_date
+from .insider import AMOUNTS
 
 
 # The method version - bump when a scoring rule, threshold or source tag changes
-METHOD_VERSION = '1.1.0'
+METHOD_VERSION = '1.2.0'
 
 
 # Each of the three signs is scored out of this many points
@@ -72,6 +76,11 @@ SIC_EXCLUSIONS = (
 )
 
 
+# The days by which the start or end of a quarterly period may differ from the date expected. Fiscal quarters that
+# end on a weekday move by a few days from year to year.
+PERIOD_DAYS = 10
+
+
 # The ways to build operating expenses excluding cost of revenue, in the order tried
 COST_METHODS = {
     1: 'gross profit - operating income',
@@ -96,13 +105,14 @@ def lin(value, zero, full, points):
 
 def year_label(end):
     """
-    Get the fiscal year label for a period end date. Years ending January to March belong to the prior year.
+    Get the fiscal year label for a period end date. Years ending from January to the first week of April belong to
+    the prior year: a 52- or 53-week year that ends near March 31 can end on either side of it.
 
     :param str end: The period end date
     :rtype: str
     """
 
-    return end[:4] if end[5:7] > '03' else str(int(end[:4]) - 1)
+    return end[:4] if end[5:] > '04-07' else str(int(end[:4]) - 1)
 
 
 def calendar_years(data_date, thresholds):
@@ -144,9 +154,12 @@ def company_series(record):
 
     annual = record['annual']
     sbc = {**annual['sbc2'], **annual['sbc']}
-    ends = sorted(end for end, fact in annual['rev'].items() if end in annual['ocf'] and end in sbc and fact[F_VAL] > 0)
+    ends = [end for end, fact in annual['rev'].items() if end in annual['ocf'] and end in sbc and fact[F_VAL] > 0]
+
+    # Two 12-month periods can have one label, for example a fiscal year and another 12 months reported in passing.
+    # The one whose revenue is from an annual report is the fiscal year; failing that, the later.
     by_label = {}
-    for end in ends:
+    for end in sorted(ends, key=lambda end: (fact_order(annual['rev'][end])[0], end)):
         by_label[year_label(end)] = end
 
     series = []
@@ -175,14 +188,13 @@ def company_series(record):
     return series
 
 
-def find_period(facts, start, end, tolerance=10):
+def find_period(facts, start, end):
     """
-    Find the fact whose period starts and ends within some days of the dates given
+    Find the fact whose period starts and ends within PERIOD_DAYS of the dates given
 
     :param dict facts: The dict of "start|end" to fact
     :param str start: The period start date
     :param str end: The period end date
-    :param int tolerance: The days either date may differ by
     :returns: The closest fact, or None
     """
 
@@ -194,7 +206,7 @@ def find_period(facts, start, end, tolerance=10):
         fact_start, fact_end = key.split('|')
         start_distance = abs((parse_date(fact_start) - start_date).days)
         end_distance = abs((parse_date(fact_end) - end_date).days)
-        if start_distance <= tolerance and end_distance <= tolerance:
+        if start_distance <= PERIOD_DAYS and end_distance <= PERIOD_DAYS:
             if best is None or start_distance + end_distance < best_distance:
                 best = facts[key]
                 best_distance = start_distance + end_distance
@@ -218,7 +230,7 @@ def latest_twelve_months(record, year):
     current_end = None
     for key in recent['rev'].get(year['rev'][F_TAG], {}):
         start, end = key.split('|')
-        if abs((parse_date(start) - parse_date(next_start)).days) <= 10 and (current_end is None or end > current_end):
+        if abs((parse_date(start) - parse_date(next_start)).days) <= PERIOD_DAYS and (current_end is None or end > current_end):
             current_end = end
     if current_end is None:
         return None, 'no quarterly report since the latest fiscal year'
@@ -286,6 +298,19 @@ def cost_line(annual, end, method):
     return None, None
 
 
+def window_years(series, thresholds):
+    """
+    Get the first and last of the latest fiscal years: the years between which the change in costs is reported. A
+    company with fewer years than the window has its first year.
+
+    :param list(dict) series: The company's yearly series
+    :param dict thresholds: The thresholds
+    :returns: The tuple of the first and last year
+    """
+
+    return series[-min(thresholds['cost_window_years'], len(series))], series[-1]
+
+
 def cost_change(record, series, thresholds):
     """
     Build operating expenses excluding cost of revenue for the first and last of the latest fiscal years, the same
@@ -297,11 +322,7 @@ def cost_change(record, series, thresholds):
     :returns: The cost dict, or None if no method works for both years
     """
 
-    window = thresholds['cost_window_years']
-    if len(series) < window:
-        return None
-    first = series[-window]
-    last = series[-1]
+    first, last = window_years(series, thresholds)
     annual = record['annual']
     for method in COST_METHODS:
         first_value, first_facts = cost_line(annual, first['end'], method)
@@ -423,21 +444,18 @@ def spending_change(record, series, thresholds):
         the company does not tag in both years is left out.
     """
 
-    window = thresholds['cost_window_years']
+    first, last = window_years(series, thresholds)
     spending = {}
-    if len(series) >= window:
-        first = series[-window]
-        last = series[-1]
-        for kind in SPENDING:
-            first_fact = record['annual'][kind].get(first['end'])
-            last_fact = record['annual'][kind].get(last['end'])
-            if first_fact is not None and last_fact is not None:
-                spending[kind] = {
-                    'firstRatio': first_fact[F_VAL] / first['rev'][F_VAL],
-                    'firstFact': first_fact,
-                    'lastRatio': last_fact[F_VAL] / last['rev'][F_VAL],
-                    'lastFact': last_fact
-                }
+    for kind in SPENDING:
+        first_fact = record['annual'][kind].get(first['end'])
+        last_fact = record['annual'][kind].get(last['end'])
+        if first_fact is not None and last_fact is not None:
+            spending[kind] = {
+                'firstRatio': first_fact[F_VAL] / first['rev'][F_VAL],
+                'firstFact': first_fact,
+                'lastRatio': last_fact[F_VAL] / last['rev'][F_VAL],
+                'lastFact': last_fact
+            }
     return spending
 
 
@@ -458,23 +476,32 @@ def low_run(series, thresholds):
     return run
 
 
-def five_years(record, series, first_year, last_year):
+def five_years(record, series, first_year, last_year, insider):
     """
     Total a company's revenue, owner cash and buybacks over the fiscal years labelled with the calendar years of the
-    insider summary, with the change in its share count - what owners got, to set beside what insiders took out
+    insider summary, with the change in its share count - what owners got - and, beside them, what its insiders took
+    out in the same years. A calendar year for which the company has no fiscal year is left out of both, so that the
+    two cover the same years.
 
     :param dict record: The company record
     :param list(dict) series: The company's yearly series
     :param int first_year: The first calendar year
     :param int last_year: The last calendar year
-    :returns: The dict of "revenue", "ownerCash", "buybacks", "withholding" and "shareGrowth" - the annualized change
-        in the diluted share count, or None if it cannot be followed
+    :param dict insider: The company's insider summary, or None if it has no insider filings
+    :returns: The dict of "years" (the count of fiscal years), "revenue", "ownerCash", "buybacks", "withholding",
+        "shareGrowth" - the annualized change in the diluted share count, or None if it cannot be followed - and
+        "insider" - the dict of the insiders' amounts over those years, or None
     """
 
     years = [year for year in series if first_year <= int(year['fy']) <= last_year]
     ends = {year['end'] for year in years}
+    labels = {int(year['fy']) for year in years}
     annual = record['annual']
     return {
+        'years': len(years),
+        'insider': insider and {
+            amount: sum(year[amount] for year in insider['years'] if year['year'] in labels) for amount in ('cashOut', *AMOUNTS)
+        },
         'revenue': sum(year['rev'][F_VAL] for year in years),
         'ownerCash': sum(year['ownerCash'] for year in years),
         'buybacks': sum(abs(fact[F_VAL]) for end, fact in annual['bb'].items() if end in ends),
@@ -483,21 +510,20 @@ def five_years(record, series, first_year, last_year):
     }
 
 
-def insiders_sign(insider, five, thresholds):
+def insiders_sign(five, thresholds):
     """
     Score the third sign, "insiders cashing out": the cash insiders took out through stock over the calendar years,
     as a share of the company's revenue over the same years - the yardstick the index uses for owner cash
 
-    :param dict insider: The company's insider summary, or None if it has no insider filings
     :param dict five: The company's five-year totals
     :param dict thresholds: The thresholds
     :returns: The dict of "share" (cash-out / revenue) and "points", or None with no insider filings or no revenue
         in those years
     """
 
-    if insider is None or five['revenue'] <= 0:
+    if five['insider'] is None or five['revenue'] <= 0:
         return None
-    share = insider['cashOut'] / five['revenue']
+    share = five['insider']['cashOut'] / five['revenue']
     return {'share': share, 'points': lin(share, thresholds['insider_zero'], thresholds['insider_full'], SIGN_POINTS)}
 
 
@@ -561,7 +587,7 @@ def evaluate(record, sic, data_date, thresholds=None, insider=None):
     annual = record['annual']
     ends = {year['end'] for year in series}
     totals = {name: sum(abs(fact[F_VAL]) for end, fact in annual[name].items() if end in ends) for name in ('bb', 'div', 'wh')}
-    five = five_years(record, series, *calendar_years(data_date, thresholds))
+    five = five_years(record, series, *calendar_years(data_date, thresholds), insider)
 
     # The latest-12-month owner-cash margin (the latest fiscal year if the quarterly data is unusable)
     ttm, ttm_reason = latest_twelve_months(record, last)
@@ -577,7 +603,7 @@ def evaluate(record, sic, data_date, thresholds=None, insider=None):
     # A sign that cannot be built leaves the company without a score: missing is not treated as zero.
     cost = cost_change(record, series, thresholds)
     costs = costs_sign(cost, thresholds)
-    insiders = insiders_sign(insider, five, thresholds)
+    insiders = insiders_sign(five, thresholds)
     score = None
     if costs is not None and insiders is not None:
         score = p1['p1'] + (p1['p1'] / SIGN_POINTS) * (costs['points'] + insiders['points'])
@@ -603,8 +629,10 @@ def evaluate(record, sic, data_date, thresholds=None, insider=None):
         ('latest_is_fiscal_year', ttm is None),
         ('one_off_years', bool(one_offs)),
         ('gap_years', int(last['fy']) - int(series[0]['fy']) + 1 != len(series)),
+        ('few_fiscal_years', 0 < five['years'] < thresholds['insider_years']),
         ('revenue_jump', any(after['rev'][F_VAL] > 3 * before['rev'][F_VAL] for before, after in zip(series, series[1:]))),
-        ('share_count_jump', share_reason is not None and 'jumps' in share_reason)
+        ('share_count_jump', share_reason is not None and 'jumps' in share_reason),
+        ('no_insider_filings', insider is None)
     )
 
     return {
@@ -654,15 +682,15 @@ def evaluate(record, sic, data_date, thresholds=None, insider=None):
     }
 
 
-def run_screen(records, sics, data_date, thresholds=None, insiders=None):
+def run_screen(records, sics, data_date, insiders, thresholds=None):
     """
     Screen and score every company
 
     :param list(dict) records: The company records
     :param dict sics: The dict of CIK to SIC code
     :param str data_date: The date of the latest filing in the data
+    :param dict insiders: The dict of CIK to insider summary. A company with no insider filings is not in it.
     :param dict thresholds: The thresholds (default is THRESHOLDS)
-    :param dict insiders: The dict of CIK to insider summary, or None if there is no insider data
     :returns: The tuple of the "scored" results - the ranked companies, then the rest by P1, then the excluded
         industries - and the funnel: the count of companies left after each step of the screen
     """
@@ -670,11 +698,9 @@ def run_screen(records, sics, data_date, thresholds=None, insiders=None):
     stage_counts = dict.fromkeys(('no_data', 'not_current', 'small', 'short', 'slow_growth', 'scored'), 0)
     results = []
     for record in records:
-        result = evaluate(record, sics.get(record['cik']), data_date, thresholds, (insiders or {}).get(record['cik']))
+        result = evaluate(record, sics.get(record['cik']), data_date, thresholds, insiders.get(record['cik']))
         stage_counts[result['stage']] += 1
         if result['stage'] == 'scored':
-            if insiders is not None and result['insider'] is None:
-                result['flags'].append('no_insider_filings')
             results.append(result)
 
     # Rank the companies that pass the screen and have all three signs
@@ -730,7 +756,7 @@ def loose_thresholds():
     return thresholds
 
 
-def sensitivity(records, sics, data_date, base_results, insiders=None):
+def sensitivity(records, sics, data_date, base_results, insiders):
     """
     Move each threshold by a fifth, up and down, and report how the top ten ranks change
 
@@ -738,7 +764,7 @@ def sensitivity(records, sics, data_date, base_results, insiders=None):
     :param dict sics: The dict of CIK to SIC code
     :param str data_date: The date of the latest filing in the data
     :param list(dict) base_results: The scored results at the index's thresholds
-    :param dict insiders: The dict of CIK to insider summary, or None if there is no insider data
+    :param dict insiders: The dict of CIK to insider summary
     :returns: The list of {threshold, factor, value, changes}. "changes" is empty when the top ten is unchanged.
     """
 
@@ -759,7 +785,7 @@ def sensitivity(records, sics, data_date, base_results, insiders=None):
         for factor in (0.8, 1.2):
             thresholds = dict(THRESHOLDS)
             thresholds[key] = round(THRESHOLDS[key] * factor, None if key in INTEGER_THRESHOLDS else 6)
-            results, _ = run_screen(records, sics, data_date, thresholds, insiders)
+            results, _ = run_screen(records, sics, data_date, insiders, thresholds)
             names.update((result['cik'], result['name']) for result in results)
             report.append({
                 'threshold': key, 'factor': factor, 'value': thresholds[key], 'changes': rank_changes(base, top_ten(results), names)

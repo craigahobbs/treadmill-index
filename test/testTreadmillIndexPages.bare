@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 include <dataLineChart.bare>
 include <unittest.bare>
 include <unittestMock.bare>
@@ -182,7 +185,7 @@ async function testMain_index():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -376,7 +379,7 @@ async function testMain_indexAll():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -572,7 +575,7 @@ async function testMain_indexShowAll():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -770,7 +773,7 @@ async function testMain_indexFind():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -954,7 +957,7 @@ async function testMain_indexFindTicker():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -1137,7 +1140,7 @@ async function testMain_indexNoMatch():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -1313,7 +1316,7 @@ async function testMain_indexUnknownArgs():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -1505,7 +1508,7 @@ async function testMain_indexInsiderSort():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -1686,7 +1689,7 @@ async function testMain_indexCapitalLed():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -1858,7 +1861,7 @@ async function testMain_indexFailed():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -2072,9 +2075,9 @@ async function testMain_company():
                 '', \
                 'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
                 'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
-                'price reported. Shares withheld count', \
-                'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
-                'award is valued at the nearest share price insiders reported, and an option at its exercise price, which overstates it.', \
+                'price reported. Shares withheld count because some companies have insiders sell on the market to cover the same taxes.', \
+                'Grants are reported, not scored: a stock award is valued at the nearest share price insiders reported, and an option at', \
+                'its exercise price, which overstates it.', \
                 'Shares held through an outside director\'s investment fund are left out. Amended filings are not used.' \
             ] \
         ], \
@@ -2104,7 +2107,7 @@ async function testMain_company():
                     '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $258M | $215M | -$43M | -2.0% |  |  |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/1/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/1/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
-                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Every linked figure opens the SEC filing it was taken from: the most recently filed annual report that has it.', \
                 'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
                 'Vesting taxes paid is cash the company paid for employees\' taxes on vesting shares. Diluted shares is the weighted average.', \
                 'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
@@ -2121,7 +2124,7 @@ async function testMain_company():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -2305,9 +2308,9 @@ async function testMain_companyPerson():
                 '', \
                 'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
                 'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
-                'price reported. Shares withheld count', \
-                'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
-                'award is valued at the nearest share price insiders reported, and an option at its exercise price, which overstates it.', \
+                'price reported. Shares withheld count because some companies have insiders sell on the market to cover the same taxes.', \
+                'Grants are reported, not scored: a stock award is valued at the nearest share price insiders reported, and an option at', \
+                'its exercise price, which overstates it.', \
                 'Shares held through an outside director\'s investment fund are left out. Amended filings are not used.' \
             ] \
         ], \
@@ -2354,7 +2357,7 @@ async function testMain_companyPerson():
                     '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $258M | $215M | -$43M | -2.0% |  |  |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/1/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/1/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
-                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Every linked figure opens the SEC filing it was taken from: the most recently filed annual report that has it.', \
                 'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
                 'Vesting taxes paid is cash the company paid for employees\' taxes on vesting shares. Diluted shares is the weighted average.', \
                 'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
@@ -2371,7 +2374,7 @@ async function testMain_companyPerson():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -2561,9 +2564,9 @@ async function testMain_companyOneOff():
                 '', \
                 'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
                 'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
-                'price reported. Shares withheld count', \
-                'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
-                'award is valued at the nearest share price insiders reported, and an option at its exercise price, which overstates it.', \
+                'price reported. Shares withheld count because some companies have insiders sell on the market to cover the same taxes.', \
+                'Grants are reported, not scored: a stock award is valued at the nearest share price insiders reported, and an option at', \
+                'its exercise price, which overstates it.', \
                 'Shares held through an outside director\'s investment fund are left out. Amended filings are not used.' \
             ] \
         ], \
@@ -2592,7 +2595,7 @@ async function testMain_companyOneOff():
                     '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) + [$20M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | [$260M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | $180M | -$80M | -4.0% | n/a | n/a | n/a | [300.0M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) |  |' \
                 ], \
                 '', \
-                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Every linked figure opens the SEC filing it was taken from: the most recently filed annual report that has it.', \
                 'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
                 'Vesting taxes paid is cash the company paid for employees\' taxes on vesting shares. Diluted shares is the weighted average.', \
                 'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
@@ -2632,7 +2635,7 @@ async function testMain_companyOneOff():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -2806,7 +2809,7 @@ async function testMain_companyCapitalLed():
                     '| **12 months** | 2026‑09‑30 | $2,150M | $860M | $645M | $258M | $215M | -$43M | -2.0% |  |  |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/2/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/2/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
-                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Every linked figure opens the SEC filing it was taken from: the most recently filed annual report that has it.', \
                 'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
                 'Vesting taxes paid is cash the company paid for employees\' taxes on vesting shares. Diluted shares is the weighted average.', \
                 'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
@@ -2834,7 +2837,7 @@ async function testMain_companyCapitalLed():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -3009,7 +3012,7 @@ async function testMain_companyNoCostLine():
                     '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/3/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/3/000000000126000010/0000000001-26-000010-index.htm) | n/a | [$400M](https://www.sec.gov/Archives/edgar/data/3/000000000126000010/0000000001-26-000010-index.htm) | $240M | -$160M | -8.0% | n/a | n/a | n/a | n/a |  |' \
                 ], \
                 '', \
-                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Every linked figure opens the SEC filing it was taken from: the most recently filed annual report that has it.', \
                 'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
                 'Vesting taxes paid is cash the company paid for employees\' taxes on vesting shares. Diluted shares is the weighted average.', \
                 'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
@@ -3053,7 +3056,7 @@ async function testMain_companyNoCostLine():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -3229,9 +3232,9 @@ async function testMain_companyNoGrossProfit():
                 '', \
                 'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
                 'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
-                'price reported. Shares withheld count', \
-                'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
-                'award is valued at the nearest share price insiders reported, and an option at its exercise price, which overstates it.', \
+                'price reported. Shares withheld count because some companies have insiders sell on the market to cover the same taxes.', \
+                'Grants are reported, not scored: a stock award is valued at the nearest share price insiders reported, and an option at', \
+                'its exercise price, which overstates it.', \
                 'Shares held through an outside director\'s investment fund are left out. Amended filings are not used.' \
             ] \
         ], \
@@ -3261,7 +3264,7 @@ async function testMain_companyNoGrossProfit():
                     '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $323M | $215M | -$108M | -5.0% |  |  |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/11/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/11/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
-                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Every linked figure opens the SEC filing it was taken from: the most recently filed annual report that has it.', \
                 'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
                 'Vesting taxes paid is cash the company paid for employees\' taxes on vesting shares. Diluted shares is the weighted average.', \
                 'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
@@ -3283,7 +3286,7 @@ async function testMain_companyNoGrossProfit():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -3344,7 +3347,7 @@ async function testMain_companyNoCashOut():
                     '| :-- | :-- | :-- | :-- |', \
                     '| Owner cash as the company grows | Appears | Stays near zero | ✅ Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. 2.6% in the latest 12 months. |', \
                     '| Operating costs | Leave part of gross profit | Take all of gross profit | ❌ Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025 |', \
-                    '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | ❌ Insiders bought $30K more than they took out through stock: 0.0% of revenue. Owners got $209.3M: 2.6% of revenue. |', \
+                    '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | ❌ Insiders put $30K more into stock than they took out: 0.0% of revenue. Owners got $209.3M: 2.6% of revenue. |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | Fell 2.0% a year; no buybacks |' \
                 ], \
                 '', \
@@ -3415,7 +3418,7 @@ async function testMain_companyNoCashOut():
                 '', \
                 '### Insiders Who Cash Out: 0.0 of 25', \
                 '', \
-                'In 2021‑2025 officers and directors bought $30K more than they took out through stock, against company revenue of $8.1B: 0.0%. 0.5% scores 0; 3.0% or more, the line the index uses for owners, scores 25.' \
+                'In 2021‑2025 officers and directors put $30K more into stock than they took out, against company revenue of $8.1B: 0.0%. 0.5% scores 0; 3.0% or more, the line the index uses for owners, scores 25.' \
             ] \
         ], \
         [ \
@@ -3426,7 +3429,7 @@ async function testMain_companyNoCashOut():
             'markdownPrint', \
             [ \
                 'Officers and directors who reported transactions: 1, of whom 0 took out more than they put in.', \
-                'Together they bought $30K more than they took out through stock. They were granted stock worth $0 and options over shares worth $0 at the time.', \
+                'Together they put $30K more into stock than they took out. They were granted stock worth $0 and options over shares worth $0 at the time.', \
                 '', \
                 [ \
                     '| Year | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
@@ -3446,9 +3449,9 @@ async function testMain_companyNoCashOut():
                 '', \
                 'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
                 'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
-                'price reported. Shares withheld count', \
-                'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
-                'award is valued at the nearest share price insiders reported, and an option at its exercise price, which overstates it.', \
+                'price reported. Shares withheld count because some companies have insiders sell on the market to cover the same taxes.', \
+                'Grants are reported, not scored: a stock award is valued at the nearest share price insiders reported, and an option at', \
+                'its exercise price, which overstates it.', \
                 'Shares held through an outside director\'s investment fund are left out. Amended filings are not used.' \
             ] \
         ], \
@@ -3478,7 +3481,7 @@ async function testMain_companyNoCashOut():
                     '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $159M | $215M | $56M | 2.6% |  |  |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/10/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/10/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
-                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Every linked figure opens the SEC filing it was taken from: the most recently filed annual report that has it.', \
                 'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
                 'Vesting taxes paid is cash the company paid for employees\' taxes on vesting shares. Diluted shares is the weighted average.', \
                 'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
@@ -3495,7 +3498,7 @@ async function testMain_companyNoCashOut():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -3686,9 +3689,9 @@ async function testMain_companyCashGenerative():
                 '', \
                 'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
                 'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
-                'price reported. Shares withheld count', \
-                'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
-                'award is valued at the nearest share price insiders reported, and an option at its exercise price, which overstates it.', \
+                'price reported. Shares withheld count because some companies have insiders sell on the market to cover the same taxes.', \
+                'Grants are reported, not scored: a stock award is valued at the nearest share price insiders reported, and an option at', \
+                'its exercise price, which overstates it.', \
                 'Shares held through an outside director\'s investment fund are left out. Amended filings are not used.' \
             ] \
         ], \
@@ -3718,7 +3721,7 @@ async function testMain_companyCashGenerative():
                     '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $43M | $215M | $172M | 8.0% |  |  |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/4/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/4/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
-                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Every linked figure opens the SEC filing it was taken from: the most recently filed annual report that has it.', \
                 'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
                 'Vesting taxes paid is cash the company paid for employees\' taxes on vesting shares. Diluted shares is the weighted average.', \
                 'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
@@ -3735,7 +3738,7 @@ async function testMain_companyCashGenerative():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -3834,9 +3837,9 @@ async function testMain_companyExcluded():
                 '', \
                 'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
                 'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
-                'price reported. Shares withheld count', \
-                'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
-                'award is valued at the nearest share price insiders reported, and an option at its exercise price, which overstates it.', \
+                'price reported. Shares withheld count because some companies have insiders sell on the market to cover the same taxes.', \
+                'Grants are reported, not scored: a stock award is valued at the nearest share price insiders reported, and an option at', \
+                'its exercise price, which overstates it.', \
                 'Shares held through an outside director\'s investment fund are left out. Amended filings are not used.' \
             ] \
         ], \
@@ -3866,7 +3869,7 @@ async function testMain_companyExcluded():
                     '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $430M | $215M | -$215M | -10.0% |  |  |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/5/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/5/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
-                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Every linked figure opens the SEC filing it was taken from: the most recently filed annual report that has it.', \
                 'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
                 'Vesting taxes paid is cash the company paid for employees\' taxes on vesting shares. Diluted shares is the weighted average.', \
                 'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
@@ -3888,7 +3891,7 @@ async function testMain_companyExcluded():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4060,7 +4063,7 @@ async function testMain_companyNoIndustryName():
                     '| **12 months** | 2026‑09‑30 | $2,150M | $97M | $43M | $41M | $54M | $13M | 0.6% |  |  |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/7/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/7/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
-                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Every linked figure opens the SEC filing it was taken from: the most recently filed annual report that has it.', \
                 'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
                 'Vesting taxes paid is cash the company paid for employees\' taxes on vesting shares. Diluted shares is the weighted average.', \
                 'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
@@ -4088,7 +4091,7 @@ async function testMain_companyNoIndustryName():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4260,7 +4263,7 @@ async function testMain_companyNoIndustry():
                     '| **12 months** | 2026‑09‑30 | $2,150M | $22M | $43M | $258M | -$22M | -$280M | -13.0% |  |  |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/8/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/8/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
                 '', \
-                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Every linked figure opens the SEC filing it was taken from: the most recently filed annual report that has it.', \
                 'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
                 'Vesting taxes paid is cash the company paid for employees\' taxes on vesting shares. Diluted shares is the weighted average.', \
                 'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
@@ -4288,7 +4291,7 @@ async function testMain_companyNoIndustry():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4342,7 +4345,7 @@ async function testMain_companyUnknown():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4394,7 +4397,7 @@ async function testMain_companyNoCik():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4468,7 +4471,7 @@ async function testMain_totals():
                         '| Revenue | $32.2B | $8.1B |', \
                         '| Owner cash | -$676.2M | $644.0M |', \
                         '| ...as a share of revenue | -2.1% | 8.0% |', \
-                        '| Cash insiders took out through stock | $420.0M | $1.5B |', \
+                        '| Net insiders took out through stock | $420.0M | $1.5B |', \
                         '| ...as a share of revenue | 1.3% | 18.6% |', \
                         '| Companies where insiders took out more than the owner cash | 3 | 1 |', \
                         '| Sold on the open market | $422.0M | $1.5B |', \
@@ -4479,7 +4482,7 @@ async function testMain_totals():
                         '| Options granted, at the price of the shares | $300K | $0 |' \
                     ], \
                     '', \
-                    'Cash taken out is open-market sales, plus shares withheld for taxes or sold to the company, less open-market purchases and', \
+                    'The net taken out is open-market sales, plus shares withheld for taxes or sold to the company, less open-market purchases and', \
                     'what was paid to exercise options.', \
                     'Grants are reported, not scored. They are valued at the market price of the shares they cover, which overstates options', \
                     'and performance awards that may never vest: a single award can dominate the total.', \
@@ -4528,7 +4531,7 @@ async function testMain_totals():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4588,7 +4591,8 @@ async function testMain_method():
                 '- **Meaningful** owner cash is 3.0% of revenue or more. It is not zero, so a company cannot pass by a hair.', \
                 '', \
                 'Annual figures come from the financial data companies file with the SEC. Where a figure was filed more than once,', \
-                'the most recently filed value is used. Nothing is estimated; a figure that is not in the filings is shown as "n/a".', \
+                'the value in the most recently filed annual report is used. Nothing is estimated; a figure that is not in the filings is', \
+                'shown as "n/a".', \
                 '', \
                 '## The Screen', \
                 '', \
@@ -4645,7 +4649,7 @@ async function testMain_method():
                 '**3. Insiders who cash out (25 points)**', \
                 '', \
                 '- The cash officers and directors took out through stock over the latest 5 whole calendar years, as a share of the company\'s revenue in those years: 0 points at 0.5%, 25 at 3.0% or more.', \
-                '- Cash taken out is open-market sales, plus shares withheld for taxes or sold to the company, less open-market purchases', \
+                '- The net taken out is open-market sales, plus shares withheld for taxes or sold to the company, less open-market purchases', \
                 '  and what was paid to exercise options,', \
                 '  from SEC Forms 4 and 5.', \
                 '- The top of the scale is the line the index uses for owners. A company whose insiders take out 3.0% of revenue has paid them what would count as meaningful cash had it gone to owners.', \
@@ -4658,7 +4662,7 @@ async function testMain_method():
                 '', \
                 '## Why These Choices', \
                 '', \
-                '- **Cash taken out, not sales against grants.** Insiders settle the tax on vesting shares in two ways: some sell on the', \
+                '- **The net taken out, not sales against grants.** Insiders settle the tax on vesting shares in two ways: some sell on the', \
                 '  market, some have the company withhold shares. Counting only market sales made the first kind look like heavier sellers.', \
                 '  Counting both treats them alike. Grants are not scored, because the filings do not value them consistently.', \
                 '- **The level of costs, not their change.** Whether costs fell against revenue over five years did not tell the companies', \
@@ -4707,7 +4711,7 @@ async function testMain_method():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4754,10 +4758,10 @@ async function testMain_data():
                 '', \
                 '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
                 '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
-                '  File size 123,456,789 bytes, SHA-256 `f9fc1223d3ff884cfe44c41716347f598258f6961f99e9244e583aadd288f5b8`.', \
+                '  File size 123,456,789 bytes, SHA-256 `184cca6f720a33e63252651fd8e8faec7b895ada8e7f208b8227b32963fd4ff4`.', \
                 '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
                 '- Insider transactions: the SEC [insider transactions data sets](https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets), 20 quarterly files from `2021q1_form345.zip` to `2025q4_form345.zip`.', \
-                '- Method version 1.1.0. A figure cited from this page can be reproduced from the same', \
+                '- Method version 1.2.0. A figure cited from this page can be reproduced from the same', \
                 '  SEC file and the same method version.', \
                 '', \
                 '## Downloads', \
@@ -4773,7 +4777,7 @@ async function testMain_data():
                 'figure is not in the filings. Each build is kept, so a figure cited from an earlier one can be found again:', \
                 '', \
                 [ \
-                    '- Data as of **2026-11-05**, method version 1.1.0, 4 ranked: [index.csv](data/archive/2026-11-05/1.1.0/index.csv), [index.json](data/archive/2026-11-05/1.1.0/index.json), [meta.json](data/archive/2026-11-05/1.1.0/meta.json)' \
+                    '- Data as of **2026-11-05**, method version 1.2.0, 4 ranked: [index.csv](data/archive/2026-11-05/1.2.0/index.csv), [index.json](data/archive/2026-11-05/1.2.0/index.json), [meta.json](data/archive/2026-11-05/1.2.0/meta.json)' \
                 ], \
                 '', \
                 '## What Is in the Data', \
@@ -4795,7 +4799,8 @@ async function testMain_data():
                 '', \
                 '- **History starts about 2009.** The SEC has collected financial statements as data only since then. A company\'s', \
                 '  "whole period" is the years it has in that data, which can be shorter than its life.', \
-                '- **Fiscal years.** A fiscal year ending in January, February or March is labelled with the prior calendar year.', \
+                '- **Fiscal years.** A fiscal year ending from January to the first week of April is labelled with the prior calendar year.', \
+                '  Where two 12-month periods would have one label, the one reported in an annual report is the fiscal year.', \
                 '- **Revenue** is the largest of four revenue tags for the year. Pass-through revenue (for example, the face value', \
                 '  of cryptocurrency sold) makes revenue-based ratios look smaller.', \
                 '- **Capital spending** is purchases of property and equipment (or of productive assets) plus capitalized software.', \
@@ -4805,8 +4810,9 @@ async function testMain_data():
                 '- **Industry codes** are the SEC\'s and are coarse. Securities brokers are excluded along with asset managers, because', \
                 '  they hold customer money. Insurance agents and brokers are not excluded: they are not insurers. Some real-estate and', \
                 '  payment companies are not excluded.', \
-                '- **Restated years.** Each year uses its most recently filed value. When a company restates recent years for a', \
-                '  business it has left, older years are not restated, so the two can sit side by side.', \
+                '- **Restated years.** Each year uses the value in the most recently filed annual report that has it, and another', \
+                '  filing only if no annual report does. When a company restates recent years for a business it has left, older years', \
+                '  are not restated, so the two can sit side by side.', \
                 '- **Foreign companies** that file financial data with the SEC in US dollars are included, but have not had to file', \
                 '  insider transactions, so most have no score.', \
                 '- **Predecessor companies** are not combined, and **share counts** are not adjusted for splits.', \
@@ -4819,11 +4825,17 @@ async function testMain_data():
                 '  purchases, and what was paid to exercise options. It leaves out salary and cash bonuses, gifts of shares, and sales by', \
                 '  people after they leave. Shares withheld can cover an option\'s exercise price as well as taxes; taking the exercise', \
                 '  price off leaves the tax. An exercise priced above the share price is treated as a filing error and left out. Amended', \
-                '  insider filings are not used. A price far from the company\'s other reported prices is treated as a filing error', \
-                '  and left out.', \
+                '  insider filings are not used. A price more than 25 times the company\'s other reported prices, or less than a 25th', \
+                '  of them, is treated as a filing error and left out; the band is wide because prices are not adjusted for stock splits.', \
+                '  Transactions filed after the latest data set are not yet counted.', \
+                '- **A shared company or partnership.** Two insiders who share one each report its sales. Where the filings name it', \
+                '  and give the same shares held afterward, the sale is counted once, for the insider who filed first. Where they say', \
+                '  only "by trust" or "see footnote", both are counted, because co-founders with equal holdings report equal, separate', \
+                '  sales the same way.', \
                 '- **Insider years are calendar years; company years are fiscal years.** Insider cash-out is set against revenue for the', \
                 '  fiscal years with the same labels. Where the fiscal year does not end in December the two periods are up to eight', \
-                '  months apart, which overstates the share at a fast-growing company.', \
+                '  months apart, which overstates the share at a fast-growing company. A calendar year for which the company has no', \
+                '  fiscal year yet is left out of both.', \
                 '- **Insider grants** are reported, not scored. They are valued at the market price of the shares they cover, not at', \
                 '  their accounting fair value, so options and performance awards are overstated.', \
                 '', \
@@ -4846,6 +4858,7 @@ async function testMain_data():
                 '## Change Log', \
                 '', \
                 [ \
+                    '- **Method version 1.2.0.** A sale by a company or partnership that two insiders share is counted once, not twice. A fiscal year ending in the first week of April is labelled with the prior year, so a 52-week year no longer hides the year before it. An annual report\'s figure is no longer replaced by a later quarterly filing\'s. A reported price is treated as an error at 25 times the others, not 3, so trades around a stock split are kept; shares sold to the company are checked too. Insider cash-out is counted only over the years for which the company has a fiscal year.', \
                     '- **Method version 1.1.0.** Insider cash-out is net of what insiders paid to exercise options. Version 1.0.0 counted the whole sale.', \
                     '- **Method version 1.0.0.** First release. The screen, and a score on three signs: owner cash from SEC financial data, operating costs as a share of gross profit, and insider cash-out as a share of revenue from SEC Forms 4 and 5.' \
                 ], \
@@ -4863,7 +4876,7 @@ async function testMain_data():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -4910,10 +4923,10 @@ async function testMain_dataNoBuilds():
                 '', \
                 '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
                 '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
-                '  File size 123,456,789 bytes, SHA-256 `f9fc1223d3ff884cfe44c41716347f598258f6961f99e9244e583aadd288f5b8`.', \
+                '  File size 123,456,789 bytes, SHA-256 `184cca6f720a33e63252651fd8e8faec7b895ada8e7f208b8227b32963fd4ff4`.', \
                 '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
                 '- Insider transactions: the SEC [insider transactions data sets](https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets), 20 quarterly files from `2021q1_form345.zip` to `2025q4_form345.zip`.', \
-                '- Method version 1.1.0. A figure cited from this page can be reproduced from the same', \
+                '- Method version 1.2.0. A figure cited from this page can be reproduced from the same', \
                 '  SEC file and the same method version.', \
                 '', \
                 '## Downloads', \
@@ -4949,7 +4962,8 @@ async function testMain_dataNoBuilds():
                 '', \
                 '- **History starts about 2009.** The SEC has collected financial statements as data only since then. A company\'s', \
                 '  "whole period" is the years it has in that data, which can be shorter than its life.', \
-                '- **Fiscal years.** A fiscal year ending in January, February or March is labelled with the prior calendar year.', \
+                '- **Fiscal years.** A fiscal year ending from January to the first week of April is labelled with the prior calendar year.', \
+                '  Where two 12-month periods would have one label, the one reported in an annual report is the fiscal year.', \
                 '- **Revenue** is the largest of four revenue tags for the year. Pass-through revenue (for example, the face value', \
                 '  of cryptocurrency sold) makes revenue-based ratios look smaller.', \
                 '- **Capital spending** is purchases of property and equipment (or of productive assets) plus capitalized software.', \
@@ -4959,8 +4973,9 @@ async function testMain_dataNoBuilds():
                 '- **Industry codes** are the SEC\'s and are coarse. Securities brokers are excluded along with asset managers, because', \
                 '  they hold customer money. Insurance agents and brokers are not excluded: they are not insurers. Some real-estate and', \
                 '  payment companies are not excluded.', \
-                '- **Restated years.** Each year uses its most recently filed value. When a company restates recent years for a', \
-                '  business it has left, older years are not restated, so the two can sit side by side.', \
+                '- **Restated years.** Each year uses the value in the most recently filed annual report that has it, and another', \
+                '  filing only if no annual report does. When a company restates recent years for a business it has left, older years', \
+                '  are not restated, so the two can sit side by side.', \
                 '- **Foreign companies** that file financial data with the SEC in US dollars are included, but have not had to file', \
                 '  insider transactions, so most have no score.', \
                 '- **Predecessor companies** are not combined, and **share counts** are not adjusted for splits.', \
@@ -4973,11 +4988,17 @@ async function testMain_dataNoBuilds():
                 '  purchases, and what was paid to exercise options. It leaves out salary and cash bonuses, gifts of shares, and sales by', \
                 '  people after they leave. Shares withheld can cover an option\'s exercise price as well as taxes; taking the exercise', \
                 '  price off leaves the tax. An exercise priced above the share price is treated as a filing error and left out. Amended', \
-                '  insider filings are not used. A price far from the company\'s other reported prices is treated as a filing error', \
-                '  and left out.', \
+                '  insider filings are not used. A price more than 25 times the company\'s other reported prices, or less than a 25th', \
+                '  of them, is treated as a filing error and left out; the band is wide because prices are not adjusted for stock splits.', \
+                '  Transactions filed after the latest data set are not yet counted.', \
+                '- **A shared company or partnership.** Two insiders who share one each report its sales. Where the filings name it', \
+                '  and give the same shares held afterward, the sale is counted once, for the insider who filed first. Where they say', \
+                '  only "by trust" or "see footnote", both are counted, because co-founders with equal holdings report equal, separate', \
+                '  sales the same way.', \
                 '- **Insider years are calendar years; company years are fiscal years.** Insider cash-out is set against revenue for the', \
                 '  fiscal years with the same labels. Where the fiscal year does not end in December the two periods are up to eight', \
-                '  months apart, which overstates the share at a fast-growing company.', \
+                '  months apart, which overstates the share at a fast-growing company. A calendar year for which the company has no', \
+                '  fiscal year yet is left out of both.', \
                 '- **Insider grants** are reported, not scored. They are valued at the market price of the shares they cover, not at', \
                 '  their accounting fair value, so options and performance awards are overstated.', \
                 '', \
@@ -5000,6 +5021,7 @@ async function testMain_dataNoBuilds():
                 '## Change Log', \
                 '', \
                 [ \
+                    '- **Method version 1.2.0.** A sale by a company or partnership that two insiders share is counted once, not twice. A fiscal year ending in the first week of April is labelled with the prior year, so a 52-week year no longer hides the year before it. An annual report\'s figure is no longer replaced by a later quarterly filing\'s. A reported price is treated as an error at 25 times the others, not 3, so trades around a stock split are kept; shares sold to the company are checked too. Insider cash-out is counted only over the years for which the company has a fiscal year.', \
                     '- **Method version 1.1.0.** Insider cash-out is net of what insiders paid to exercise options. Version 1.0.0 counted the whole sale.', \
                     '- **Method version 1.0.0.** First release. The screen, and a score on three signs: owner cash from SEC financial data, operating costs as a share of gross profit, and insider cash-out as a share of revenue from SEC Forms 4 and 5.' \
                 ], \
@@ -5017,7 +5039,7 @@ async function testMain_dataNoBuilds():
                 '', \
                 '---', \
                 '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.2.0.', \
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
@@ -5027,615 +5049,3 @@ async function testMain_dataNoBuilds():
     ])
 endfunction
 unittestRunTest('testMain_dataNoBuilds')
-
-
-# The index page of a build without the insider data sets
-async function testMain_indexNoInsider():
-    data = testData(['data/meta.json', 'data/index.json'], 'noinsider/')
-    unittestMockAll(data)
-    tiMain()
-    log = unittestMockEnd()
-    unittestDeepEqual(log, [ \
-        [ \
-            'systemFetch', \
-            [ \
-                ['data/meta.json', 'data/index.json'] \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                'Index | [Group Totals](#var.vPage=\'totals\'&_top) | [Methodology](#var.vPage=\'method\'&_top) | [Data and Limits](#var.vPage=\'data\'&_top)' \
-            ] \
-        ], \
-        [ \
-            'documentSetTitle', \
-            ['The Treadmill Index'] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '# The Treadmill Index', \
-                '', \
-                'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
-                'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
-                'Of 11 companies in the SEC data, 5 pass the screen and 0 are ranked. [How it is computed](#var.vPage=\'method\'&_top).', \
-                '', \
-                '## What a High Rank Can Mean for a Shareholder', \
-                '', \
-                '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
-                'growth, and on profit measures that leave stock pay out. Where that revenue is held up by spending that has to go on,', \
-                'such as a large sales force, a valuation on owner cash would be far lower. At the higher valuation its insiders are', \
-                'granted shares, and can sell them, every year. The theory of this index is that at some companies this is the point: owner', \
-                'cash is kept near zero so that the company is never valued on it, while insiders turn grants into cash at the price that', \
-                'results. At those companies, shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which', \
-                'companies this is deliberate: a real bet on growth looks the same until it pays off.', \
-                '', \
-                '**The three signs.** The index looks for three things together, each one visible in the filings. In a growth bet that', \
-                'pays off, they fade: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little', \
-                'next to what owners get.', \
-                '', \
-                '1. **Owner cash that stays near zero.** Together the 5 companies here recorded $6.8B of stock pay against $5.2B of free cash flow.', \
-                '   At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
-                '2. **Revenue held up by costs.** Operating costs are mostly people, and have to go on for the revenue to go on. At 1 of the 5,', \
-                '   they took all of gross profit or more in the latest year. Cash that does arrive can go to buying back the shares just', \
-                '   granted: of the 1 that bought back shares over five years and whose share count can be followed,', \
-                '   the count still rose at 1, after $40.0M spent on buybacks and employees\' vesting taxes.', \
-                '3. **Insiders who cash out.** Insider transactions are not in this build, so no company has a score.', \
-                '', \
-                '**What it costs a shareholder.** Where the pattern holds, each share owns a smaller part of a company that produces little', \
-                'or no cash for its owners, at a price that cannot be checked against what it earns. A falling share price makes it worse:', \
-                'the same pay takes more shares.', \
-                '', \
-                '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
-                'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months. Each company page shows which way', \
-                'its own numbers point, and what cuts the other way. [Group Totals](#var.vPage=\'totals\'&_top) has every figure, with the companies that', \
-                'do produce cash for their owners beside them as a baseline.', \
-                '', \
-                '## The Index' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '**Show:** Stock pay (5) | [Capital\\-led \\(1\\)](#var.vType=\'capital_led\') | [Thin margin \\(1\\)](#var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vType=\'excluded\') | [All \\(10\\)](#var.vType=\'all\') \\\n**Sort:** Score | [Owner cash](#var.vSort=\'owner\') | [Costs](#var.vSort=\'costs\') | [Insider cash\\-out](#var.vSort=\'insiders\') | [Name](#var.vSort=\'name\')', \
-                '', \
-                '*Stock pay:* Passed the screen: owner cash is under the line and stock pay is the cause.' \
-            ] \
-        ], \
-        [ \
-            'elementModelRender', \
-            [ \
-                { \
-                    'elem': [ \
-                        {'elem': {'text': 'Find a company or ticker: '}, 'html': 'b'}, \
-                        { \
-                            'attr': { \
-                                'autocomplete': 'off', \
-                                'id': 'tiFind', \
-                                'size': 30, \
-                                'style': 'font-size: inherit; border: thin solid black; padding: 0.4em;', \
-                                'type': 'text', \
-                                'value': '' \
-                            }, \
-                            'callback': {'keyup': '<function>'}, \
-                            'html': 'input' \
-                        }, \
-                        {'text': ' '}, \
-                        { \
-                            'attr': {'style': 'cursor: pointer; user-select: none;'}, \
-                            'callback': {'click': '<function>'}, \
-                            'elem': {'text': 'Find'}, \
-                            'html': 'a' \
-                        }, \
-                        [] \
-                    ], \
-                    'html': 'p' \
-                } \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                [ \
-                    '| Rank | Company | Ticker | Score (75) | Owner cash (25) | Costs (25) | Insiders (25) | Owner-cash margin | Costs / gross profit | Insider cash-out / revenue | Notes |', \
-                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | 24.0 | n/a | n/a | -8.2% | n/a | n/a | N |', \
-                    '|  | [No Gross Profit Co](#var.vCik=11&var.vPage=\'company\'&_top) | NGP | n/a | 22.3 | 25.0 | n/a | -5.0% | no gross profit | n/a |  |', \
-                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 21.1 | 18.1 | n/a | -4.0% | 91.7% | n/a | O |', \
-                    '|  | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | n/a | 18.6 | 18.1 | n/a | -2.0% | 91.7% | n/a |  |', \
-                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 13.0 | 18.1 | n/a | 2.6% | 91.7% | n/a |  |' \
-                ] \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '**Rank** is by score, among the companies that pass the screen and have all three signs. A high rank is not a statement', \
-                'that a company keeps the pattern going on purpose. Unranked companies are listed for comparison only.', \
-                '', \
-                '**The score is out of 75**, 25 for each sign: owner cash + (owner cash / 25) x (costs + insiders). Costs and insider', \
-                'cash-out count only to the extent owners are getting no cash.', \
-                '', \
-                '**Owner-cash margin** covers every fiscal year in the SEC data. **Costs / gross profit** is operating costs in the latest', \
-                'fiscal year. **Insider cash-out / revenue** is what officers and directors took out through stock in 2021‑2025,', \
-                'against the company\'s revenue in those years.', \
-                '', \
-                '**Neighbouring ranks are close.** Moving one threshold by a fifth changes the top ten in 0 of 30 tests.', \
-                'Read a rank as a rough position, not a precise one. [Data and Limits](#var.vPage=\'data\'&_top) lists every change.', \
-                '', \
-                '**Notes**', \
-                '' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '- **O** - Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows the first sign with and without those years.' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '- **N** - The cost line cannot be built from the filing tags, so the costs sign is missing and the company has no score.' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '- **I** - No insider transactions in the SEC data sets for the five years, so the insiders sign is missing and the company has no score. Foreign companies have not had to file them.' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '---', \
-                '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
-                'History starts about 2009, when the SEC began collecting financial statements as data.', \
-                '', \
-                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
-            ] \
-        ] \
-    ])
-endfunction
-unittestRunTest('testMain_indexNoInsider')
-
-
-# A company's page in a build without the insider data sets
-async function testMain_companyNoInsider():
-    data = testData(['data/meta.json', 'data/company/1.json'], 'noinsider/')
-    systemGlobalSet('vPage', 'company')
-    systemGlobalSet('vCik', 1)
-    unittestMockAll(data)
-    tiMain()
-    log = unittestMockEnd()
-    systemGlobalSet('vPage', null)
-    systemGlobalSet('vCik', null)
-    unittestDeepEqual(log, [ \
-        [ \
-            'systemFetch', \
-            [ \
-                ['data/meta.json', 'data/company/1.json'] \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '[Index](#var=&_top) | [Group Totals](#var.vPage=\'totals\'&_top) | [Methodology](#var.vPage=\'method\'&_top) | [Data and Limits](#var.vPage=\'data\'&_top)' \
-            ] \
-        ], \
-        [ \
-            'documentSetTitle', \
-            ['Stock Pay Co - The Treadmill Index'] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '# Stock Pay Co', \
-                '', \
-                '**Ticker:** SPAY (Nasdaq) \\\n**SEC filings:** [CIK 1](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=1&type=10-K) \\\n**Industry:** Services\\-Prepackaged Software ([SIC 7372](#var.vSic=7372&var.vType=\'all\'&_top)) \\\n**Type:** Stock pay. Passed the screen: owner cash is under the line and stock pay is the cause.', \
-                '', \
-                'From fiscal 2019 to 2025, Stock Pay Co reported $10.2 billion of revenue and $1.0 billion of free cash flow. Stock pay was $1.2 billion, which leaves -$203 million of owner cash: -2.0% of revenue. Owner cash was under 3.0% of revenue in 7 of 7 years. In the 12 months to 2026-09-30 it was -2.0% of revenue.' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '## Which Way the Numbers Point', \
-                '', \
-                [ \
-                    '| Sign | A growth bet paying off | A treadmill | This company |', \
-                    '| :-- | :-- | :-- | :-- |', \
-                    '| Owner cash as the company grows | Appears | Stays near zero | ✅ Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -2.0% in the latest 12 months. |', \
-                    '| Operating costs | Leave part of gross profit | Take all of gross profit | ❌ Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025; sales and marketing 32.0% to 28.0% |', \
-                    '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | ✅ Rose 2.0% a year, after $40.0M of buybacks and employees\' vesting taxes |' \
-                ], \
-                '', \
-                '✅ marks figures that match the treadmill column, and ❌ figures that do not: owner cash under 3.0% of revenue in the latest 12 months; operating costs of 100.0% of gross profit or more; insiders taking out more than owners got;', \
-                'a share count that did not fall despite buybacks. No mark means the figures are missing, or there were no buybacks.', \
-                'The marks say what the figures are, not why.' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            ['', '## What Cuts the Other Way', ''] \
-        ], \
-        [ \
-            'markdownPrint', \
-            ['- The company paid $40 million to buy back shares over the period.'] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '## Score: Not Scored', \
-                '', \
-                [ \
-                    '| Sign | Points |', \
-                    '| :-- | --: |', \
-                    '| Owner cash that stays near zero | 18.6 of 25 |', \
-                    '| Revenue held up by costs | 18.1 of 25 |', \
-                    '| Insiders who cash out | not in this build |' \
-                ], \
-                '', \
-                'The score needs all three signs. Missing is not treated as zero.' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '### Owner Cash That Stays Near Zero: 18.6 of 25', \
-                '', \
-                [ \
-                    '| Part | Input | Points |', \
-                    '| :-- | --: | --: |', \
-                    '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
-                    '| Cumulative owner-cash margin, 2019‑2025 | -2.0% | 3.7 of 8 |', \
-                    '| Owner-cash margin, 12 months to 2026‑09‑30 | -2.0% | 4.9 of 7 |' \
-                ] \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            ['', '### Revenue Held Up by Costs: 18.1 of 25', ''] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                'In 2025, operating expenses excluding cost of revenue (gross profit - operating income) were $1,100M: 91.7% of gross profit.', \
-                '70.0% scores 0; 100.0% or more scores 25.', \
-                '', \
-                'As a share of revenue they were 55.0% in 2021 and 55.0% in 2025, a change of 0.0 points. The change is reported, not scored.', \
-                'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $100M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) (2025).' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                'By kind of spending, in the same two years: sales and marketing [$400M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) and [$560M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm).' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '### Insiders Who Cash Out: Not in This Build', \
-                '', \
-                'Insider transactions are not in this build.' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            ['', '## Year by Year', ''] \
-        ], \
-        testChartCall(data, 'data/company/1.json'), \
-        [ \
-            'markdownPrint', \
-            [''] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                [ \
-                    '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Vesting taxes paid | Dividends | Diluted shares | One-off |', \
-                    '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
-                    '| 2019 | 2019‑12‑31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$20M | -2.0% | n/a | n/a | n/a | [100.0M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) |  |', \
-                    '| 2020 | 2020‑12‑31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | $110M | -$22M | -2.0% | n/a | n/a | n/a | [102.0M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) |  |', \
-                    '| 2021 | 2021‑12‑31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$25M | -2.0% | n/a | n/a | n/a | [104.0M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) |  |', \
-                    '| 2022 | 2022‑12‑31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$28M | -2.0% | n/a | n/a | n/a | [106.1M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) |  |', \
-                    '| 2023 | 2023‑12‑31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$32M | -2.0% | n/a | n/a | n/a | [108.2M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) |  |', \
-                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | [$40M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | n/a | n/a | [110.4M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) |  |', \
-                    '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$40M | -2.0% | n/a | n/a | n/a | [112.6M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) |  |', \
-                    '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $258M | $215M | -$43M | -2.0% |  |  |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/1/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/1/000000000125000030/0000000001-25-000030-index.htm) |' \
-                ], \
-                '', \
-                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
-                'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
-                'Vesting taxes paid is cash the company paid for employees\' taxes on vesting shares. Diluted shares is the weighted average.', \
-                'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
-                '"n/a" means the filings have no tagged figure. History starts about 2009.' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            ['', '## Notes on the Data', '', '- Diluted share count: changed +2.0% a year over the period.'] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '---', \
-                '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
-                'History starts about 2009, when the SEC began collecting financial statements as data.', \
-                '', \
-                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
-            ] \
-        ] \
-    ])
-endfunction
-unittestRunTest('testMain_companyNoInsider')
-
-
-# The group totals page of a build without the insider data sets
-async function testMain_totalsNoInsider():
-    data = testData(['data/meta.json'], 'noinsider/')
-    systemGlobalSet('vPage', 'totals')
-    unittestMockAll(data)
-    tiMain()
-    log = unittestMockEnd()
-    systemGlobalSet('vPage', null)
-    unittestDeepEqual(log, [ \
-        [ \
-            'systemFetch', \
-            [ \
-                ['data/meta.json'] \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '[Index](#var=&_top) | Group Totals | [Methodology](#var.vPage=\'method\'&_top) | [Data and Limits](#var.vPage=\'data\'&_top)' \
-            ] \
-        ], \
-        [ \
-            'documentSetTitle', \
-            ['Group Totals - The Treadmill Index'] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '# Group Totals', \
-                '', \
-                'The 5 companies that pass the screen, added together over each company\'s own history (about 2009 onward).', \
-                '', \
-                [ \
-                    '|  | The 5 companies |', \
-                    '| :-- | --: |', \
-                    '| Revenue | $50.8B |', \
-                    '| Free cash flow | $5.2B |', \
-                    '| Stock pay | $6.8B |', \
-                    '| Owner cash (free cash flow - stock pay) | -$1.7B |', \
-                    '| Capital spending | $933.5M |', \
-                    '| Share buybacks | $40.0M |', \
-                    '| Cash paid for employees\' vesting taxes | $0 |', \
-                    '| Dividends | $0 |' \
-                ], \
-                '', \
-                'Buybacks and dividends are cash paid out, shown for comparison; they are not scored.', \
-                '', \
-                [ \
-                    '', \
-                    '## Buybacks Against the Share Count, 2021‑2025', \
-                    '', \
-                    'A buyback returns cash to owners only if it leaves fewer shares. Where the share count still rose, the cash went to', \
-                    'offsetting the shares granted. The count is the diluted weighted average; a company whose count jumps in one year (a', \
-                    'split, or a conversion at listing) is left out.', \
-                    '', \
-                    [ \
-                        '|  | Pass the screen | Cash-generative companies |', \
-                        '| :-- | --: | --: |', \
-                        '| Companies that bought back shares, and whose share count can be followed | 1 | 1 |', \
-                        '| ...where the share count still rose | 1 | 1 |', \
-                        '| Spent on buybacks and employees\' vesting taxes | $40.0M | $250.0M |', \
-                        '| ...by the companies where the share count still rose | $40.0M | $250.0M |' \
-                    ] \
-                ], \
-                '', \
-                '## Latest 12 Months', \
-                '', \
-                'Of the 5 companies:', \
-                '', \
-                '- Owner cash of 3.0% of revenue or more: 0', \
-                '- Negative owner cash: 4', \
-                '- The latest fiscal year stands in for the latest 12 months: 2', \
-                '', \
-                '## Operating Costs', \
-                '', \
-                'Of the 5 companies, in the latest fiscal year:', \
-                '', \
-                '- Operating costs took all of gross profit or more: 1', \
-                '- No usable cost line (no score): 1' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '---', \
-                '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
-                'History starts about 2009, when the SEC began collecting financial statements as data.', \
-                '', \
-                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
-            ] \
-        ] \
-    ])
-endfunction
-unittestRunTest('testMain_totalsNoInsider')
-
-
-# The data and limits page of a build without the insider data sets
-async function testMain_dataNoInsider():
-    data = testData(['data/meta.json', 'data/archive/builds.json'], 'noinsider/')
-    systemGlobalSet('vPage', 'data')
-    unittestMockAll(data)
-    tiMain()
-    log = unittestMockEnd()
-    systemGlobalSet('vPage', null)
-    unittestDeepEqual(log, [ \
-        [ \
-            'systemFetch', \
-            [ \
-                ['data/meta.json', 'data/archive/builds.json'] \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '[Index](#var=&_top) | [Group Totals](#var.vPage=\'totals\'&_top) | [Methodology](#var.vPage=\'method\'&_top) | Data and Limits' \
-            ] \
-        ], \
-        [ \
-            'documentSetTitle', \
-            ['Data and Limits - The Treadmill Index'] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '# Data and Limits', \
-                '', \
-                '## Sources', \
-                '', \
-                '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
-                '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
-                '  File size 123,456,789 bytes, SHA-256 `f9fc1223d3ff884cfe44c41716347f598258f6961f99e9244e583aadd288f5b8`.', \
-                '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
-                '- Insider transactions: not in this build.', \
-                '- Method version 1.1.0. A figure cited from this page can be reproduced from the same', \
-                '  SEC file and the same method version.', \
-                '', \
-                '## Downloads', \
-                '', \
-                '- [index.csv](data/index.csv): one row per company that passes the basic tests, with every input, score, type and flag.', \
-                '- [index.json](data/index.json): the same rows.', \
-                '- [meta.json](data/meta.json): the as-of date, source file hash, screen counts, every threshold, group totals and the', \
-                '  sensitivity test.', \
-                '- `data/company/<CIK>.json`: one file per company, with its yearly series and its insiders. Every figure carries the', \
-                '  accession number of the SEC filing it came from.', \
-                '', \
-                'Money is in US dollars. Margins and ratios are fractions (0.03 is 3%). An empty CSV cell, or a JSON null, means the', \
-                'figure is not in the filings. Each build is kept, so a figure cited from an earlier one can be found again:', \
-                '', \
-                [ \
-                    '- Data as of **2026-11-05**, method version 1.1.0, 0 ranked: [index.csv](data/archive/2026-11-05/1.1.0/index.csv), [index.json](data/archive/2026-11-05/1.1.0/index.json), [meta.json](data/archive/2026-11-05/1.1.0/meta.json)' \
-                ], \
-                '', \
-                '## What Is in the Data', \
-                '', \
-                [ \
-                    '| Type | Companies | Meaning |', \
-                    '| :-- | --: | :-- |', \
-                    '| Stock pay | 5 | Passed the screen: owner cash is under the line and stock pay is the cause. |', \
-                    '| Capital-led | 1 | Would pass the screen, but capital spending is more than twice stock pay, so the shortfall is mostly investment. Listed, not ranked. |', \
-                    '| Thin margin | 1 | Owner cash is under the line, but stock pay is too small to be the cause. |', \
-                    '| Cash burner | 1 | Free cash flow is negative before any stock pay. |', \
-                    '| Cash generative | 1 | Owner cash is at or above the line. These companies are the baseline. |', \
-                    '| Excluded industry | 1 | A bank, insurer, lender, broker, asset manager, REIT or drug developer. |' \
-                ], \
-                '', \
-                'Excluded industries: bank 1.', \
-                '', \
-                '## Known Limits', \
-                '', \
-                '- **History starts about 2009.** The SEC has collected financial statements as data only since then. A company\'s', \
-                '  "whole period" is the years it has in that data, which can be shorter than its life.', \
-                '- **Fiscal years.** A fiscal year ending in January, February or March is labelled with the prior calendar year.', \
-                '- **Revenue** is the largest of four revenue tags for the year. Pass-through revenue (for example, the face value', \
-                '  of cryptocurrency sold) makes revenue-based ratios look smaller.', \
-                '- **Capital spending** is purchases of property and equipment (or of productive assets) plus capitalized software.', \
-                '  A year with neither tag counts as zero and is noted.', \
-                '- **The cost line** cannot be built for 1 companies (1 of those that pass the screen) because of inconsistent tagging. They have no score.', \
-                '- **Latest 12 months** fall back to the latest fiscal year when a quarterly figure is missing or tagged differently.', \
-                '- **Industry codes** are the SEC\'s and are coarse. Securities brokers are excluded along with asset managers, because', \
-                '  they hold customer money. Insurance agents and brokers are not excluded: they are not insurers. Some real-estate and', \
-                '  payment companies are not excluded.', \
-                '- **Restated years.** Each year uses its most recently filed value. When a company restates recent years for a', \
-                '  business it has left, older years are not restated, so the two can sit side by side.', \
-                '- **Foreign companies** that file financial data with the SEC in US dollars are included, but have not had to file', \
-                '  insider transactions, so most have no score.', \
-                '- **Predecessor companies** are not combined, and **share counts** are not adjusted for splits.', \
-                '- **Founding dates** are not in the data. Some listed companies are less than ten years old.', \
-                '- **Insiders** are officers and directors who file as people. A filing made with an entity counts only if one of', \
-                '  its people is an officer, and an outside director\'s shares held through an entity are left out unless the filing', \
-                '  says the holder is a trust, family or a retirement account. Some fund sales may still be counted, and some personal', \
-                '  holdings left out.', \
-                '- **Insider cash-out** counts only what is on Forms 4 and 5: sales, shares withheld or sold to the company,', \
-                '  purchases, and what was paid to exercise options. It leaves out salary and cash bonuses, gifts of shares, and sales by', \
-                '  people after they leave. Shares withheld can cover an option\'s exercise price as well as taxes; taking the exercise', \
-                '  price off leaves the tax. An exercise priced above the share price is treated as a filing error and left out. Amended', \
-                '  insider filings are not used. A price far from the company\'s other reported prices is treated as a filing error', \
-                '  and left out.', \
-                '- **Insider years are calendar years; company years are fiscal years.** Insider cash-out is set against revenue for the', \
-                '  fiscal years with the same labels. Where the fiscal year does not end in December the two periods are up to eight', \
-                '  months apart, which overstates the share at a fast-growing company.', \
-                '- **Insider grants** are reported, not scored. They are valued at the market price of the shares they cover, not at', \
-                '  their accounting fair value, so options and performance awards are overstated.', \
-                '', \
-                '## If a Threshold Moves by a Fifth', \
-                '', \
-                'Each threshold was moved down and up by a fifth, one at a time, and the index rebuilt. These are the changes in the', \
-                'top ten.', \
-                '', \
-                'No test changed the top ten.', \
-                '', \
-                'No change in the top ten: Least latest revenue, a fifth lower; Least latest revenue, a fifth higher; Least years of data, a fifth lower; Least years of data, a fifth higher; Least revenue growth, a fifth lower; Least revenue growth, a fifth higher; Meaningful owner cash, a fifth lower; Meaningful owner cash, a fifth higher; Least stock pay, share of revenue, a fifth lower; Least stock pay, share of revenue, a fifth higher; Least stock pay, share of free cash flow, a fifth lower; Least stock pay, share of free cash flow, a fifth higher; Capital spending, as a multiple of stock pay, that makes a company capital-led, a fifth lower; Capital spending, as a multiple of stock pay, that makes a company capital-led, a fifth higher; Cumulative owner-cash margin that scores 0, a fifth lower; Cumulative owner-cash margin that scores 0, a fifth higher; Cumulative owner-cash margin that scores 8, a fifth lower; Cumulative owner-cash margin that scores 8, a fifth higher; Latest owner-cash margin that scores 0, a fifth lower; Latest owner-cash margin that scores 0, a fifth higher; Latest owner-cash margin that scores 7, a fifth lower; Latest owner-cash margin that scores 7, a fifth higher; Costs as a share of gross profit that score 0, a fifth lower; Costs as a share of gross profit that score 0, a fifth higher; Costs as a share of gross profit that score 25, a fifth lower; Costs as a share of gross profit that score 25, a fifth higher; Insider cash-out as a share of revenue that scores 0, a fifth lower; Insider cash-out as a share of revenue that scores 0, a fifth higher; Insider cash-out as a share of revenue that scores 25, a fifth lower; Insider cash-out as a share of revenue that scores 25, a fifth higher.', \
-                '', \
-                'The thresholds: `capital_led_ratio` = 2, `cost_level_full` = 1, `cost_level_zero` = 0.7, `cost_window_years` = 5, `grant_price_days` = 90, `growth_min` = 0.5, `insider_full` = 0.03, `insider_years` = 5, `insider_zero` = 0.005, `meaningful_margin` = 0.03, `one_off_ocf_share` = 0.25, `p1_cum_full` = -0.1, `p1_cum_points` = 8, `p1_cum_zero` = 0.05, `p1_latest_full` = -0.05, `p1_latest_points` = 7, `p1_latest_zero` = 0.05, `p1_years_points` = 10, `prefilter_revenue` = 500000000, `revenue_min` = 1000000000, `sbc_fcf_min` = 0.5, `sbc_revenue_min` = 0.02, `still_filing_days` = 548, `years_min` = 5.', \
-                '', \
-                '## Change Log', \
-                '', \
-                [ \
-                    '- **Method version 1.1.0.** Insider cash-out is net of what insiders paid to exercise options. Version 1.0.0 counted the whole sale.', \
-                    '- **Method version 1.0.0.** First release. The screen, and a score on three signs: owner cash from SEC financial data, operating costs as a share of gross profit, and insider cash-out as a share of revenue from SEC Forms 4 and 5.' \
-                ], \
-                '', \
-                '## Corrections', \
-                '', \
-                'If a figure here does not match the linked SEC filing, it is an error in this index. Confirmed errors are corrected in', \
-                'the next build and noted in the change log. Report one at the', \
-                '[project repository](https://github.com/craigahobbs/treadmill-index/issues) with the company and the year.' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '---', \
-                '', \
-                'Data as of 2026-11-05, from SEC filings. Method version 1.1.0.', \
-                'History starts about 2009, when the SEC began collecting financial statements as data.', \
-                '', \
-                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
-            ] \
-        ] \
-    ])
-endfunction
-unittestRunTest('testMain_dataNoInsider')

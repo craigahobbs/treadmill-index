@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 # pylint: disable=missing-class-docstring, missing-function-docstring, missing-module-docstring
 
 import datetime
@@ -8,7 +11,7 @@ from unittest.mock import patch
 
 from treadmill_index.insider import INSIDER_PAGE_URL, buyback_quarters, download_insider, filing_insider, insider_links, \
     insider_quarters, insider_summary, is_odd_price, load_insider, missing_quarters, nearest_price, parse_number, parse_sec_date, \
-    price_series, read_insider_zip
+    price_series, read_insider_zip, shared_holding
 
 from .helpers import insider_filing, insider_zip
 
@@ -33,18 +36,18 @@ class TestInsider(unittest.TestCase):
 
 
     def test_insider_quarters(self):
-        quarters = insider_quarters(datetime.date(2026, 11, 24))
+        quarters = insider_quarters(datetime.date(2026, 11, 24), 5)
         self.assertEqual(len(quarters), 23)
         self.assertEqual(quarters[:5], ['2021q1', '2021q2', '2021q3', '2021q4', '2022q1'])
         self.assertEqual(quarters[-4:], ['2025q4', '2026q1', '2026q2', '2026q3'])
 
         # In the first quarter, the last quarter that has ended is in the prior year
-        quarters = insider_quarters(datetime.date(2027, 2, 1))
+        quarters = insider_quarters(datetime.date(2027, 2, 1), 5)
         self.assertEqual(len(quarters), 20)
         self.assertEqual((quarters[0], quarters[-1]), ('2022q1', '2026q4'))
 
         # The first and last days of a quarter
-        self.assertEqual(insider_quarters(datetime.date(2026, 4, 1), years=0), ['2026q1'])
+        self.assertEqual(insider_quarters(datetime.date(2026, 4, 1), 0), ['2026q1'])
         self.assertEqual(insider_quarters(datetime.date(2026, 6, 30), years=0), ['2026q1'])
         self.assertEqual(insider_quarters(datetime.date(2026, 3, 31), years=0), [])
 
@@ -68,7 +71,7 @@ class TestInsider(unittest.TestCase):
             with patch('treadmill_index.insider.insider_quarters', return_value=['2025q4', '2026q1', '2026q2', '2026q3']), \
                  patch('treadmill_index.insider.fetch_url', side_effect=fetch) as mock_fetch, \
                  patch('time.sleep') as mock_sleep:
-                self.assertEqual(download_insider(temp_dir, 'Test Person test@example.com', today, log=logs.append), 2)
+                self.assertEqual(download_insider(temp_dir, 'Test Person test@example.com', today, 5, log=logs.append), 2)
             self.assertEqual([call.args[0] for call in mock_fetch.call_args_list], [INSIDER_PAGE_URL, URL_2026Q1, URL_2026Q3])
             self.assertEqual([call.args for call in mock_sleep.call_args_list], [(0.5,)])
             self.assertEqual(logs, [
@@ -86,7 +89,7 @@ class TestInsider(unittest.TestCase):
             logs.clear()
             with patch('treadmill_index.insider.insider_quarters', return_value=['2025q4', '2026q3']), \
                  patch('treadmill_index.insider.fetch_url') as mock_fetch:
-                self.assertEqual(download_insider(temp_dir, 'Test Person test@example.com', today, log=logs.append), 0)
+                self.assertEqual(download_insider(temp_dir, 'Test Person test@example.com', today, 5, log=logs.append), 0)
             mock_fetch.assert_not_called()
             self.assertEqual(logs, ['Every insider-transaction data set is already downloaded'])
 
@@ -96,7 +99,7 @@ class TestInsider(unittest.TestCase):
             logs = []
             with patch('treadmill_index.insider.fetch_url', side_effect=OSError('HTTP Error 403: Forbidden')), \
                  patch('time.sleep'):
-                self.assertEqual(download_insider(temp_dir, 'sec-data-client/1.0', datetime.date(2026, 11, 24), log=logs.append), 23)
+                self.assertEqual(download_insider(temp_dir, 'sec-data-client/1.0', datetime.date(2026, 11, 24), 5, log=logs.append), 23)
             self.assertEqual(logs, [
                 'The SEC refused the list of data sets: HTTP Error 403: Forbidden',
                 'Set SEC_USER_AGENT to a User-Agent that names you and gives a contact address, or download the files in a browser'
@@ -105,9 +108,9 @@ class TestInsider(unittest.TestCase):
 
 
 def transaction(kind, date, shares, price=None, accn='A1', filed='2024-03-18', owner=1001, name='Doe Jane',
-                title='Chief Executive Officer'):
+                title='Chief Executive Officer', holding=None):
     return {'accn': accn, 'filed': filed, 'owner': owner, 'name': name, 'title': title, 'kind': kind, 'date': date, 'shares': shares,
-            'price': price}
+            'price': price, 'holding': holding}
 
 
 # A company's transactions: two insiders, every kind, and rows that are left out
@@ -225,7 +228,10 @@ class TestInsiderRead(unittest.TestCase):
                 ]),
 
                 # An officer with no title, selling through an entity
-                insider_filing('D1', owners=[officer], nonderiv=[('15-MAR-2024', 'S', 'D', '7.0', '50.0', 'I', 'By Low Holdings LLC')]),
+                insider_filing('D1', owners=[officer], nonderiv=[
+                    ('15-MAR-2024', 'S', 'D', '7.0', '50.0', 'I', 'By Low Holdings LLC', '93.0'),
+                    ('15-MAR-2024', 'S', 'D', '3.0', '50.0', 'I', 'By Trust', '40.0')
+                ]),
 
                 # Left out: a fund's filing, an amended filing, an initial statement, other companies
                 insider_filing('E1', owners=[director, ('0000009001', 'Fund Partners IV, L.P.', 'Director', '')],
@@ -252,7 +258,9 @@ class TestInsiderRead(unittest.TestCase):
             ceo('issuer', '2024-03-15', 50),
             transaction('sale', '2025-02-03', 200, 41, accn='B1', filed='2025-02-05', owner=1002, name='Roe Rich', title='Director'),
             transaction('sale', '2025-02-03', 300, 41, accn='B1', filed='2025-02-05', owner=1002, name='Roe Rich', title='Director'),
-            transaction('sale', '2024-03-15', 7, 50, accn='D1', owner=1004, name='Low Lee', title='Officer'),
+            transaction('sale', '2024-03-15', 7, 50, accn='D1', owner=1004, name='Low Lee', title='Officer',
+                        holding=['by low holdings llc', 93]),
+            transaction('sale', '2024-03-15', 3, 50, accn='D1', owner=1004, name='Low Lee', title='Officer'),
             ceo('option', '2024-03-16', 5000, 60),
             ceo('option', '2024-03-16', 700),
             ceo('grant', '2024-03-16', 400),
@@ -341,16 +349,32 @@ class TestInsiderSummary(unittest.TestCase):
 
         # Compared with the median of the days within 30 days: 11
         self.assertFalse(is_odd_price(series, 110, 11))
-        self.assertFalse(is_odd_price(series, 110, 33))
-        self.assertTrue(is_odd_price(series, 110, 33.1))
-        self.assertFalse(is_odd_price(series, 110, 3.67))
-        self.assertTrue(is_odd_price(series, 110, 3.66))
-        self.assertTrue(is_odd_price(series, 80, 1000, window_days=40))
+        self.assertFalse(is_odd_price(series, 110, 275))
+        self.assertTrue(is_odd_price(series, 110, 275.1))
+        self.assertFalse(is_odd_price(series, 110, 0.44))
+        self.assertTrue(is_odd_price(series, 110, 0.43))
 
-        # Fewer than three days to compare with
-        self.assertFalse(is_odd_price(series, 200, 500))
-        self.assertFalse(is_odd_price(series, 80, 1000))
+        # A stock split: the trades on either side of it are kept
+        split = ([100, 101, 102, 103, 104], [1000, 1010, 100, 101, 102])
+        self.assertEqual([is_odd_price(split, day, price) for day, price in zip(*split)], [False] * 5)
+
+        # Fewer than three days within 30 days: compared with the median of all the days, 11.5
+        self.assertFalse(is_odd_price(series, 200, 280))
+        self.assertTrue(is_odd_price(series, 200, 500))
+        self.assertTrue(is_odd_price(series, 60, 0.4))
+
+        # Fewer than three days at all
+        self.assertFalse(is_odd_price(([100, 110], [10, 11]), 100, 5000))
         self.assertFalse(is_odd_price(([], []), 100, 1000))
+
+
+    def test_shared_holding(self):
+        for nature in ('By Zelnick Media Corporation', 'By ZMC Advisors, L.P.', ' By MMMK Development, Inc. ', 'By Hilrod Holdings LP'):
+            self.assertEqual(shared_holding(nature), nature.strip().lower())
+
+        # A nature of ownership that names nothing
+        for nature in ('By Trust', 'See footnote', '', 'By LLC', 'By Family LLC', 'By the Doe Family Trust', 'By Spouse'):
+            self.assertIsNone(shared_holding(nature))
 
 
     def test_insider_summary(self):
@@ -441,6 +465,8 @@ class TestInsiderSummary(unittest.TestCase):
             # A 52-week fiscal year that starts with a half year: nothing can be split
             '2023-12-31|2024-06-29': fact(8e6, 'H1'),
             '2023-12-31|2024-09-28': fact(9e6, 'Q3'),
+            # A quarter reported again with dates two days off is the same quarter
+            '2025-01-03|2025-04-02': fact(11e6, 'Q1X'),
             # A year-to-date amount that falls: the year is used only up to there
             '2022-01-01|2022-03-31': fact(4e6, 'Q1'),
             '2022-01-01|2022-06-30': fact(3e6, 'Q2'),
@@ -453,6 +479,29 @@ class TestInsiderSummary(unittest.TestCase):
             {'start': '2025-07-01', 'end': '2025-09-30', 'buybacks': 0},
             {'start': '2025-10-01', 'end': '2025-12-31', 'buybacks': 40e6}
         ])
+
+
+    def test_insider_summary_shared(self):
+        zmc = ['by doe roe corporation', 5000]
+        roe = {'owner': 1002, 'name': 'Roe Rich', 'title': 'President'}
+        transactions = [
+            # A company that two insiders share: each reports its sale, which is counted once, for the first to file
+            transaction('sale', '2024-03-15', 1000, 50, holding=zmc),
+            transaction('sale', '2024-03-15', 1000, 50, accn='B1', holding=zmc, **roe),
+            # The same insider's two sales that look alike are two sales
+            transaction('sale', '2024-03-15', 1000, 50, holding=zmc),
+            # Sales that differ - in the shares held afterward, or with no count of them - are separate sales
+            transaction('sale', '2024-03-15', 1000, 50, accn='B1', holding=['by doe roe corporation', 4000], **roe),
+            transaction('sale', '2024-03-15', 1000, 50, accn='B1', holding=['by doe roe corporation', None], **roe),
+            transaction('sale', '2024-03-15', 1000, 50, accn='B1', **roe),
+            # Shares sold to the company at a price far from the others are left out, like any sale
+            transaction('sale', '2024-03-18', 10, 51, accn='A2'),
+            transaction('sale', '2024-03-19', 10, 52, accn='A2'),
+            transaction('issuer', '2024-03-20', 10, 130000, accn='A2')
+        ]
+        summary = insider_summary(transactions, 2021, 2025, THRESHOLDS)
+        self.assertEqual((summary['sales'], summary['toIssuer'], summary['cashOut']), (251030, 0, 251030))
+        self.assertEqual([(person['name'], person['sales']) for person in summary['people']], [('Roe Rich', 150000), ('Doe Jane', 101030)])
 
 
     def test_insider_summary_quarters(self):

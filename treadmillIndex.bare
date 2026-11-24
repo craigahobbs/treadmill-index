@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 include <args.bare>
 include <dataLineChart.bare>
 include <forms.bare>
@@ -119,6 +122,7 @@ tiNotes = [ \
     {'flag': 'latest_is_fiscal_year', 'text': 'The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.'}, \
     {'flag': 'capex_missing', 'text': 'No capital spending tag in at least one year; that year counts capital spending as zero.'}, \
     {'flag': 'gap_years', 'text': 'At least one fiscal year is missing between the first and last year.'}, \
+    {'flag': 'few_fiscal_years', 'text': 'The company has no fiscal year for at least one of the five calendar years. Insider cash-out, revenue, owner cash and buybacks are counted over the years it has, so the figures for the five years cover fewer.'}, \
     {'flag': 'revenue_jump', 'text': 'Revenue more than tripled in one year, which often marks a merger or a change of reporting entity.'}, \
     {'flag': 'share_count_jump', 'text': 'The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.'} \
 ]
@@ -161,6 +165,12 @@ function tiDollars(value):
         return sign + '$' + tiNumber(amount / 1000000, 1) + 'M'
     endif
     return if(amount > 0, sign + '$' + tiNumber(amount / 1000, 0) + 'K', '$0')
+endfunction
+
+
+# Format a part of a whole as a percent - "n/a" if there is no whole
+function tiShare(part, whole):
+    return tiPercent(if(whole, part / whole))
 endfunction
 
 
@@ -401,7 +411,7 @@ function tiIndexPage(args, meta, index):
         tableRow = [ \
             if(rank != null, '' + rank, ''), \
             argsLink(tiArguments, objectGet(row, 'name'), {'page': 'company', 'cik': objectGet(row, 'cik')}, true, argsTopHeaderId), \
-            markdownEscape(objectGet(row, 'ticker', '') || ''), \
+            markdownEscape(objectGet(row, 'ticker') || ''), \
             tiScore(objectGet(row, 'score')), \
             tiScore(objectGet(row, 'p1')), \
             tiScore(objectGet(row, 'costs')), \
@@ -469,9 +479,6 @@ endfunction
 # Get the index page's lines on the third sign: what insiders took out, beside what owners got
 function tiInsiderLines(meta):
     insiderMeta = objectGet(meta, 'insider')
-    if insiderMeta == null:
-        return '3. **Insiders who cash out.** Insider transactions are not in this build, so no company has a score.'
-    endif
     group = objectGet(insiderMeta, 'screened')
     count = objectGet(group, 'companies')
     baseline = objectGet(insiderMeta, 'cashGenerative')
@@ -480,11 +487,11 @@ function tiInsiderLines(meta):
             ', the officers and directors of ' + count + ' of these companies took ' + tiDollars(objectGet(group, 'cashOut')) + \
             ' out through stock:', \
         "   open-market sales and shares given up for taxes, less what they paid to buy shares and exercise options. That is " + \
-            tiPercent(objectGet(group, 'cashOut') / objectGet(group, 'revenue')) + " of those companies' revenue over the same years.", \
-        '   Their owners got ' + tiPercent(objectGet(group, 'ownerCash') / objectGet(group, 'revenue')) + \
+            tiShare(objectGet(group, 'cashOut'), objectGet(group, 'revenue')) + " of those companies' revenue over the same years.", \
+        '   Their owners got ' + tiShare(objectGet(group, 'ownerCash'), objectGet(group, 'revenue')) + \
             '. At the companies that do produce cash for owners, insiders took out ' + \
-            tiPercent(objectGet(baseline, 'cashOut') / objectGet(baseline, 'revenue')) + ' of revenue and owners got ' + \
-            tiPercent(objectGet(baseline, 'ownerCash') / objectGet(baseline, 'revenue')) + '.' \
+            tiShare(objectGet(baseline, 'cashOut'), objectGet(baseline, 'revenue')) + ' of revenue and owners got ' + \
+            tiShare(objectGet(baseline, 'ownerCash'), objectGet(baseline, 'revenue')) + '.' \
     ]
 endfunction
 
@@ -612,8 +619,7 @@ function tiCompanyScore(meta, cik, company):
         tiTable(['Sign', 'Points'], ['l', 'r'], [ \
             ['Owner cash that stays near zero', tiScore(p1) + ' of 25'], \
             ['Revenue held up by costs', if(costs != null, tiScore(costs) + ' of 25', 'cannot be built')], \
-            ['Insiders who cash out', if(insiders != null, tiScore(insiders) + ' of 25', \
-                if(objectGet(meta, 'insider') != null, 'cannot be built', 'not in this build'))] \
+            ['Insiders who cash out', if(insiders != null, tiScore(insiders) + ' of 25', 'cannot be built')] \
         ]), \
         '', \
         if(score != null, \
@@ -693,17 +699,14 @@ function tiCompanyScore(meta, cik, company):
     share = objectGet(row, 'cashOutRevenue')
     markdownPrint( \
         '', \
-        '### Insiders Who Cash Out: ' + if(insiders != null, tiScore(insiders) + ' of 25', if(objectGet(meta, 'insider') != null, \
-            'Cannot Be Built', 'Not in This Build')), \
+        '### Insiders Who Cash Out: ' + if(insiders != null, tiScore(insiders) + ' of 25', 'Cannot Be Built'), \
         '', \
         if(share != null, \
             'In ' + tiFiveYears(meta) + ' officers and directors ' + tiCashOut(objectGet(row, 'cashOut')) + \
                 ', against company revenue of ' + tiDollars(objectGet(row, 'revenueFive')) + ': ' + \
                 tiPercent(share) + '. ' + tiPercent(objectGet(thresholds, 'insider_zero')) + ' scores 0; ' + \
                 tiPercent(objectGet(thresholds, 'insider_full')) + ' or more, the line the index uses for owners, scores 25.', \
-            if(objectGet(meta, 'insider') != null, \
-                'No officer or director of this company has a transaction in the SEC insider data for ' + tiFiveYears(meta) + '.', \
-                'Insider transactions are not in this build.')) \
+            'No officer or director of this company has a transaction in the SEC insider data for ' + tiFiveYears(meta) + '.') \
     )
 endfunction
 
@@ -716,7 +719,8 @@ tiSpending = [['sm', 'sales and marketing'], ['rnd', 'research and development']
 # is paying off and for a treadmill, and this company's own figures
 function tiCompanySigns(meta, company):
     row = objectGet(company, 'row')
-    line = tiPercent(objectGet(objectGet(meta, 'thresholds'), 'meaningful_margin'))
+    thresholds = objectGet(meta, 'thresholds')
+    line = tiPercent(objectGet(thresholds, 'meaningful_margin'))
     fiveYears = tiFiveYears(meta)
     lowRun = objectGet(row, 'lowRun')
 
@@ -742,7 +746,6 @@ function tiCompanySigns(meta, company):
             endif
         endfor
     endif
-    thresholds = objectGet(meta, 'thresholds')
     rows = [ \
         ['Owner cash as the company grows', 'Appears', 'Stays near zero', \
             tiSignMark(objectGet(row, 'latestMargin') < objectGet(thresholds, 'meaningful_margin'), ownerCash)], \
@@ -750,16 +753,14 @@ function tiCompanySigns(meta, company):
             tiSignMark(if(cost != null, objectGet(cost, 'level') == null || objectGet(cost, 'level') >= objectGet(thresholds, 'cost_level_full')), costs)] \
     ]
 
-    # Insiders, where the build has them
-    if objectGet(meta, 'insider') != null:
-        share = objectGet(row, 'cashOutRevenue')
-        arrayPush(rows, ['Insiders, ' + fiveYears, 'Take out little next to what owners get', 'Take out more than owners get', \
-            if(share != null, \
-                tiSignMark(objectGet(row, 'cashOut') > mathMax(objectGet(row, 'ownerCashFive'), 0), \
-                    'Insiders ' + tiCashOut(objectGet(row, 'cashOut')) + ': ' + tiPercent(share) + ' of revenue. Owners got ' + \
-                    tiDollars(objectGet(row, 'ownerCashFive')) + ': ' + tiPercent(objectGet(row, 'ownerMarginFive')) + ' of revenue.'), \
-                'n/a: no insider transactions in the SEC data sets')])
-    endif
+    # Insiders
+    share = objectGet(row, 'cashOutRevenue')
+    arrayPush(rows, ['Insiders, ' + fiveYears, 'Take out little next to what owners get', 'Take out more than owners get', \
+        if(share != null, \
+            tiSignMark(objectGet(row, 'cashOut') > mathMax(objectGet(row, 'ownerCashFive'), 0), \
+                'Insiders ' + tiCashOut(objectGet(row, 'cashOut')) + ': ' + tiPercent(share) + ' of revenue. Owners got ' + \
+                tiDollars(objectGet(row, 'ownerCashFive')) + ': ' + tiPercent(objectGet(row, 'ownerMarginFive')) + ' of revenue.'), \
+            'n/a: no insider transactions in the SEC data sets')])
 
     # The share count against buybacks
     shareGrowth = objectGet(row, 'shareGrowthFive')
@@ -783,9 +784,6 @@ endfunction
 # Render a company's insiders: what they took out by year, and who took out the most
 function tiCompanyInsiders(args, meta, cik, company):
     insider = objectGet(company, 'insider')
-    if objectGet(meta, 'insider') == null:
-        return
-    endif
     yearsText = tiFiveYears(meta)
     markdownPrint('', '## Insiders, ' + yearsText, '')
     if insider == null:
@@ -834,9 +832,9 @@ function tiCompanyInsiders(args, meta, cik, company):
         '', \
         'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
         'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
-        'price reported. Shares withheld count', \
-        'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
-        'award is valued at the nearest share price insiders reported, and an option at its exercise price, which overstates it.', \
+        'price reported. Shares withheld count because some companies have insiders sell on the market to cover the same taxes.', \
+        'Grants are reported, not scored: a stock award is valued at the nearest share price insiders reported, and an option at', \
+        'its exercise price, which overstates it.', \
         "Shares held through an outside director's investment fund are left out. Amended filings are not used." \
     )
 
@@ -860,10 +858,10 @@ function tiCompanyInsiders(args, meta, cik, company):
 endfunction
 
 
-# Say what insiders took out through stock, or put in
+# Say what insiders took out through stock, net - or put in, if they paid more for shares than they took out
 function tiCashOut(cashOut):
     if cashOut < 0:
-        return 'bought ' + tiDollars(-cashOut) + ' more than they took out through stock'
+        return 'put ' + tiDollars(-cashOut) + ' more into stock than they took out'
     endif
     return 'took ' + tiDollars(cashOut) + ' out through stock'
 endfunction
@@ -964,7 +962,7 @@ function tiCompanyYears(meta, cik, company):
             yearRows \
         ), \
         '', \
-        'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+        'Every linked figure opens the SEC filing it was taken from: the most recently filed annual report that has it.', \
         'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
         "Vesting taxes paid is cash the company paid for employees' taxes on vesting shares. Diluted shares is the weighted average.", \
         'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
@@ -1104,12 +1102,9 @@ tiTotalsHeaders = ['', 'Pass the screen', 'Cash-generative companies']
 # Get the totals page's lines on what insiders took out beside what owners got
 function tiTotalsInsiderLines(meta):
     insiderMeta = objectGet(meta, 'insider')
-    if insiderMeta == null:
-        return ''
-    endif
     rows = [ \
         ['Companies with insider filings'], ['Revenue'], ['Owner cash'], ['...as a share of revenue'], \
-        ['Cash insiders took out through stock'], ['...as a share of revenue'], \
+        ['Net insiders took out through stock'], ['...as a share of revenue'], \
         ['Companies where insiders took out more than the owner cash'], ['Sold on the open market'], \
         ['Withheld for taxes or sold to the company'], ['Bought on the open market'], ['Paid to exercise options'], ['Stock granted'], \
         ['Options granted, at the price of the shares'] \
@@ -1118,15 +1113,13 @@ function tiTotalsInsiderLines(meta):
     for name in ['screened', 'cashGenerative']:
         group = objectGet(insiderMeta, name)
         revenue = objectGet(group, 'revenue')
-        quarters = objectGet(group, 'quarters')
-        salesInQuarters = objectGet(group, 'salesInQuarters')
         cells = [ \
             tiNumber(objectGet(group, 'companies'), 0), \
             tiDollars(revenue), \
             tiDollars(objectGet(group, 'ownerCash')), \
-            tiPercent(if(revenue, objectGet(group, 'ownerCash') / revenue)), \
+            tiShare(objectGet(group, 'ownerCash'), revenue), \
             tiDollars(objectGet(group, 'cashOut')), \
-            tiPercent(if(revenue, objectGet(group, 'cashOut') / revenue)), \
+            tiShare(objectGet(group, 'cashOut'), revenue), \
             tiNumber(objectGet(group, 'tookMore'), 0), \
             tiDollars(objectGet(group, 'sales')), \
             tiDollars(objectGet(group, 'withheld') + objectGet(group, 'toIssuer')), \
@@ -1138,8 +1131,8 @@ function tiTotalsInsiderLines(meta):
         for cell, ixCell in cells:
             arrayPush(arrayGet(rows, ixCell), cell)
         endfor
-        arrayPush(timing, tiPercent(if(quarters, objectGet(group, 'buybackQuarters') / quarters)) + ' of quarters had a buyback and ' + \
-            tiPercent(if(salesInQuarters, objectGet(group, 'salesInBuybackQuarters') / salesInQuarters)) + \
+        arrayPush(timing, tiShare(objectGet(group, 'buybackQuarters'), objectGet(group, 'quarters')) + ' of quarters had a buyback and ' + \
+            tiShare(objectGet(group, 'salesInBuybackQuarters'), objectGet(group, 'salesInQuarters')) + \
             " of insiders' open-market sales fell in them")
     endfor
     return [ \
@@ -1152,7 +1145,7 @@ function tiTotalsInsiderLines(meta):
         '', \
         tiTable(tiTotalsHeaders, ['l', 'r', 'r'], rows), \
         '', \
-        'Cash taken out is open-market sales, plus shares withheld for taxes or sold to the company, less open-market purchases and', \
+        'The net taken out is open-market sales, plus shares withheld for taxes or sold to the company, less open-market purchases and', \
         'what was paid to exercise options.', \
         'Grants are reported, not scored. They are valued at the market price of the shares they cover, which overstates options', \
         'and performance awards that may never vest: a single award can dominate the total.', \
@@ -1231,7 +1224,8 @@ function tiMethodPage(meta):
         '- **Meaningful** owner cash is ' + line + ' of revenue or more. It is not zero, so a company cannot pass by a hair.', \
         '', \
         'Annual figures come from the financial data companies file with the SEC. Where a figure was filed more than once,', \
-        'the most recently filed value is used. Nothing is estimated; a figure that is not in the filings is shown as "n/a".', \
+        'the value in the most recently filed annual report is used. Nothing is estimated; a figure that is not in the filings is', \
+        'shown as "n/a".', \
         '', \
         '## The Screen', \
         '', \
@@ -1299,7 +1293,7 @@ function tiMethodPage(meta):
         '- The cash officers and directors took out through stock over the latest ' + objectGet(thresholds, 'insider_years') + \
             " whole calendar years, as a share of the company's revenue in those years: 0 points at " + \
             tiPercent(objectGet(thresholds, 'insider_zero')) + ', 25 at ' + tiPercent(objectGet(thresholds, 'insider_full')) + ' or more.', \
-        '- Cash taken out is open-market sales, plus shares withheld for taxes or sold to the company, less open-market purchases', \
+        '- The net taken out is open-market sales, plus shares withheld for taxes or sold to the company, less open-market purchases', \
         '  and what was paid to exercise options,', \
         '  from SEC Forms 4 and 5.', \
         '- The top of the scale is the line the index uses for owners. A company whose insiders take out ' + \
@@ -1313,7 +1307,7 @@ function tiMethodPage(meta):
         '', \
         '## Why These Choices', \
         '', \
-        '- **Cash taken out, not sales against grants.** Insiders settle the tax on vesting shares in two ways: some sell on the', \
+        '- **The net taken out, not sales against grants.** Insiders settle the tax on vesting shares in two ways: some sell on the', \
         '  market, some have the company withhold shares. Counting only market sales made the first kind look like heavier sellers.', \
         '  Counting both treats them alike. Grants are not scored, because the filings do not value them consistently.', \
         '- **The level of costs, not their change.** Whether costs fell against revenue over five years did not tell the companies', \
@@ -1465,7 +1459,8 @@ function tiDataPage(meta, builds):
         '', \
         "- **History starts about 2009.** The SEC has collected financial statements as data only since then. A company's", \
         '  "whole period" is the years it has in that data, which can be shorter than its life.', \
-        '- **Fiscal years.** A fiscal year ending in January, February or March is labelled with the prior calendar year.', \
+        '- **Fiscal years.** A fiscal year ending from January to the first week of April is labelled with the prior calendar year.', \
+        '  Where two 12-month periods would have one label, the one reported in an annual report is the fiscal year.', \
         '- **Revenue** is the largest of four revenue tags for the year. Pass-through revenue (for example, the face value', \
         '  of cryptocurrency sold) makes revenue-based ratios look smaller.', \
         '- **Capital spending** is purchases of property and equipment (or of productive assets) plus capitalized software.', \
@@ -1476,8 +1471,9 @@ function tiDataPage(meta, builds):
         "- **Industry codes** are the SEC's and are coarse. Securities brokers are excluded along with asset managers, because", \
         '  they hold customer money. Insurance agents and brokers are not excluded: they are not insurers. Some real-estate and', \
         '  payment companies are not excluded.', \
-        '- **Restated years.** Each year uses its most recently filed value. When a company restates recent years for a', \
-        '  business it has left, older years are not restated, so the two can sit side by side.', \
+        '- **Restated years.** Each year uses the value in the most recently filed annual report that has it, and another', \
+        '  filing only if no annual report does. When a company restates recent years for a business it has left, older years', \
+        '  are not restated, so the two can sit side by side.', \
         '- **Foreign companies** that file financial data with the SEC in US dollars are included, but have not had to file', \
         '  insider transactions, so most have no score.', \
         '- **Predecessor companies** are not combined, and **share counts** are not adjusted for splits.', \
@@ -1490,11 +1486,17 @@ function tiDataPage(meta, builds):
         '  purchases, and what was paid to exercise options. It leaves out salary and cash bonuses, gifts of shares, and sales by', \
         "  people after they leave. Shares withheld can cover an option's exercise price as well as taxes; taking the exercise", \
         '  price off leaves the tax. An exercise priced above the share price is treated as a filing error and left out. Amended', \
-        "  insider filings are not used. A price far from the company's other reported prices is treated as a filing error", \
-        '  and left out.', \
+        "  insider filings are not used. A price more than 25 times the company's other reported prices, or less than a 25th", \
+        '  of them, is treated as a filing error and left out; the band is wide because prices are not adjusted for stock splits.', \
+        '  Transactions filed after the latest data set are not yet counted.', \
+        '- **A shared company or partnership.** Two insiders who share one each report its sales. Where the filings name it', \
+        '  and give the same shares held afterward, the sale is counted once, for the insider who filed first. Where they say', \
+        '  only "by trust" or "see footnote", both are counted, because co-founders with equal holdings report equal, separate', \
+        '  sales the same way.', \
         '- **Insider years are calendar years; company years are fiscal years.** Insider cash-out is set against revenue for the', \
         '  fiscal years with the same labels. Where the fiscal year does not end in December the two periods are up to eight', \
-        '  months apart, which overstates the share at a fast-growing company.', \
+        '  months apart, which overstates the share at a fast-growing company. A calendar year for which the company has no', \
+        '  fiscal year yet is left out of both.', \
         '- **Insider grants** are reported, not scored. They are valued at the market price of the shares they cover, not at', \
         '  their accounting fair value, so options and performance awards are overstated.', \
         '', \
@@ -1525,6 +1527,11 @@ endfunction
 
 # The method's change log, newest first
 tiChanges = [ \
+    ['1.2.0', 'A sale by a company or partnership that two insiders share is counted once, not twice. A fiscal year ending in ' + \
+        'the first week of April is labelled with the prior year, so a 52-week year no longer hides the year before it. An ' + \
+        "annual report's figure is no longer replaced by a later quarterly filing's. A reported price is treated as an error at " + \
+        '25 times the others, not 3, so trades around a stock split are kept; shares sold to the company are checked too. ' + \
+        "Insider cash-out is counted only over the years for which the company has a fiscal year."], \
     ['1.1.0', 'Insider cash-out is net of what insiders paid to exercise options. Version 1.0.0 counted the whole sale.'], \
     ['1.0.0', 'First release. The screen, and a score on three signs: owner cash from SEC financial data, operating costs ' + \
         'as a share of gross profit, and insider cash-out as a share of revenue from SEC Forms 4 and 5.'] \
@@ -1564,10 +1571,7 @@ tiThresholdNames = { \
 # Get the data and limits page's insider source line
 function tiDataInsiderSource(sources):
     insider = objectGet(sources, 'insider')
-    files = if(insider != null, objectGet(insider, 'files'), [])
-    if !arrayLength(files):
-        return '- Insider transactions: not in this build.'
-    endif
+    files = objectGet(insider, 'files')
     return '- Insider transactions: the SEC [insider transactions data sets](' + objectGet(insider, 'url') + '), ' + \
         arrayLength(files) + ' quarterly files from `' + arrayGet(files, 0) + '` to `' + arrayGet(files, arrayLength(files) - 1) + '`.'
 endfunction

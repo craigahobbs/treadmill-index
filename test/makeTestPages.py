@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 """
 Generate the web application's page render tests, test/testTreadmillIndexPages.bare: render every page state below
 against test/data/ and write each render log out as the test's expected value. Run it with "make test-pages" after a
@@ -19,8 +22,7 @@ def company(cik):
     return f'data/company/{cik}.json'
 
 
-# The page states: the test name, the arguments (and other globals), the data URLs that load, a comment, and the
-# test/data/ directory if it is not the default
+# The page states: the test name, the arguments (and other globals), the data URLs that load, and a comment
 SCENARIOS = [
     ('testMain_index', {}, [META, INDEX], 'The index page: the companies that pass the screen, in score order'),
     ('testMain_indexAll', {'vType': 'all', 'vSort': 'owner', 'tiRowLimit': 3}, [META, INDEX],
@@ -58,20 +60,16 @@ SCENARIOS = [
     ('testMain_totals', {'vPage': 'totals'}, [META], 'The group totals page'),
     ('testMain_method', {'vPage': 'method'}, [META], 'The methodology page'),
     ('testMain_data', {'vPage': 'data'}, [META, BUILDS], 'The data and limits page'),
-    ('testMain_dataNoBuilds', {'vPage': 'data'}, [META], 'The data and limits page when the list of builds failed to load'),
-    ('testMain_indexNoInsider', {}, [META, INDEX], 'The index page of a build without the insider data sets', 'noinsider/'),
-    ('testMain_companyNoInsider', {'vPage': 'company', 'vCik': 1}, [META, company(1)],
-     "A company's page in a build without the insider data sets", 'noinsider/'),
-    ('testMain_totalsNoInsider', {'vPage': 'totals'}, [META], 'The group totals page of a build without the insider data sets',
-     'noinsider/'),
-    ('testMain_dataNoInsider', {'vPage': 'data'}, [META, BUILDS], 'The data and limits page of a build without the insider data sets',
-     'noinsider/')
+    ('testMain_dataNoBuilds', {'vPage': 'data'}, [META], 'The data and limits page when the list of builds failed to load')
 ]
 
 # The globals that are not arguments, and the values the tests put back
 DEFAULTS = {'tiRowLimit': 100}
 
 HEADER = '''\
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 include <dataLineChart.bare>
 include <unittest.bare>
 include <unittestMock.bare>
@@ -126,14 +124,14 @@ def is_chart(call):
     return isinstance(model, dict) and isinstance(model.get('elem'), dict) and model['elem'].get('svg') == 'svg'
 
 
-def page_test(bare, test_dir, name, page_globals, urls, comment, data_dir=''):
+def page_test(bare, test_dir, name, page_globals, urls, comment):
     """
     Render a page state and write its test
     """
 
     command = [
         bare, '-m', os.path.join(test_dir, 'capturePage.bare'), '-v', 'vCapUrls', string(json.dumps(urls)),
-        '-v', 'vCapGlobals', string(json.dumps(page_globals)), '-v', 'vCapDir', string(data_dir)
+        '-v', 'vCapGlobals', string(json.dumps(page_globals))
     ]
     output = subprocess.run(command, capture_output=True, text=True, check=True).stdout
     log = json.loads(next(line for line in output.splitlines() if line.startswith('[[')))
@@ -145,7 +143,7 @@ def page_test(bare, test_dir, name, page_globals, urls, comment, data_dir=''):
     return f'''
 # {comment}
 async function {name}():
-    data = testData({literal(urls, 4)}{", " + string(data_dir) if data_dir else ""})
+    data = testData({literal(urls, 4)})
 {sets}    unittestMockAll(data)
     tiMain()
     log = unittestMockEnd()

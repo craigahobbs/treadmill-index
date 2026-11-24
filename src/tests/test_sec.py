@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 # pylint: disable=missing-class-docstring, missing-function-docstring, missing-module-docstring
 
 import json

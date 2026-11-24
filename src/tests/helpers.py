@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 # pylint: disable=missing-function-docstring, missing-module-docstring
 
 import json
@@ -5,6 +8,7 @@ import os
 import zipfile
 
 from treadmill_index.extract import extract_company
+from treadmill_index.insider import AMOUNTS
 
 
 # The test data date and the baseline company's revenue, in millions, for fiscal 2019 to 2025
@@ -80,21 +84,39 @@ INSIDER_TABLES = {
     'REPORTINGOWNER.tsv': ('ACCESSION_NUMBER', 'RPTOWNERCIK', 'RPTOWNERNAME', 'RPTOWNER_RELATIONSHIP', 'RPTOWNER_TITLE'),
     'NONDERIV_TRANS.tsv': (
         'ACCESSION_NUMBER', 'TRANS_DATE', 'TRANS_CODE', 'TRANS_ACQUIRED_DISP_CD', 'TRANS_SHARES', 'TRANS_PRICEPERSHARE',
-        'DIRECT_INDIRECT_OWNERSHIP', 'NATURE_OF_OWNERSHIP'
+        'DIRECT_INDIRECT_OWNERSHIP', 'NATURE_OF_OWNERSHIP', 'SHRS_OWND_FOLWNG_TRANS'
     ),
     'DERIV_TRANS.tsv': (
         'ACCESSION_NUMBER', 'TRANS_DATE', 'TRANS_CODE', 'TRANS_ACQUIRED_DISP_CD', 'TRANS_SHARES', 'TRANS_PRICEPERSHARE',
-        'DIRECT_INDIRECT_OWNERSHIP', 'NATURE_OF_OWNERSHIP', 'SECURITY_TITLE', 'CONV_EXERCISE_PRICE', 'UNDLYNG_SEC_SHARES'
+        'DIRECT_INDIRECT_OWNERSHIP', 'NATURE_OF_OWNERSHIP', 'SECURITY_TITLE', 'CONV_EXERCISE_PRICE', 'UNDLYNG_SEC_SHARES',
+        'SHRS_OWND_FOLWNG_TRANS'
     )
 }
 
 CEO = ('0000001001', 'Doe Jane', 'Director,Officer', 'Chief Executive Officer')
 
 
+def insider_fixture(sales, year=2025, **amounts):
+    """
+    Build an insider summary for the calendar years 2021 to 2025, with one year's amounts: its sales and any others
+    """
+
+    none = dict.fromkeys(('cashOut', *AMOUNTS), 0)
+    totals = {**none, 'sales': sales, **amounts}
+    totals['cashOut'] = totals['sales'] + totals['withheld'] + totals['toIssuer'] - totals['purchases'] - totals['exercised']
+    return {
+        **totals,
+        'years': [{'year': other, **(totals if other == year else none)} for other in range(2021, 2026)],
+        'insiders': 3, 'sellers': 2, 'people': [],
+        'quarters': 2, 'buybackQuarters': 1, 'buybacks': 30000000, 'salesInQuarters': 90000000, 'salesInBuybackQuarters': 60000000
+    }
+
+
 def insider_filing(accn, cik=1, filed='18-MAR-2024', form='4', owners=(CEO,), nonderiv=(), deriv=()):
     """
     Build a filing for insider_zip. A "nonderiv" row is (date, code, acquired/disposed, shares, price, direct/indirect,
-    nature); a "deriv" row adds (title, exercise price, underlying shares). Trailing values may be left off.
+    nature, shares owned afterward); a "deriv" row is (date, code, acquired/disposed, shares, price, direct/indirect,
+    nature, title, exercise price, underlying shares, shares owned afterward). Trailing values may be left off.
     """
 
     return {

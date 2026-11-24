@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 include <args.bare>
 include <forms.bare>
 include <unittest.bare>
@@ -64,7 +67,7 @@ unittestRunTest('testSignMark')
 function testCashOut():
     unittestEqual(tiCashOut(346022932), 'took $346.0M out through stock')
     unittestEqual(tiCashOut(0), 'took $0 out through stock')
-    unittestEqual(tiCashOut(-30000), 'bought $30K more than they took out through stock')
+    unittestEqual(tiCashOut(-30000), 'put $30K more into stock than they took out')
 endfunction
 unittestRunTest('testCashOut')
 
@@ -87,6 +90,14 @@ function testPercent():
     unittestEqual(tiPercent(0), '0.0%')
 endfunction
 unittestRunTest('testPercent')
+
+
+function testShare():
+    unittestEqual(tiShare(33, 872), '3.8%')
+    unittestEqual(tiShare(-5, 100), '-5.0%')
+    unittestEqual(tiShare(0, 0), 'n/a')
+endfunction
+unittestRunTest('testShare')
 
 
 function testNoWrap():

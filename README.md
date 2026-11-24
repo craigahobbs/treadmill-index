@@ -43,7 +43,8 @@ industry codes and tickers, screens and scores every company, checks the result,
 is also copied to `data/archive/<data date>/<method version>/`.
 
 Industry codes and tickers come from the SEC bulk file `submissions.zip` if it is in `data/raw/`, otherwise
-from the SEC's per-company API, one request per company (about 1,300, cached in `data/raw/`).
+from the SEC's per-company API, one request per company (about 1,300, cached in `data/raw/`). The cache is not
+refreshed: delete `data/raw/submissions-cache.json` to pick up a company's new ticker or industry code.
 
 Any step that makes a request to the SEC requires the `SEC_USER_AGENT` environment variable: your name and a
 contact address, as the SEC asks of automated clients. There is no default, and it is never written to a
@@ -54,10 +55,9 @@ SEC_USER_AGENT="Your Name you@example.com" make data
 SEC_USER_AGENT="Your Name you@example.com" make insider-data
 ~~~
 
-`make insider-data` downloads the SEC's quarterly insider-transaction data sets to `data/raw/insider/`. When they
-are there, `make data` adds what each company's insiders took out through stock, which is one of the three
-signs. Without them the build still runs, no company has a score, and the pages say so. With some of them, the
-build stops if a quarter of the latest five calendar years is missing, because that year's figures would be short.
+`make insider-data` downloads the SEC's quarterly insider-transaction data sets to `data/raw/insider/`. `make data`
+needs them: what each company's insiders took out through stock is one of the three signs. The build stops, and
+names the quarters, if a data set of the latest five calendar years is missing.
 
 `data/raw/` and `*.zip` are git-ignored. Everything else in `data/` is published.
 

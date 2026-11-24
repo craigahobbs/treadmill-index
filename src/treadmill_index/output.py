@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 """
 Write the web application's data files: index.json, index.csv, meta.json and company/<cik>.json
 """
@@ -9,6 +12,7 @@ import os
 import shutil
 
 from .extract import F_ACCN, F_FILED, F_FORM, F_TAG, F_VAL, PREFILTER_REVENUE
+from .insider import AMOUNTS
 from .score import COST_METHODS, METHOD_VERSION, SIC_EXCLUSIONS, SIGN_POINTS, THRESHOLDS, calendar_years, group_totals
 
 
@@ -19,7 +23,7 @@ ARCHIVE_FILES = ('index.json', 'index.csv', 'meta.json')
 SCORE_FIELDS = ('score', 'p1', 'p1Years', 'p1Cum', 'p1Latest', 'p1Ex', 'costs', 'insiders')
 
 # The insider summary's dollar amounts, and its amounts over the quarters that have the company's buybacks
-INSIDER_AMOUNTS = ('cashOut', 'sales', 'withheld', 'toIssuer', 'purchases', 'exercised', 'grants', 'optionGrants')
+INSIDER_AMOUNTS = ('cashOut', *AMOUNTS)
 INSIDER_QUARTER_AMOUNTS = ('buybacks', 'salesInQuarters', 'salesInBuybackQuarters')
 
 
@@ -67,11 +71,11 @@ def money(value):
     :rtype: str
     """
 
-    sign = '-' if value < 0 else ''
-    value = abs(value)
-    if value >= 1e9:
-        return f'{sign}${value / 1e9:,.1f} billion'
-    return f'{sign}${value / 1e6:,.0f} million'
+    millions = round(abs(value) / 1e6)
+    sign = '-' if value < 0 and millions else ''
+    if millions >= 1000:
+        return f'{sign}${abs(value) / 1e9:,.1f} billion'
+    return f'{sign}${millions:,} million'
 
 
 def percent(value):
@@ -142,7 +146,7 @@ def other_way(result, thresholds):
         years = join_words(sorted(result['oneOffs']))
         causes = join_words(sorted({cause[0] for causes in result['oneOffs'].values() for cause in causes}))
         text = f'In {years}, {causes} moved operating cash flow by more than {percent(thresholds["one_off_ocf_share"])} of revenue.'
-        if result['p1Ex']:
+        if result['p1Ex'] and not result['excluded']:
             text += f' Without those years the cumulative owner-cash margin is {percent(result["p1Ex"]["cumMargin"])}' \
                 f' and the owner-cash sign scores {result["p1Ex"]["p1"]:.1f} instead of {result["p1"]["p1"]:.1f}.'
         items.append(text)
@@ -179,7 +183,6 @@ def index_row(result, info):
     p1_ex = result['p1Ex'] or {}
     costs = result['costs'] or {}
     insiders = result['insiders'] or {}
-    insider = result['insider'] or {}
     five = result['five']
     row = {
         'rank': result['rank'],
@@ -223,11 +226,9 @@ def index_row(result, info):
         'shareGrowth': ratio(result['shareGrowth']),
         'costLevel': ratio(costs.get('level')),
         'costChange': ratio((result['cost'] or {}).get('change'), 2),
-        'cashOut': dollars(insider.get('cashOut')),
+        'yearsFive': five['years'],
+        'cashOut': dollars((five['insider'] or {}).get('cashOut')),
         'cashOutRevenue': ratio(insiders.get('share')),
-        'insiderSales': dollars(insider.get('sales')),
-        'insiderGrants': dollars(insider.get('grants')),
-        'insiderOptionGrants': dollars(insider.get('optionGrants')),
         'revenueFive': dollars(five['revenue']),
         'ownerCashFive': dollars(five['ownerCash']),
         'ownerMarginFive': ratio(five['ownerCash'] / five['revenue']) if five['revenue'] > 0 else None,
@@ -345,8 +346,8 @@ def check_output(rows, funnel, infos):
     """
 
     problems = []
-    if funnel['stockPay'] == 0:
-        problems.append('No companies passed the screen')
+    if funnel['ranked'] == 0:
+        problems.append('No companies are ranked')
     ranks = sorted(row['rank'] for row in rows if row['rank'] is not None)
     if ranks != list(range(1, len(ranks) + 1)):
         problems.append('Ranks are not 1 to N')
@@ -369,20 +370,21 @@ def insider_totals(results):
 
     :param list(dict) results: The scored results
     :returns: The dict of the count of companies with insider filings, their revenue and owner cash over the same
-        years, the count whose insiders took out more than that owner cash, the total of each insider amount, and
-        the insiders' sales beside the companies' buybacks by quarter
+        years, the count whose insiders took out more than that owner cash, the total of each insider amount over
+        those years, and the insiders' sales beside the companies' buybacks by quarter
     """
 
-    with_insiders = [result for result in results if result['insider'] is not None]
-    insiders = [result['insider'] for result in with_insiders]
+    fives = [result['five'] for result in results if result['insider'] is not None]
+    insiders = [result['insider'] for result in results if result['insider'] is not None]
     return {
-        'companies': len(insiders),
-        'revenue': dollars(sum(result['five']['revenue'] for result in with_insiders)),
-        'ownerCash': dollars(sum(result['five']['ownerCash'] for result in with_insiders)),
-        'tookMore': sum(1 for result in with_insiders if result['insider']['cashOut'] > max(result['five']['ownerCash'], 0)),
+        'companies': len(fives),
+        'revenue': dollars(sum(five['revenue'] for five in fives)),
+        'ownerCash': dollars(sum(five['ownerCash'] for five in fives)),
+        'tookMore': sum(1 for five in fives if five['insider']['cashOut'] > max(five['ownerCash'], 0)),
         'quarters': sum(insider['quarters'] for insider in insiders),
         'buybackQuarters': sum(insider['buybackQuarters'] for insider in insiders),
-        **{amount: dollars(sum(insider[amount] for insider in insiders)) for amount in (*INSIDER_AMOUNTS, *INSIDER_QUARTER_AMOUNTS)}
+        **{amount: dollars(sum(five['insider'][amount] for five in fives)) for amount in INSIDER_AMOUNTS},
+        **{amount: dollars(sum(insider[amount] for insider in insiders)) for amount in INSIDER_QUARTER_AMOUNTS}
     }
 
 
@@ -440,8 +442,7 @@ def build_meta(results, funnel, companies_in_file, sources, sensitivity_report):
     :param list(dict) results: The scored results
     :param dict funnel: The screen funnel
     :param int companies_in_file: The count of companies in the companyfacts file
-    :param dict sources: The source files' descriptions - "companyfacts" has "latestFiling", the as-of date, and
-        "insider" has "files", the insider-transaction data sets used (none means the build has no insider figures)
+    :param dict sources: The source files' descriptions - "companyfacts" has "latestFiling", the as-of date
     :param list(dict) sensitivity_report: The sensitivity report
     :rtype: dict
     """
@@ -470,7 +471,7 @@ def build_meta(results, funnel, companies_in_file, sources, sensitivity_report):
         'types': types,
         'excluded': excluded,
         'totals': group_totals(screened),
-        'insider': {name: insider_totals(group) for name, group in groups.items()} if sources['insider']['files'] else None,
+        'insider': {name: insider_totals(group) for name, group in groups.items()},
         'buybackShares': {name: buyback_totals(group) for name, group in groups.items()},
         'lowFiveYears': sum(1 for result in screened if result['lowRun'] >= 5),
         'latest': {

@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 # pylint: disable=missing-class-docstring, missing-function-docstring, missing-module-docstring
 
 import json
@@ -5,13 +8,13 @@ import os
 from tempfile import TemporaryDirectory
 import unittest
 
-from treadmill_index.insider import insider_summary
+from treadmill_index.insider import AMOUNTS, insider_summary
 from treadmill_index.output import build_meta, buyback_totals, check_output, company_json, dollars, fact_json, \
     file_sha256, index_row, insider_json, insider_totals, join_words, money, other_way, percent, ratio, summary_sentences, \
     write_archive, write_json, write_output
 from treadmill_index.score import METHOD_VERSION, THRESHOLDS, evaluate, run_screen, sensitivity
 
-from .helpers import DATA_DATE, REVENUE, annual, company_record
+from .helpers import DATA_DATE, REVENUE, annual, company_record, insider_fixture
 from .test_insider import TRANSACTIONS
 
 
@@ -65,36 +68,30 @@ ROW = {
     'shareGrowth': None,
     'costLevel': 0.91667,
     'costChange': 0.0,
+    'yearsFive': 5,
     'cashOut': None,
     'cashOutRevenue': None,
-    'insiderSales': None,
-    'insiderGrants': None,
-    'insiderOptionGrants': None,
     'revenueFive': 8050000000,
     'ownerCashFive': -161000000,
     'ownerMarginFive': -0.02,
     'buybacksFive': 0,
     'withholdingFive': 0,
     'shareGrowthFive': None,
-    'flags': []
+    'flags': ['no_insider_filings']
 }
 
 # An insider summary whose cash-out is 1.75% of the test company's revenue over the five years, for half of the
 # insiders sign's points
-INSIDER = {
-    'cashOut': 140875000, 'sales': 140000000, 'withheld': 1000000, 'toIssuer': 1000000, 'purchases': 1000000, 'exercised': 125000,
-    'grants': 110000, 'optionGrants': 300000, 'quarters': 2, 'buybackQuarters': 1, 'buybacks': 30000000, 'salesInQuarters': 90000000,
-    'salesInBuybackQuarters': 60000000, 'insiders': 3, 'sellers': 2, 'years': [], 'people': []
-}
+INSIDER = insider_fixture(
+    140000000, withheld=1000000, toIssuer=1000000, purchases=1000000, exercised=125000, grants=110000, optionGrants=300000
+)
 
 INSIDER_ROW = {
     'score': 41.41,
     'insiders': 12.5,
     'cashOut': 140875000,
     'cashOutRevenue': 0.0175,
-    'insiderSales': 140000000,
-    'insiderGrants': 110000,
-    'insiderOptionGrants': 300000
+    'flags': []
 }
 
 NO_INSIDERS = {
@@ -128,7 +125,7 @@ def screen():
     ]
     sics = {1: 7372, 2: 3674, 3: 7372, 4: 7372, 5: 6021, 6: 7372}
     insiders = {1: INSIDER, 2: INSIDER, 4: INSIDER, 6: INSIDER}
-    results, funnel = run_screen(records, sics, DATA_DATE, insiders=insiders)
+    results, funnel = run_screen(records, sics, DATA_DATE, insiders)
     return records, sics, insiders, results, funnel
 
 
@@ -159,8 +156,10 @@ class TestOutput(unittest.TestCase):
         self.assertEqual(money(1234.56e9), '$1,234.6 billion')
         self.assertEqual(money(-2.5e9), '-$2.5 billion')
         self.assertEqual(money(999e6), '$999 million')
+        self.assertEqual(money(999.6e6), '$1.0 billion')
         self.assertEqual(money(-203e6), '-$203 million')
         self.assertEqual(money(0), '$0 million')
+        self.assertEqual(money(-0.4e6), '$0 million')
 
 
     def test_join_words(self):
@@ -213,6 +212,10 @@ class TestOutput(unittest.TestCase):
             'Capital spending was 2.1 times stock pay. The shortfall is mostly investment, not stock pay.'
         ])
 
+        # A company in an excluded industry has no scores, in its text as in its row
+        result = evaluate(company_record(sbc=0.14, tags={'IncreaseDecreaseInInventories': [annual(2019, -300)]}), 6021, DATA_DATE)
+        self.assertEqual(other_way(result, THRESHOLDS), ['In 2019, inventory moved operating cash flow by more than 25.0% of revenue.'])
+
         # Every year is a one-off year
         result = evaluate(company_record(tags={
             'IncreaseDecreaseInInventories': [annual(2019 + index, value * 0.3) for index, value in enumerate(REVENUE)],
@@ -252,7 +255,7 @@ class TestOutput(unittest.TestCase):
             'costChange': None,
             'shareGrowth': 0.05,
             'shareGrowthFive': 0.05,
-            'flags': ['no_cost_line', 'one_off_years']
+            'flags': ['no_cost_line', 'one_off_years', 'no_insider_filings']
         })
 
         # Insiders: all three signs, and a score
@@ -317,7 +320,11 @@ class TestOutput(unittest.TestCase):
 
     def test_insider_totals(self):
         def result(owner_cash, has_insider=True):
-            return {'insider': INSIDER if has_insider else None, 'five': {'revenue': 8050e6, 'ownerCash': owner_cash}}
+            amounts = {amount: INSIDER[amount] for amount in ('cashOut', *AMOUNTS)}
+            return {
+                'insider': INSIDER if has_insider else None,
+                'five': {'revenue': 8050e6, 'ownerCash': owner_cash, 'insider': amounts if has_insider else None}
+            }
 
         # Insiders took out more than the owner cash the business produced at two of the three companies
         results = [result(140875000), result(5e9, False), result(-1e6), result(140874999.6)]
@@ -371,7 +378,8 @@ class TestOutput(unittest.TestCase):
         self.assertIsNone(company['insider'])
         self.assertEqual(company['spending'], {})
         self.assertEqual(company['row'], {
-            **ROW, 'p1Ex': 18.63, 'cumMarginEx': -0.02, 'buybacks': 150e6, 'buybacksFive': 150000000, 'flags': ['one_off_years']
+            **ROW, 'p1Ex': 18.63, 'cumMarginEx': -0.02, 'buybacks': 150e6, 'buybacksFive': 150000000,
+            'flags': ['one_off_years', 'no_insider_filings']
         })
         self.assertEqual(company['formerNames'], ['Old Test Co'])
         self.assertEqual(company['summary'], SUMMARY)
@@ -484,8 +492,8 @@ class TestOutput(unittest.TestCase):
         rows[2]['rank'] = 4
         rows[3]['rank'] = 5
         del infos[4]
-        self.assertEqual(check_output(rows, {**funnel, 'stockPay': 0}, infos), [
-            'No companies passed the screen',
+        self.assertEqual(check_output(rows, {**funnel, 'ranked': 0}, infos), [
+            'No companies are ranked',
             'Ranks are not 1 to N',
             'Worse Co (CIK 6): the owner-cash sign is out of range',
             'Worse Co (CIK 6): the score is out of range',
@@ -583,13 +591,13 @@ class TestOutput(unittest.TestCase):
         self.assertEqual(meta['cost'], {'allGross': 0, 'missing': 1, 'missingAll': 1})
         self.assertIs(meta['sensitivity'], report)
 
-        # No insider data; a cash-generative latest year; and operating costs that take all of gross profit
+        # No insider filings; a cash-generative latest year; and operating costs that take all of gross profit
         records = [company_record(
             sbc=[120, 132, 150, 168, 192, 216, 100], quarters=False, operating=[50, 55, 62.5, 70, 80, 90, -5]
         )]
-        results, funnel = run_screen(records, {}, DATA_DATE)
-        meta = build_meta(results, funnel, 1, {**SOURCES, 'insider': {'files': []}}, [])
-        self.assertIsNone(meta['insider'])
+        results, funnel = run_screen(records, {}, DATA_DATE, {})
+        meta = build_meta(results, funnel, 1, SOURCES, [])
+        self.assertEqual(meta['insider'], {'screened': NO_INSIDERS, 'cashGenerative': NO_INSIDERS})
         self.assertEqual(meta['latest'], {'cleared': 1, 'negative': 0, 'fiscalYearBasis': 1})
         self.assertEqual(meta['cost'], {'allGross': 1, 'missing': 0, 'missingAll': 0})
         self.assertEqual(meta['lowFiveYears'], 0)
@@ -638,8 +646,7 @@ class TestOutput(unittest.TestCase):
                 lines[2],
                 '2,Test Co,TEST,Nasdaq,1,stock_pay,,7372,Services-Prepackaged Software,41.41,18.63,10.0,3.73,4.9,,18.06,12.5,7,2019,'
                 '2025,2025-12-31,2000000000.0,2.0,7,7,-0.02,,-0.02,ttm,2026-09-30,10150000000.0,1015000000.0,1218000000.0,'
-                '203000000.0,-203000000.0,0,0,0,,0.91667,0.0,140875000,0.0175,140000000,110000,300000,8050000000,-161000000,-0.02,'
-                '0,0,,'
+                '203000000.0,-203000000.0,0,0,0,,0.91667,0.0,5,140875000,0.0175,8050000000,-161000000,-0.02,0,0,,'
             )
             self.assertTrue(lines[4].endswith(',no_cost_line latest_is_fiscal_year no_insider_filings'))
             self.assertTrue(lines[6].startswith(',Bank Co,TEST,Nasdaq,5,excluded,bank,6021,Services-Prepackaged Software,,,,,,,,,7,2019,'))

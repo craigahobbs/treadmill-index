@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 # pylint: disable=missing-class-docstring, missing-function-docstring, missing-module-docstring
 
 from concurrent.futures import ThreadPoolExecutor
@@ -9,7 +12,8 @@ import unittest
 from unittest.mock import patch
 import zipfile
 
-from treadmill_index.extract import annual_facts, extract_all, extract_company, extract_members, load_records, parse_date, period_facts
+from treadmill_index.extract import annual_facts, extract_all, extract_company, extract_members, is_annual_form, load_records, \
+    parse_date, period_facts
 
 from .helpers import annual, company_bytes, company_doc, company_record, nine_months, unit
 
@@ -45,6 +49,24 @@ class TestExtract(unittest.TestCase):
             '2025-01-01|2025-06-30': [7, None, '', None, '2025-01-01']
         })
 
+        # An annual report's fact is taken before a more recently filed fact from another filing
+        units = [
+            unit('2025-01-01', '2025-12-31', 1, accn='A', filed='2026-02-01'),
+            unit('2025-01-01', '2025-12-31', 2, accn='B', filed='2026-05-01', form='10-Q'),
+            unit('2024-01-01', '2024-12-31', 3, accn='C', filed='2025-05-01', form='8-K'),
+            unit('2024-01-01', '2024-12-31', 4, accn='D', filed='2025-08-01', form='10-Q')
+        ]
+        self.assertEqual(period_facts(units, 350, 380)['2025-01-01|2025-12-31'][1], 'B')
+        self.assertEqual(period_facts(units, 350, 380, annual=True), {
+            '2025-01-01|2025-12-31': [1, 'A', '2026-02-01', '10-K', '2025-01-01'],
+            '2024-01-01|2024-12-31': [4, 'D', '2025-08-01', '10-Q', '2024-01-01']
+        })
+
+
+    def test_is_annual_form(self):
+        self.assertEqual([is_annual_form(form) for form in ('10-K', '10-K/A', '10-KT', '20-F', '40-F/A')], [True] * 5)
+        self.assertEqual([is_annual_form(form) for form in ('10-Q', '8-K', '10-Q/A', '', None)], [False] * 5)
+
 
     def test_annual_facts(self):
         units = [
@@ -52,11 +74,18 @@ class TestExtract(unittest.TestCase):
             unit('2024-12-28', '2025-12-31', 2, accn='B', filed='2027-02-01'),
             unit('2024-12-29', '2025-12-31', 3, accn='C', filed='2026-06-01'),
             unit('2025-01-01', '2025-09-30', 4, form='10-Q'),
-            unit('2024-01-01', '2024-12-31', 5, accn='D', filed='2025-02-01')
+            unit('2024-01-01', '2024-12-31', 5, accn='D', filed='2025-02-01'),
+            # A quarterly report's 12-month figure, filed later, does not replace the annual report's - even one
+            # for a period that starts on another day
+            unit('2024-12-30', '2025-12-31', 6, accn='E', filed='2027-05-01', form='10-Q'),
+            unit('2024-01-01', '2024-12-31', 7, accn='F', filed='2025-05-01', form='10-Q'),
+            # ... but it is the figure for a year no annual report has
+            unit('2023-01-01', '2023-12-31', 8, accn='G', filed='2024-05-01', form='10-Q')
         ]
         self.assertEqual(annual_facts(units), {
             '2025-12-31': [2, 'B', '2027-02-01', '10-K', '2024-12-28'],
-            '2024-12-31': [5, 'D', '2025-02-01', '10-K', '2024-01-01']
+            '2024-12-31': [5, 'D', '2025-02-01', '10-K', '2024-01-01'],
+            '2023-12-31': [8, 'G', '2024-05-01', '10-Q', '2023-01-01']
         })
 
 

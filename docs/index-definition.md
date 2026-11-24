@@ -25,6 +25,8 @@ Why, from the 2026-11-20 data (screened companies against cash-generative ones):
 - "Sold more than they were granted" was partly an artifact of how insiders settle vesting taxes. Some sell on the market, some have the company withhold shares; counting only market sales made the first kind look like heavier sellers. Grant values are also not consistently available.
 - Insider cash-out as a share of revenue separates them strongly: median 2.9% against 0.4%, and at or above 3% at 49% against 6% (2.7% against 0.3%, and 44% against 5%, once exercise costs are deducted).
 
+Data handling, after an independent review on 2026-11-24 (method version 1.2.0): an annual figure is taken from the most recently filed annual report, and from another filing only if no annual report has it; a fiscal year ending by the first week of April belongs to the prior year; a sale by a named company or partnership that two insiders both report is counted once; a reported price is an error at 25 times the company's other reported prices or a 25th of them; and insider cash-out is counted only over the calendar years for which the company has a fiscal year.
+
 The 70%/100% and 0.5%/3% scales are judgment set from those distributions. The owner approved the plan; he has not reviewed the scales number by number.
 
 ## The original definition

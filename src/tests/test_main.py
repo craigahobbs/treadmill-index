@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 # pylint: disable=missing-class-docstring, missing-function-docstring, missing-module-docstring
 
 from concurrent.futures import ThreadPoolExecutor
@@ -33,6 +36,18 @@ def write_companyfacts(raw_dir, ciks):
         archive.writestr('CIK0000000009.json', '{}')
 
 
+def write_insider(raw_dir):
+    # The first company's insiders sell in 2025; the second's only before the five years; the third has none
+    os.mkdir(os.path.join(raw_dir, 'insider'))
+    return insider_zips(os.path.join(raw_dir, 'insider'), [
+        insider_filing('A1', cik=1, filed='18-MAR-2025', nonderiv=[
+            ('14-MAR-2025', 'A', 'A', '1000.0', '0.0', 'D'),
+            ('17-MAR-2025', 'S', 'D', '1000.0', '50.0', 'D')
+        ]),
+        insider_filing('B1', cik=2, filed='18-MAR-2020', nonderiv=[('17-MAR-2020', 'S', 'D', '1000.0', '50.0', 'D')])
+    ])
+
+
 class TestMain(unittest.TestCase):
 
     def test_main_submodule(self):
@@ -45,6 +60,7 @@ class TestMain(unittest.TestCase):
             out_dir = os.path.join(temp_dir, 'out')
             os.mkdir(raw_dir)
             write_companyfacts(raw_dir, [1, 2, 3])
+            names = write_insider(raw_dir)
             with patch('treadmill_index.extract.ProcessPoolExecutor', ThreadPoolExecutor), \
                  patch('treadmill_index.sec.fetch_url', side_effect=fetch_submission) as mock_fetch, \
                  patch('time.sleep'), \
@@ -55,105 +71,85 @@ class TestMain(unittest.TestCase):
             zip_path = os.path.join(raw_dir, 'companyfacts.zip')
             self.assertEqual(stdout.getvalue().splitlines(), [
                 f'Extracting {zip_path} ...',
+                *(f'Reading {name} ...' for name in names),
                 '{"inFile": 4, "prefilter": 3, "current": 3, "revenue": 3, "years": 3, "growth": 3, "industry": 2, "lowMargin": 1, '
-                '"stockPayCause": 1, "stockPay": 1, "ranked": 0}',
+                '"stockPayCause": 1, "stockPay": 1, "ranked": 1}',
                 f'Wrote 3 companies to "{out_dir}" - data as of 2026-11-05'
             ])
             self.assertEqual(stderr.getvalue(), '')
             self.assertEqual([call.args[1] for call in mock_fetch.call_args_list], ['test-client/1.0'] * 3)
-            self.assertEqual(sorted(os.listdir(raw_dir)), ['companyfacts.zip', 'extract-cache.json', 'submissions-cache.json'])
+            self.assertEqual(
+                sorted(os.listdir(raw_dir)),
+                ['companyfacts.zip', 'extract-cache.json', 'insider', 'insider-cache.json', 'submissions-cache.json']
+            )
             self.assertEqual(sorted(os.listdir(out_dir)), ['archive', 'company', 'index.csv', 'index.json', 'meta.json'])
             self.assertEqual(sorted(os.listdir(os.path.join(out_dir, 'company'))), ['1.json', '2.json', '3.json'])
 
+            # The first company's insiders took out $50,000; the others have no insider filings in the five years
             with open(os.path.join(out_dir, 'index.json'), 'r', encoding='utf-8') as index_file:
                 index = json.load(index_file)
             self.assertEqual(
-                [(row['rank'], row['name'], row['type'], row['ticker'], row['sic']) for row in index['companies']],
                 [
-                    (None, 'Stock Pay Co', 'stock_pay', 'TEST', 7372),
-                    (None, 'Cash Co', 'cash_generative', 'TEST', 7372),
-                    (None, 'Bank Co', 'excluded', 'TEST', 6021)
+                    (row['rank'], row['name'], row['type'], row['ticker'], row['sic'], row['cashOut'], row['insiders'], row['score'],
+                     row['flags'])
+                    for row in index['companies']
+                ],
+                [
+                    (1, 'Stock Pay Co', 'stock_pay', 'TEST', 7372, 50000, 0.0, 32.09, []),
+                    (None, 'Cash Co', 'cash_generative', 'TEST', 7372, None, None, None, ['no_insider_filings']),
+                    (None, 'Bank Co', 'excluded', 'TEST', 6021, None, None, None, ['no_insider_filings'])
                 ]
             )
 
             with open(os.path.join(out_dir, 'meta.json'), 'r', encoding='utf-8') as meta_file:
                 meta = json.load(meta_file)
             self.assertEqual(meta['dataDate'], '2026-11-05')
+            self.assertEqual(meta['years'], {'first': 2021, 'last': 2025})
             self.assertEqual(meta['sources']['companyfacts']['bytes'], os.path.getsize(zip_path))
             self.assertEqual(len(meta['sources']['companyfacts']['sha256']), 64)
             self.assertEqual(meta['sources']['submissions'], {'url': 'https://data.sec.gov/submissions/', 'companies': 3})
             self.assertEqual(meta['sources']['insider'], {
                 'url': 'https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets',
-                'files': []
+                'files': names
             })
-            self.assertIsNone(meta['insider'])
-            self.assertEqual(len(meta['sensitivity']), 30)
-            self.assertEqual([row['flags'] for row in index['companies']], [[], [], []])
-
-
-    def test_main_insider(self):
-        with TemporaryDirectory() as temp_dir:
-            raw_dir = os.path.join(temp_dir, 'raw')
-            out_dir = os.path.join(temp_dir, 'out')
-            os.makedirs(os.path.join(raw_dir, 'insider'))
-            write_companyfacts(raw_dir, [1, 2, 3])
-
-            # The first company's insiders sell in 2025; the second's only before the five years; the third has none
-            names = insider_zips(os.path.join(raw_dir, 'insider'), [
-                insider_filing('A1', cik=1, filed='18-MAR-2025', nonderiv=[
-                    ('14-MAR-2025', 'A', 'A', '1000.0', '0.0', 'D'),
-                    ('17-MAR-2025', 'S', 'D', '1000.0', '50.0', 'D')
-                ]),
-                insider_filing('B1', cik=2, filed='18-MAR-2020', nonderiv=[('17-MAR-2020', 'S', 'D', '1000.0', '50.0', 'D')])
-            ])
-            with patch('treadmill_index.extract.ProcessPoolExecutor', ThreadPoolExecutor), \
-                 patch('treadmill_index.sec.fetch_url', side_effect=fetch_submission), \
-                 patch('time.sleep'), \
-                 patch('sys.stdout', StringIO()) as stdout, \
-                 patch('sys.stderr', StringIO()):
-                self.assertEqual(main(['--raw', raw_dir, '--out', out_dir, '--processes', '1', '--user-agent', 'test-client/1.0']), 0)
-            self.assertIn('Reading 2025q4_form345.zip ...', stdout.getvalue().splitlines())
-
-            with open(os.path.join(out_dir, 'index.json'), 'r', encoding='utf-8') as index_file:
-                index = json.load(index_file)
-            self.assertEqual(
-                [(row['rank'], row['name'], row['cashOut'], row['insiderGrants'], row['insiders'], row['score'], row['flags'])
-                 for row in index['companies']],
-                [
-                    (1, 'Stock Pay Co', 50000, 50000, 0.0, 32.09, []),
-                    (None, 'Cash Co', None, None, None, None, ['no_insider_filings']),
-                    (None, 'Bank Co', None, None, None, None, ['no_insider_filings'])
-                ]
-            )
-            with open(os.path.join(out_dir, 'meta.json'), 'r', encoding='utf-8') as meta_file:
-                meta = json.load(meta_file)
-            self.assertEqual(meta['sources']['insider']['files'], names)
-            self.assertEqual(meta['years'], {'first': 2021, 'last': 2025})
             self.assertEqual(meta['insider']['screened'], {
                 'companies': 1, 'revenue': 8050000000, 'ownerCash': -161000000, 'tookMore': 1, 'quarters': 2, 'buybackQuarters': 1,
                 'cashOut': 50000, 'sales': 50000, 'withheld': 0, 'toIssuer': 0, 'purchases': 0, 'exercised': 0, 'grants': 50000,
-                'optionGrants': 0,
-                'buybacks': 20000000, 'salesInQuarters': 50000, 'salesInBuybackQuarters': 50000
+                'optionGrants': 0, 'buybacks': 20000000, 'salesInQuarters': 50000, 'salesInBuybackQuarters': 50000
             })
-            self.assertEqual(meta['funnel']['ranked'], 1)
+            self.assertEqual(len(meta['sensitivity']), 30)
             with open(os.path.join(out_dir, 'company', '1.json'), 'r', encoding='utf-8') as company_file:
                 company = json.load(company_file)
             self.assertEqual(company['insider']['people'][0]['name'], 'Doe Jane')
-            self.assertEqual(company['insider']['cashOut'], 50000)
+            self.assertEqual((company['insider']['cashOut'], company['insider']['grants']), (50000, 50000))
 
-            # A quarter of the five years has no data set: its year's figures would be short, so nothing is built
+
+    def test_main_insider_missing(self):
+        with TemporaryDirectory() as temp_dir:
+            raw_dir = os.path.join(temp_dir, 'raw')
+            out_dir = os.path.join(temp_dir, 'out')
+            os.mkdir(raw_dir)
+            write_companyfacts(raw_dir, [1, 2, 3])
+
+            def build():
+                with patch('treadmill_index.extract.ProcessPoolExecutor', ThreadPoolExecutor), \
+                     patch('treadmill_index.sec.fetch_url', side_effect=fetch_submission), \
+                     patch('time.sleep'), \
+                     patch('sys.stdout', StringIO()), \
+                     patch('sys.stderr', StringIO()) as stderr:
+                    self.assertEqual(main(['--raw', raw_dir, '--out', out_dir, '--processes', '1', '--user-agent', 'test-client/1.0']), 1)
+                return stderr.getvalue()
+
+            # No data sets at all: one of the three signs would be missing, so nothing is built
+            quarters = ', '.join(f'{year}q{quarter}' for year in range(2021, 2026) for quarter in range(1, 5))
+            self.assertEqual(build(), f'The insider-transaction data sets of {quarters} are missing: run "make insider-data"\n')
+
+            # A quarter of the five years has no data set: its year's figures would be short
+            write_insider(raw_dir)
             os.remove(os.path.join(raw_dir, 'insider', '2023q2_form345.zip'))
             os.remove(os.path.join(raw_dir, 'insider', '2025q4_form345.zip'))
-            with patch('treadmill_index.extract.ProcessPoolExecutor', ThreadPoolExecutor), \
-                 patch('treadmill_index.sec.fetch_url', side_effect=fetch_submission), \
-                 patch('time.sleep'), \
-                 patch('sys.stdout', StringIO()), \
-                 patch('sys.stderr', StringIO()) as stderr:
-                self.assertEqual(main(['--raw', raw_dir, '--out', out_dir, '--processes', '1', '--user-agent', 'test-client/1.0']), 1)
-            self.assertEqual(
-                stderr.getvalue(),
-                'The insider-transaction data sets of 2023q2, 2025q4 are missing: run "make insider-data"\n'
-            )
+            self.assertEqual(build(), 'The insider-transaction data sets of 2023q2, 2025q4 are missing: run "make insider-data"\n')
+            self.assertFalse(os.path.exists(out_dir))
 
 
     def test_main_download_insider(self):
@@ -227,6 +223,7 @@ class TestMain(unittest.TestCase):
             out_dir = os.path.join(temp_dir, 'out')
             os.mkdir(raw_dir)
             write_companyfacts(raw_dir, [1, 4])
+            names = write_insider(raw_dir)
             with patch('treadmill_index.extract.ProcessPoolExecutor', ThreadPoolExecutor), \
                  patch('treadmill_index.sec.fetch_url', side_effect=fetch_submission), \
                  patch('time.sleep'), \
@@ -235,7 +232,8 @@ class TestMain(unittest.TestCase):
                 self.assertEqual(main(['--raw', raw_dir, '--out', out_dir]), 1)
             self.assertEqual(stdout.getvalue().splitlines(), [
                 f'Extracting {os.path.join(raw_dir, "companyfacts.zip")} ...',
-                'Warning: no SEC company information for CIK 4: HTTP Error 404'
+                'Warning: no SEC company information for CIK 4: HTTP Error 404',
+                *(f'Reading {name} ...' for name in names)
             ])
             self.assertEqual(
                 stderr.getvalue(),

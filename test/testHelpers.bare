@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 include <dataLineChart.bare>
 include <unittest.bare>
 include <unittestMock.bare>
@@ -6,12 +9,8 @@ include '../treadmillIndex.bare'
 
 # Load test data files for the systemFetch mock. With a directory, the files are loaded from that directory of
 # the test data - "noinsider/" is the build without the insider data sets.
-async function testData(urls, dir):
-    paths = []
-    for url in urls:
-        arrayPush(paths, stringReplace(url, 'data/', 'data/' + if(dir != null, dir, '')))
-    endfor
-    texts = systemFetch(paths)
+async function testData(urls):
+    texts = systemFetch(urls)
     data = {}
     for url, ixURL in urls:
         objectSet(data, url, arrayGet(texts, ixURL))

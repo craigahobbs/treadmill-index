@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 include <unittest.bare>
 include <unittestMock.bare>
 include '../treadmillIndex.bare'
@@ -8,14 +11,9 @@ include '../treadmillIndex.bare'
 #
 #     vCapUrls - the JSON array of the data URLs that load (others fail to load)
 #     vCapGlobals - the JSON object of the global variables to set: the page's arguments
-#     vCapDir - the directory of test/data/ to load from, "" or "noinsider/"
 async function capturePage():
     urls = jsonParse(vCapUrls)
-    paths = []
-    for url in urls:
-        arrayPush(paths, stringReplace(url, 'data/', 'data/' + vCapDir))
-    endfor
-    texts = systemFetch(paths)
+    texts = systemFetch(urls)
     data = {}
     for url, ixURL in urls:
         objectSet(data, url, arrayGet(texts, ixURL))

@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 """
 Extract the figures the index needs from the SEC "companyfacts" bulk file
 """
@@ -10,7 +13,7 @@ import zipfile
 
 
 # The extract cache version - bump when the extracted record changes
-EXTRACT_VERSION = 5
+EXTRACT_VERSION = 6
 
 # Companies that never reported this much annual revenue are dropped at extraction. This is a speed filter that
 # sits below the definition's $1B revenue test (and below that test moved down by a fifth).
@@ -57,6 +60,9 @@ TTM_CONCEPTS = ('rev', 'ocf', 'ppe', 'prod', 'sw', 'sbc', 'sbc2')
 # Fact array indexes: [value, accession number, date filed, form, period start, XBRL tag]
 F_VAL, F_ACCN, F_FILED, F_FORM, F_START, F_TAG = range(6)
 
+# The annual report forms. Their amendments, such as 10-K/A, count too.
+ANNUAL_FORMS = ('10-K', '10-KT', '20-F', '40-F')
+
 
 def parse_date(text):
     """
@@ -69,13 +75,15 @@ def parse_date(text):
     return datetime.date(int(text[:4]), int(text[5:7]), int(text[8:10]))
 
 
-def period_facts(units, min_days, max_days):
+def period_facts(units, min_days, max_days, annual=False):
     """
     Get the most recently filed fact for each period whose length is within a range of days
 
     :param list(dict) units: The XBRL facts for one tag and unit
     :param int min_days: The minimum period length, in days
     :param int max_days: The maximum period length, in days
+    :param bool annual: If true, a fact from an annual report is taken before a more recently filed fact from
+        another filing
     :returns: A dict of "start|end" to the fact, [value, accession number, date filed, form, period start]
     """
 
@@ -89,26 +97,50 @@ def period_facts(units, min_days, max_days):
         if days < min_days or days > max_days:
             continue
         key = start + '|' + end
-        filed = unit.get('filed', '')
-        if key not in best or filed > best[key][F_FILED]:
-            best[key] = [unit['val'], unit.get('accn'), filed, unit.get('form'), start]
+        fact = [unit['val'], unit.get('accn'), unit.get('filed', ''), unit.get('form'), start]
+        if key not in best or (fact_order(fact) > fact_order(best[key]) if annual else fact[F_FILED] > best[key][F_FILED]):
+            best[key] = fact
     return best
+
+
+def is_annual_form(form):
+    """
+    Test whether a form is an annual report, or an amendment of one
+
+    :param str form: The form, or None
+    :rtype: bool
+    """
+
+    return (form or '').split('/')[0] in ANNUAL_FORMS
 
 
 def annual_facts(units):
     """
-    Get the most recently filed annual (350 to 380 day) fact for each period end date
+    Get the annual (350 to 380 day) fact for each period end date: the most recently filed in an annual report, or
+    the most recently filed in any other filing if no annual report has one. A quarterly report's 12-month figure
+    is not a restatement of the year, and is sometimes a quarter's figure tagged with the year's dates.
 
     :param list(dict) units: The XBRL facts for one tag and unit
     :returns: A dict of period end date to the fact
     """
 
     best = {}
-    for key, fact in period_facts(units, 350, 380).items():
+    for key, fact in period_facts(units, 350, 380, annual=True).items():
         end = key.split('|')[1]
-        if end not in best or fact[F_FILED] > best[end][F_FILED]:
+        if end not in best or fact_order(fact) > fact_order(best[end]):
             best[end] = fact
     return best
+
+
+def fact_order(fact):
+    """
+    Get the sort key that puts an annual fact from an annual report, and then the most recently filed, last
+
+    :param list fact: The fact
+    :rtype: tuple
+    """
+
+    return is_annual_form(fact[F_FORM]), fact[F_FILED]
 
 
 def extract_company(raw):
@@ -168,7 +200,7 @@ def extract_company(raw):
             buybacks.setdefault(key, fact)
 
     return {
-        'cik': int(doc['cik']), 'name': doc.get('entityName'), 'annual': annual, 'recent': recent, 'buybacks': buybacks,
+        'cik': int(doc['cik']), 'name': doc.get('entityName') or '', 'annual': annual, 'recent': recent, 'buybacks': buybacks,
         'filed_max': filed_max
     }
 

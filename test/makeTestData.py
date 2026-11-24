@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 """
 Generate the web application's unit test data, test/data/, by running the build step on a few made-up companies.
 Run it with "make test-data" after a change to the data files' content.
@@ -136,24 +139,19 @@ def fetch_submission(url, unused_user_agent):
 
 
 def make_test_data(out_dir):
-    # Build twice: with the insider data sets, and without them (to "noinsider")
     shutil.rmtree(out_dir, ignore_errors=True)
-    for insider, build_dir in ((True, out_dir), (False, os.path.join(out_dir, 'noinsider'))):
-        with TemporaryDirectory() as raw_dir:
-            with zipfile.ZipFile(os.path.join(raw_dir, 'companyfacts.zip'), 'w') as archive:
-                for company, _ in COMPANIES:
-                    archive.writestr(f'CIK{company["cik"]:010d}.json', company_bytes(**company))
-            if insider:
-                os.mkdir(os.path.join(raw_dir, 'insider'))
-                insider_zips(os.path.join(raw_dir, 'insider'), INSIDER_FILINGS)
-            with patch('treadmill_index.extract.ProcessPoolExecutor', ThreadPoolExecutor), \
-                 patch('treadmill_index.sec.fetch_url', side_effect=fetch_submission), \
-                 patch('treadmill_index.output.file_sha256', return_value='0123456789abcdef'), \
-                 patch('treadmill_index.main.os.path.getsize', return_value=123456789), \
-                 patch('time.sleep'):
-                if main(['--raw', raw_dir, '--out', build_dir, '--processes', '1', '--user-agent', 'test-client/1.0']):
-                    return 1
-    return 0
+    with TemporaryDirectory() as raw_dir:
+        with zipfile.ZipFile(os.path.join(raw_dir, 'companyfacts.zip'), 'w') as archive:
+            for company, _ in COMPANIES:
+                archive.writestr(f'CIK{company["cik"]:010d}.json', company_bytes(**company))
+        os.mkdir(os.path.join(raw_dir, 'insider'))
+        insider_zips(os.path.join(raw_dir, 'insider'), INSIDER_FILINGS)
+        with patch('treadmill_index.extract.ProcessPoolExecutor', ThreadPoolExecutor), \
+             patch('treadmill_index.sec.fetch_url', side_effect=fetch_submission), \
+             patch('treadmill_index.output.file_sha256', return_value='0123456789abcdef'), \
+             patch('treadmill_index.main.os.path.getsize', return_value=123456789), \
+             patch('time.sleep'):
+            return main(['--raw', raw_dir, '--out', out_dir, '--processes', '1', '--user-agent', 'test-client/1.0'])
 
 
 if __name__ == '__main__':

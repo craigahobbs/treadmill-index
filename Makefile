@@ -1,3 +1,7 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
+
 # Download python-build
 PYTHON_BUILD_DIR ?= ../python-build
 define WGET

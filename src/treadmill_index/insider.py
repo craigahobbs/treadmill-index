@@ -1,3 +1,6 @@
+# Licensed under the MIT License
+# https://github.com/craigahobbs/treadmill-index/blob/main/LICENSE
+
 """
 The SEC insider-transaction data sets (Forms 3, 4 and 5): one zip file per calendar quarter
 """
@@ -36,10 +39,10 @@ def insider_links(html):
     return {quarter: urljoin(INSIDER_PAGE_URL, href) for href, quarter in _RE_LINK.findall(html)}
 
 
-def insider_quarters(today, years=5):
+def insider_quarters(today, years):
     """
-    Get the quarters the index needs: from the first quarter of the calendar year some years back, through the
-    last quarter that has ended
+    Get the quarters to download: from the first quarter of the calendar year some years back, through the last
+    quarter that has ended
 
     :param datetime.date today: Today's date
     :param int years: The number of calendar years back to start from
@@ -57,15 +60,16 @@ def insider_quarters(today, years=5):
     ]
 
 
-def download_insider(raw_dir, user_agent, today, pause=0.5, log=print):
+def download_insider(raw_dir, user_agent, today, years, pause=0.5, log=print):
     """
-    Download the insider-transaction data sets the index needs to the raw directory's "insider" directory.
-    Files that are already there are not downloaded again.
+    Download the insider-transaction data sets of the latest calendar years to the raw directory's "insider"
+    directory. Files that are already there are not downloaded again.
 
     :param str raw_dir: The raw data directory
     :param str user_agent: The User-Agent header for SEC requests. The SEC refuses these files without one that
         names the requester and gives a contact address. It is needed only if a file is downloaded.
     :param datetime.date today: Today's date
+    :param int years: The number of calendar years back to start from
     :param float pause: The seconds to pause between SEC requests
     :param log: The log function
     :returns: The number of data sets that are still missing
@@ -73,7 +77,10 @@ def download_insider(raw_dir, user_agent, today, pause=0.5, log=print):
 
     insider_dir = os.path.join(raw_dir, 'insider')
     os.makedirs(insider_dir, exist_ok=True)
-    quarters = [quarter for quarter in insider_quarters(today) if not os.path.exists(os.path.join(insider_dir, f'{quarter}_form345.zip'))]
+    quarters = [
+        quarter for quarter in insider_quarters(today, years)
+        if not os.path.exists(os.path.join(insider_dir, f'{quarter}_form345.zip'))
+    ]
     if not quarters:
         log('Every insider-transaction data set is already downloaded')
         return 0
@@ -110,7 +117,7 @@ def download_insider(raw_dir, user_agent, today, pause=0.5, log=print):
 
 
 # The insider cache version - bump when the parsed transactions change
-INSIDER_VERSION = 4
+INSIDER_VERSION = 6
 
 # The forms used. Amended filings (4/A, 5/A) are not used: they restate transactions already reported.
 INSIDER_FORMS = ('4', '5')
@@ -126,9 +133,37 @@ _RE_ENTITY = re.compile(
 # Indirect holdings with these words in their nature of ownership are an insider's own: family, trusts and
 # retirement accounts. An outside director's other indirect holdings are taken to be an investment fund's.
 _RE_PERSONAL = re.compile(
-    r'trust|spouse|wife|husband|family|child|son\b|daughter|minor|custodian|grantor|grat\b|descendant|estate|joint|\bira\b|401',
+    r'trust|spouse|wife|husband|family|child|\bsons?\b|daughter|minor|custodian|grantor|grat\b|descendant|estate|joint|\bira\b|401',
     re.IGNORECASE
 )
+
+# A nature of ownership that names a company or partnership, such as "By Zelnick Media Corporation": the form its
+# name ends with, and at least one word that is a name. Two insiders who share such an entity each report its
+# transactions. "By Trust" and "See footnote" name nothing: two co-founders with equal holdings report equal, separate
+# sales in those words.
+_RE_COMPANY = re.compile(
+    r'\b(l\.?l?\.?l?\.?p\.?|l\.?l\.?c\.?|inc\.?|incorporated|corp\.?|corporation|ltd\.?|limited|company|co\.|holdings|partners|'
+    r'partnership|advisors|advisers|associates|investments?|ventures|capital|management|group)(?![\w])',
+    re.IGNORECASE
+)
+_GENERIC_WORDS = frozenset((
+    'a', 'an', 'and', 'by', 'family', 'footnote', 'footnotes', 'for', 'held', 'her', 'his', 'in', 'indirect', 'indirectly', 'of',
+    'owned', 'see', 'spouse', 'the', 'their', 'through', 'trust'
+))
+
+
+def shared_holding(nature):
+    """
+    Get the name of the company or partnership that a nature of ownership names
+
+    :param str nature: The nature of ownership
+    :returns: The name, in lower case, or None if the nature of ownership does not name a company or partnership
+    """
+
+    name = nature.strip().lower()
+    words = [word for word in re.findall(r"[a-z0-9&']+", _RE_COMPANY.sub(' ', name)) if word not in _GENERIC_WORDS]
+    return name if _RE_COMPANY.search(name) and words else None
+
 
 # Derivative securities with these words in their title are options: their value is less than the shares they cover
 _RE_OPTION = re.compile(r'option|right to buy|appreciation', re.IGNORECASE)
@@ -218,7 +253,9 @@ def read_insider_zip(zip_path, ciks):
     :param set(int) ciks: The companies (issuers) to read
     :returns: The dict of company CIK to the list of transactions. A transaction is a dict of "accn", "filed",
         "owner" (the insider's CIK), "name", "title", "kind" ("sale", "purchase", "grant", "option", "exercise",
-        "withheld" or "issuer"), "date", "shares" and "price" (as reported; for an option, its exercise price).
+        "withheld" or "issuer"), "date", "shares", "price" (as reported; for an option, its exercise price) and
+        "holding" - for shares held through a named company or partnership, its name and the shares it held
+        afterward; None for other shares.
     """
 
     transactions = {}
@@ -249,6 +286,7 @@ def read_insider_zip(zip_path, ciks):
                     continue
                 shares = parse_number(row['TRANS_SHARES'])
                 price = parse_number(row['TRANS_PRICEPERSHARE'])
+                holding = shared_holding(row['NATURE_OF_OWNERSHIP']) if row['DIRECT_INDIRECT_OWNERSHIP'] == 'I' else None
                 if table == 'DERIV_TRANS.tsv':
                     # A derivative covers its underlying shares; an option's price is its exercise price. Only an
                     # option costs anything to exercise: share units convert for nothing.
@@ -270,7 +308,8 @@ def read_insider_zip(zip_path, ciks):
                     'kind': kind,
                     'date': date,
                     'shares': shares,
-                    'price': price if price and price > 0 else None
+                    'price': price if price and price > 0 else None,
+                    'holding': holding and [holding, parse_number(row['SHRS_OWND_FOLWNG_TRANS'])]
                 })
     return transactions
 
@@ -291,7 +330,8 @@ def load_insider(raw_dir, ciks, log=print):
     names = sorted(name for name in os.listdir(insider_dir) if name.endswith('_form345.zip')) if os.path.isdir(insider_dir) else []
     if not names:
         return {}, []
-    stamp = [INSIDER_VERSION, sorted(ciks), [[name, os.path.getsize(os.path.join(insider_dir, name))] for name in names]]
+    stats = [os.stat(os.path.join(insider_dir, name)) for name in names]
+    stamp = [INSIDER_VERSION, sorted(ciks), [[name, stat.st_size, int(stat.st_mtime)] for name, stat in zip(names, stats)]]
     cache_path = os.path.join(raw_dir, 'insider-cache.json')
     if os.path.exists(cache_path):
         with open(cache_path, 'r', encoding='utf-8') as cache_file:
@@ -330,11 +370,19 @@ def missing_quarters(names, first_year, last_year):
 #
 
 
-# The dollar amounts summed by year, by insider and by filing, and the transaction kind behind each
-_AMOUNTS = {
+# The dollar amount each transaction kind adds to, by year, by insider and by filing
+_KIND_AMOUNTS = {
     'sale': 'sales', 'purchase': 'purchases', 'exercise': 'exercised', 'withheld': 'withheld', 'issuer': 'toIssuer', 'grant': 'grants',
     'option': 'optionGrants'
 }
+
+# The dollar amounts
+AMOUNTS = tuple(_KIND_AMOUNTS.values())
+
+# The days either side of a transaction within which its price is compared with the company's other reported prices,
+# and how many times the median of those prices, or what part of it, a price can be before it is taken as an error
+PRICE_DAYS = 30
+PRICE_FACTOR = 25
 
 
 def price_series(transactions):
@@ -349,7 +397,7 @@ def price_series(transactions):
     by_day = {}
     for transaction in transactions:
         if transaction['kind'] in ('sale', 'purchase', 'withheld') and transaction['price']:
-            by_day.setdefault(datetime.date.fromisoformat(transaction['date']).toordinal(), []).append(transaction['price'])
+            by_day.setdefault(parse_date(transaction['date']).toordinal(), []).append(transaction['price'])
     days = sorted(by_day)
     return days, [statistics.median(by_day[day]) for day in days]
 
@@ -372,25 +420,30 @@ def nearest_price(series, day, max_days):
     return prices[nearest]
 
 
-def is_odd_price(series, day, price, window_days=30):
+def is_odd_price(series, day, price):
     """
-    Test whether a reported price is far from the company's other reported prices around the day - more than three
-    times, or less than a third of, the median of at least three days' prices. Such a price is nearly always an
-    error in the filing, for example a total entered as a price.
+    Test whether a reported price is far from the company's other reported prices - nearly always an error in the
+    filing, such as a total entered as a price.
+
+    The price is compared with the median of the prices reported within PRICE_DAYS of it or, with fewer than three
+    such days, of all the company's reported prices. It is odd if it is more than PRICE_FACTOR times the median, or
+    less than the median over PRICE_FACTOR. The band is wide so that trades on either side of a stock split are
+    kept: the prices are as reported, not adjusted for splits.
 
     :param tuple series: The price series
     :param int day: The day ordinal
     :param float price: The reported price
-    :param int window_days: The days either side to compare with
     :rtype: bool
     """
 
     days, prices = series
-    window = prices[bisect.bisect_left(days, day - window_days):bisect.bisect_right(days, day + window_days)]
+    window = prices[bisect.bisect_left(days, day - PRICE_DAYS):bisect.bisect_right(days, day + PRICE_DAYS)]
+    if len(window) < 3:
+        window = prices
     if len(window) < 3:
         return False
     median = statistics.median(window)
-    return price > 3 * median or price < median / 3
+    return price > PRICE_FACTOR * median or price < median / PRICE_FACTOR
 
 
 def buyback_quarters(periods):
@@ -418,7 +471,9 @@ def buyback_quarters(periods):
             amount = abs(fact[F_VAL]) - previous
             if amount < 0:
                 break
-            quarters.setdefault(end, {'start': quarter_start, 'end': end, 'buybacks': amount})
+            # A quarter reported again with dates a day or two off is the same quarter
+            if not any(quarter['start'] <= end and quarter_start <= quarter['end'] for quarter in quarters.values()):
+                quarters[end] = {'start': quarter_start, 'end': end, 'buybacks': amount}
             previous = abs(fact[F_VAL])
             quarter_start = (parse_date(end) + datetime.timedelta(days=1)).isoformat()
     return [quarters[end] for end in sorted(quarters)]
@@ -439,7 +494,8 @@ def insider_summary(transactions, first_year, last_year, thresholds, quarters=()
     the shares it covers, so this overstates option grants. A grant with no reported price near it is left out.
 
     A reported price far from the company's other reported prices is taken to be a filing error, and the transaction
-    is left out. So is an exercise price above the share price: nobody pays more than the market to exercise.
+    is left out. So is an exercise price above the share price: nobody pays more than the market to exercise. A
+    transaction of a named company or partnership that two insiders both report is counted once.
 
     :param list(dict) transactions: The company's transactions
     :param int first_year: The first calendar year
@@ -455,20 +511,29 @@ def insider_summary(transactions, first_year, last_year, thresholds, quarters=()
         if quarter['start'] >= f'{first_year}-01-01' and quarter['end'] <= f'{last_year}-12-31'
     ]
     quarter_starts = [quarter['start'] for quarter in quarters]
-    years = {year: {'year': year, **dict.fromkeys(_AMOUNTS.values(), 0)} for year in range(first_year, last_year + 1)}
+    years = {year: {'year': year, **dict.fromkeys(AMOUNTS, 0)} for year in range(first_year, last_year + 1)}
     series = price_series(transactions)
     people = {}
+    holdings = {}
     for transaction in sorted(transactions, key=lambda transaction: (transaction['filed'] or '', transaction['accn'])):
         year = years.get(int(transaction['date'][:4]))
         if year is None:
             continue
+
+        # Two insiders who share a company or partnership each report its transactions. Count each once: for the
+        # insider who filed first.
+        holding = transaction['holding']
+        if holding is not None and holding[1] is not None:
+            key = (transaction['kind'], transaction['date'], transaction['shares'], transaction['price'], *holding)
+            if holdings.setdefault(key, transaction['owner']) != transaction['owner']:
+                continue
         kind = transaction['kind']
         shares = transaction['shares']
         price = transaction['price']
-        day = datetime.date.fromisoformat(transaction['date']).toordinal()
+        day = parse_date(transaction['date']).toordinal()
         person = people.setdefault(transaction['owner'], {
             'cik': transaction['owner'], 'name': transaction['name'], 'title': transaction['title'], 'filings': {},
-            **dict.fromkeys(_AMOUNTS.values(), 0)
+            **dict.fromkeys(AMOUNTS, 0)
         })
         person['title'] = transaction['title']  # the title on the insider's latest filing
 
@@ -480,19 +545,19 @@ def insider_summary(transactions, first_year, last_year, thresholds, quarters=()
             market = nearest_price(series, day, thresholds['grant_price_days'])
             if price is not None and market is not None and price > market:
                 price = None
-        elif price is not None and kind != 'issuer' and is_odd_price(series, day, price):
+        elif price is not None and is_odd_price(series, day, price):
             price = None
         if price is None:
             # No price to value it at. Shares returned to the company for nothing are a forfeit, not a sale.
             continue
 
         # Add it to the year, the insider and the filing
-        amount = _AMOUNTS[kind]
+        amount = _KIND_AMOUNTS[kind]
         value = shares * price
         year[amount] += value
         person[amount] += value
         filing = person['filings'].setdefault(transaction['accn'], {
-            'accn': transaction['accn'], 'filed': transaction['filed'], **dict.fromkeys(_AMOUNTS.values(), 0)
+            'accn': transaction['accn'], 'filed': transaction['filed'], **dict.fromkeys(AMOUNTS, 0)
         })
         filing[amount] += value
 
@@ -508,7 +573,7 @@ def insider_summary(transactions, first_year, last_year, thresholds, quarters=()
     def cash_out(item):
         return item['sales'] + item['withheld'] + item['toIssuer'] - item['purchases'] - item['exercised']
 
-    summary = {amount: sum(year[amount] for year in years.values()) for amount in _AMOUNTS.values()}
+    summary = {amount: sum(year[amount] for year in years.values()) for amount in AMOUNTS}
     filings = [filing for person in people.values() for filing in person['filings'].values()]
     for item in (summary, *years.values(), *people.values(), *filings):
         item['cashOut'] = cash_out(item)
@@ -518,7 +583,7 @@ def insider_summary(transactions, first_year, last_year, thresholds, quarters=()
         (person for person in people.values() if person['cashOut'] > 0), key=lambda person: (-person['cashOut'], person['name'])
     )
     for person in sellers[:5]:
-        person['filings'] = sorted(person['filings'].values(), key=lambda filing: (filing['filed'], filing['accn']))
+        person['filings'] = sorted(person['filings'].values(), key=lambda filing: (filing['filed'] or '', filing['accn']))
     return {
         **summary,
         'years': list(years.values()),
