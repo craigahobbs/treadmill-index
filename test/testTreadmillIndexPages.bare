@@ -189,7 +189,9 @@ async function testMain_index():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -383,7 +385,9 @@ async function testMain_indexAll():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -579,7 +583,9 @@ async function testMain_indexShowAll():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -777,7 +783,9 @@ async function testMain_indexFind():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -961,7 +969,9 @@ async function testMain_indexFindTicker():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -1144,7 +1154,9 @@ async function testMain_indexNoMatch():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -1320,7 +1332,9 @@ async function testMain_indexUnknownArgs():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -1512,7 +1526,9 @@ async function testMain_indexInsiderSort():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -1693,7 +1709,9 @@ async function testMain_indexCapitalLed():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -1865,7 +1883,9 @@ async function testMain_indexFailed():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -2128,7 +2148,9 @@ async function testMain_company():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -2378,7 +2400,9 @@ async function testMain_companyPerson():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -2639,7 +2663,9 @@ async function testMain_companyOneOff():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -2841,7 +2867,9 @@ async function testMain_companyCapitalLed():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -3060,7 +3088,9 @@ async function testMain_companyNoCostLine():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -3290,7 +3320,9 @@ async function testMain_companyNoGrossProfit():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -3502,7 +3534,9 @@ async function testMain_companyNoCashOut():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -3742,7 +3776,9 @@ async function testMain_companyCashGenerative():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -3895,7 +3931,9 @@ async function testMain_companyExcluded():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -4095,7 +4133,9 @@ async function testMain_companyNoIndustryName():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -4295,7 +4335,9 @@ async function testMain_companyNoIndustry():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -4349,7 +4391,9 @@ async function testMain_companyUnknown():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -4401,7 +4445,9 @@ async function testMain_companyNoCik():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -4535,7 +4581,9 @@ async function testMain_totals():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -4717,7 +4765,9 @@ async function testMain_method():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -4885,7 +4935,9 @@ async function testMain_data():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])
@@ -5051,7 +5103,9 @@ async function testMain_dataNoBuilds():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no finding about any one company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.', \
+                '', \
+                'The source code, the method and every data file are on [GitHub](https://github.com/craigahobbs/treadmill-index).' \
             ] \
         ] \
     ])

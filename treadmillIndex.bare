@@ -63,13 +63,19 @@ async function tiMain():
         'History starts about 2009, when the SEC began collecting financial statements as data.', \
         '', \
         'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-        "and it makes no finding about any one company's intent." \
+        "and it makes no finding about any one company's intent.", \
+        '', \
+        'The source code, the method and every data file are on [GitHub](' + tiRepositoryURL + ').' \
     )
 endfunction
 
 
 # The application title
 tiTitle = 'The Treadmill Index'
+
+
+# The project's GitHub repository
+tiRepositoryURL = 'https://github.com/craigahobbs/treadmill-index'
 
 
 # The application pages
@@ -1526,7 +1532,7 @@ function tiDataPage(meta, builds):
         '', \
         'If a figure here does not match the linked SEC filing, it is an error in this index. Confirmed errors are corrected in', \
         'a timely manner and noted in the change log. Report one at the', \
-        '[project repository](https://github.com/craigahobbs/treadmill-index/issues) with the company and the year.' \
+        '[project repository](' + tiRepositoryURL + '/issues) with the company and the year.' \
     )
 endfunction
 
