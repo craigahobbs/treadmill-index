@@ -64,7 +64,7 @@ async function tiMain():
         'History starts about 2009, when the SEC began collecting financial statements as data.', \
         '', \
         'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-        "and it makes no statement about any company's intent." \
+        "and it makes no finding about any one company's intent." \
     )
 endfunction
 
@@ -294,12 +294,22 @@ function tiIndexPage(args, meta, index):
         '', \
         '## What a high rank can mean for a shareholder', \
         '', \
-        'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the ' + \
-            count + ' companies', \
-        'here recorded ' + tiBillions(objectGet(screened, 'cumSbc')) + ' of stock pay against ' + \
-            tiBillions(objectGet(screened, 'cumFcf')) + ' of free cash flow (' + \
+        '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
+        'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
+        'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+        'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
+        'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
+        'which companies: a real bet on growth looks the same until it pays off.', \
+        '', \
+        '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
+        'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
+        'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
+        'which way its numbers point. Insider grants and sales are not measured in this release.', \
+        '', \
+        'Together the ' + count + ' companies here recorded ' + tiBillions(objectGet(screened, 'cumSbc')) + \
+            ' of stock pay against ' + tiBillions(objectGet(screened, 'cumFcf')) + ' of free cash flow (' + \
             argsLink(tiArguments, 'group totals', {'page': 'totals'}, true) + ').', \
-        'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+        'Whatever the reason, this is what it costs a shareholder:', \
         '', \
         '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
         '  existing share owns a smaller part of the company.', \
@@ -308,16 +318,16 @@ function tiIndexPage(args, meta, index):
         '  can go to offsetting new shares rather than to owners.', \
         '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
         '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-        "- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder's return depends on", \
-        '  margins improving later, or on the share price alone.', \
+        '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
+        '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: ' + \
+            objectGet(objectGet(meta, 'cost'), 'full') + ' of the ' + objectGet(funnel, 'ranked') + ' ranked', \
+        '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
+        '  to check, and more likely to be wrong.', \
         '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
         '  when the price is weak, or pay has to move to cash.', \
-        '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
-        "  return does not depend on owner cash as an outside owner's does. This release does not yet measure their grants and sales.", \
         '', \
-        '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
-        'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
-        'may have accepted it. ' + objectGet(objectGet(meta, 'latest'), 'cleared') + ' of the ' + count + \
+        "**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company's purpose, and not", \
+        'a forecast that its shares will fall. ' + objectGet(objectGet(meta, 'latest'), 'cleared') + ' of the ' + count + \
             ' had meaningful owner cash in their latest 12 months, and ' + \
             (count - objectGet(objectGet(totals, 'notCapitalLed'), 'companies')) + ' are capital-led: their', \
         'shortfall is mostly investment. Each company page lists what cuts the other way.', \
@@ -990,8 +1000,9 @@ function tiMethodPage(meta):
         '', \
         'Mature companies whose revenue growth has not become meaningful cash for outside owners because the cash goes out as', \
         'stock pay. It ranks how owners have been treated. It does not predict share prices, it is not a trading', \
-        'recommendation, and it does not measure intent. Paying staff in stock, and reporting profit before stock pay, are', \
-        'legal and disclosed.', \
+        'recommendation, and it does not measure intent: the view that some companies keep the pattern going on purpose is', \
+        "this index's, stated on the index page, and is not a finding about any one company. Paying staff in stock, and", \
+        'reporting profit before stock pay, are legal and disclosed.', \
         '', \
         '## Definitions', \
         '', \

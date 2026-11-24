@@ -48,6 +48,7 @@ Local Makefile:
 
 - Never call a company's conduct fraud, a scam, or misleading unless a court or regulator has. The index measures how owners were treated, not intent. The evidence gathered did not support fraud; what it supports is a governance and disclosure finding.
 - It is not a short list or investment advice. Say so in the app.
+- The index page states the owner's view that some companies keep the pattern going on purpose, at shareholders' expense (owner's decision, 2026-11-24, over the assistant's weaker wording). That view is about the pattern. It is never attached to a named company, and a company page never says or implies it.
 - Every published figure must trace to an SEC filing (accession number). Compute in code; never estimate; show missing as missing.
 - Include what cuts the other way: recent improvement, one-off causes, targets met.
 - Keep screen scores and full scores separate.

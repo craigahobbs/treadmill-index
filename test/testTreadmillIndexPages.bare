@@ -44,9 +44,20 @@ async function testMain_index():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
-                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
+                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
+                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
+                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
+                'which companies: a real bet on growth looks the same until it pays off.', \
+                '', \
+                '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
+                'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
+                'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
+                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                '', \
+                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'Whatever the reason, this is what it costs a shareholder:', \
                 '', \
                 '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
                 '  existing share owns a smaller part of the company.', \
@@ -54,16 +65,15 @@ async function testMain_index():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
-                '  margins improving later, or on the share price alone.', \
+                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
+                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
+                '  to check, and more likely to be wrong.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
-                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
-                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
                 '', \
-                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
-                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
-                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
+                'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
                 'shortfall is mostly investment. Each company page lists what cuts the other way.', \
                 '', \
                 '## The index' \
@@ -198,7 +208,7 @@ async function testMain_index():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -247,9 +257,20 @@ async function testMain_indexAll():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
-                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
+                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
+                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
+                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
+                'which companies: a real bet on growth looks the same until it pays off.', \
+                '', \
+                '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
+                'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
+                'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
+                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                '', \
+                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'Whatever the reason, this is what it costs a shareholder:', \
                 '', \
                 '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
                 '  existing share owns a smaller part of the company.', \
@@ -257,16 +278,15 @@ async function testMain_indexAll():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
-                '  margins improving later, or on the share price alone.', \
+                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
+                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
+                '  to check, and more likely to be wrong.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
-                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
-                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
                 '', \
-                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
-                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
-                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
+                'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
                 'shortfall is mostly investment. Each company page lists what cuts the other way.', \
                 '', \
                 '## The index' \
@@ -403,7 +423,7 @@ async function testMain_indexAll():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -454,9 +474,20 @@ async function testMain_indexShowAll():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
-                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
+                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
+                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
+                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
+                'which companies: a real bet on growth looks the same until it pays off.', \
+                '', \
+                '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
+                'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
+                'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
+                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                '', \
+                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'Whatever the reason, this is what it costs a shareholder:', \
                 '', \
                 '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
                 '  existing share owns a smaller part of the company.', \
@@ -464,16 +495,15 @@ async function testMain_indexShowAll():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
-                '  margins improving later, or on the share price alone.', \
+                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
+                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
+                '  to check, and more likely to be wrong.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
-                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
-                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
                 '', \
-                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
-                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
-                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
+                'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
                 'shortfall is mostly investment. Each company page lists what cuts the other way.', \
                 '', \
                 '## The index' \
@@ -612,7 +642,7 @@ async function testMain_indexShowAll():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -663,9 +693,20 @@ async function testMain_indexFind():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
-                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
+                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
+                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
+                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
+                'which companies: a real bet on growth looks the same until it pays off.', \
+                '', \
+                '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
+                'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
+                'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
+                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                '', \
+                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'Whatever the reason, this is what it costs a shareholder:', \
                 '', \
                 '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
                 '  existing share owns a smaller part of the company.', \
@@ -673,16 +714,15 @@ async function testMain_indexFind():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
-                '  margins improving later, or on the share price alone.', \
+                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
+                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
+                '  to check, and more likely to be wrong.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
-                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
-                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
                 '', \
-                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
-                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
-                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
+                'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
                 'shortfall is mostly investment. Each company page lists what cuts the other way.', \
                 '', \
                 '## The index' \
@@ -823,7 +863,7 @@ async function testMain_indexFind():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -868,9 +908,20 @@ async function testMain_indexFindTicker():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
-                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
+                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
+                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
+                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
+                'which companies: a real bet on growth looks the same until it pays off.', \
+                '', \
+                '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
+                'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
+                'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
+                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                '', \
+                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'Whatever the reason, this is what it costs a shareholder:', \
                 '', \
                 '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
                 '  existing share owns a smaller part of the company.', \
@@ -878,16 +929,15 @@ async function testMain_indexFindTicker():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
-                '  margins improving later, or on the share price alone.', \
+                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
+                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
+                '  to check, and more likely to be wrong.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
-                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
-                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
                 '', \
-                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
-                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
-                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
+                'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
                 'shortfall is mostly investment. Each company page lists what cuts the other way.', \
                 '', \
                 '## The index' \
@@ -1021,7 +1071,7 @@ async function testMain_indexFindTicker():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -1068,9 +1118,20 @@ async function testMain_indexNoMatch():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
-                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
+                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
+                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
+                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
+                'which companies: a real bet on growth looks the same until it pays off.', \
+                '', \
+                '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
+                'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
+                'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
+                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                '', \
+                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'Whatever the reason, this is what it costs a shareholder:', \
                 '', \
                 '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
                 '  existing share owns a smaller part of the company.', \
@@ -1078,16 +1139,15 @@ async function testMain_indexNoMatch():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
-                '  margins improving later, or on the share price alone.', \
+                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
+                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
+                '  to check, and more likely to be wrong.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
-                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
-                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
                 '', \
-                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
-                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
-                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
+                'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
                 'shortfall is mostly investment. Each company page lists what cuts the other way.', \
                 '', \
                 '## The index' \
@@ -1218,7 +1278,7 @@ async function testMain_indexNoMatch():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -1265,9 +1325,20 @@ async function testMain_indexUnknownArgs():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
-                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
+                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
+                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
+                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
+                'which companies: a real bet on growth looks the same until it pays off.', \
+                '', \
+                '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
+                'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
+                'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
+                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                '', \
+                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'Whatever the reason, this is what it costs a shareholder:', \
                 '', \
                 '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
                 '  existing share owns a smaller part of the company.', \
@@ -1275,16 +1346,15 @@ async function testMain_indexUnknownArgs():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
-                '  margins improving later, or on the share price alone.', \
+                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
+                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
+                '  to check, and more likely to be wrong.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
-                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
-                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
                 '', \
-                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
-                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
-                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
+                'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
                 'shortfall is mostly investment. Each company page lists what cuts the other way.', \
                 '', \
                 '## The index' \
@@ -1408,7 +1478,7 @@ async function testMain_indexUnknownArgs():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -1451,9 +1521,20 @@ async function testMain_indexFailed():
                 '', \
                 '## What a high rank can mean for a shareholder', \
                 '', \
-                'A company high on the index has grown for years without the growth reaching outside owners as cash. Together the 5 companies', \
-                'here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
-                'That raises these questions for a shareholder. They are questions to ask, not findings about any one company.', \
+                '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
+                'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
+                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
+                'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
+                'which companies: a real bet on growth looks the same until it pays off.', \
+                '', \
+                '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
+                'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
+                'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
+                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                '', \
+                'Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                'Whatever the reason, this is what it costs a shareholder:', \
                 '', \
                 '- **Your share of the company shrinks.** Stock pay is paid in new shares. Unless the company buys them back, each', \
                 '  existing share owns a smaller part of the company.', \
@@ -1461,16 +1542,15 @@ async function testMain_indexFailed():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The return rests on what has not happened yet.** With little owner cash so far, a shareholder\'s return depends on', \
-                '  margins improving later, or on the share price alone.', \
+                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
+                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
+                '  to check, and more likely to be wrong.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
-                '- **Insiders are paid differently from owners.** Officers and directors receive grants and can sell them, so their', \
-                '  return does not depend on owner cash as an outside owner\'s does. This release does not yet measure their grants and sales.', \
                 '', \
-                '**What a high rank does not mean.** It is not a finding that a company is badly run or overvalued, a forecast that its', \
-                'shares will fall, or a statement about intent. Paying in stock can be a deliberate way to fund growth, and shareholders', \
-                'may have accepted it. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
+                'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
                 'shortfall is mostly investment. Each company page lists what cuts the other way.', \
                 '', \
                 '## The index' \
@@ -1594,7 +1674,7 @@ async function testMain_indexFailed():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -1772,7 +1852,7 @@ async function testMain_company():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -1949,7 +2029,7 @@ async function testMain_companyOneOff():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -2103,7 +2183,7 @@ async function testMain_companyCapitalLed():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -2268,7 +2348,7 @@ async function testMain_companyNoCostLine():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -2424,7 +2504,7 @@ async function testMain_companyCashGenerative():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -2529,7 +2609,7 @@ async function testMain_companyExcluded():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -2682,7 +2762,7 @@ async function testMain_companyNoIndustryName():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -2835,7 +2915,7 @@ async function testMain_companyNoIndustry():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -2889,7 +2969,7 @@ async function testMain_companyUnknown():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -2941,7 +3021,7 @@ async function testMain_companyNoCik():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -3026,7 +3106,7 @@ async function testMain_totals():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -3110,7 +3190,7 @@ async function testMain_explore():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -3200,7 +3280,7 @@ async function testMain_exploreMoved():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -3280,7 +3360,7 @@ async function testMain_exploreFailed():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -3323,8 +3403,9 @@ async function testMain_method():
                 '', \
                 'Mature companies whose revenue growth has not become meaningful cash for outside owners because the cash goes out as', \
                 'stock pay. It ranks how owners have been treated. It does not predict share prices, it is not a trading', \
-                'recommendation, and it does not measure intent. Paying staff in stock, and reporting profit before stock pay, are', \
-                'legal and disclosed.', \
+                'recommendation, and it does not measure intent: the view that some companies keep the pattern going on purpose is', \
+                'this index\'s, stated on the index page, and is not a finding about any one company. Paying staff in stock, and', \
+                'reporting profit before stock pay, are legal and disclosed.', \
                 '', \
                 '## Definitions', \
                 '', \
@@ -3427,7 +3508,7 @@ async function testMain_method():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -3543,7 +3624,7 @@ async function testMain_data():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -3612,7 +3693,7 @@ async function testMain_downloads():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
@@ -3679,7 +3760,7 @@ async function testMain_downloadsNoBuilds():
                 'History starts about 2009, when the SEC began collecting financial statements as data.', \
                 '', \
                 'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
-                'and it makes no statement about any company\'s intent.' \
+                'and it makes no finding about any one company\'s intent.' \
             ] \
         ] \
     ])
