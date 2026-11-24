@@ -296,7 +296,7 @@ function tiIndexPage(args, meta, index):
         '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
         'growth, and on profit measures that leave stock pay out. Where that revenue is held up by spending that has to go on,', \
         'such as a large sales force, a valuation on owner cash would be far lower. At the higher valuation its insiders are', \
-        'granted shares, and can sell them, every year. The view of this index is that at some companies this is the point: owner', \
+        'granted shares, and can sell them, every year. The theory of this index is that at some companies this is the point: owner', \
         'cash is kept near zero so that the company is never valued on it, while insiders turn grants into cash at the price that', \
         'results. At those companies, shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which', \
         'companies this is deliberate: a real bet on growth looks the same until it pays off.', \
@@ -1218,7 +1218,7 @@ function tiMethodPage(meta):
         '', \
         'Large, growing companies whose revenue growth has not become meaningful cash for outside owners because the cash goes out as', \
         'stock pay. It ranks how owners have been treated. It does not predict share prices, it is not a trading', \
-        'recommendation, and it does not measure intent: the view that some companies keep the pattern going on purpose is', \
+        'recommendation, and it does not measure intent: the theory that some companies keep the pattern going on purpose is', \
         "this index's, stated on the index page, and is not a finding about any one company. Paying staff in stock, and", \
         'reporting profit before stock pay, are legal and disclosed.', \
         '', \
