@@ -1,6 +1,7 @@
 # The Treadmill Index
 
-A public index of large, growing companies whose revenue growth has not become meaningful cash for outside
+[The Treadmill Index](https://craigahobbs.github.io/treadmill-index/)
+is a public index of large, growing companies whose revenue growth has not become meaningful cash for outside
 owners, because the cash goes out as stock pay. It scores three signs together: owner cash that stays near
 zero, operating costs that take all of gross profit, and insiders who take cash out through stock. It ranks
 how owners have been treated. It is not a short list, a price forecast or investment advice, and it makes no

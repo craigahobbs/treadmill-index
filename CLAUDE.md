@@ -93,12 +93,11 @@ Local Makefile:
 
 - Tested on real data: the whole build, on companyfacts.zip with a latest filing of 2026-11-20 and the insider data sets for 2021 Q1 to 2026 Q3.
 - Never done: founding-age check, predecessor combining, split adjustment, history before 2009.
-- The pages have been checked as static renders (`bare -l` output, screenshot of the HTML file). The live application in MarkdownUp (navigation, the find box) has not been looked at in a browser.
+- Published on 2026-11-24: GitHub Pages serves `main` from the repo root at https://craigahobbs.github.io/treadmill-index/, so every push to `main` publishes. The live index, company, totals, methodology and data pages and a find query were checked in headless Chrome that day. Clicking through in a real browser has not been done by the assistant.
 
 ## Waiting on the owner
 
 - Refreshing the insider-transaction data sets each quarter: the owner runs `SEC_USER_AGENT="..." make insider-data` himself. www.sec.gov refuses these without a User-Agent that gives a contact address. The 23 files for 2021 Q1 to 2026 Q3 are in data/raw/insider/ (git-ignored).
-- Publishing: the GitHub repository and Pages. The data page's corrections link points at github.com/craigahobbs/treadmill-index, which does not exist yet.
 - A license, and a lawyer's read of the index page's headline paragraph and the methodology page before launch.
 - Update cadence (quarterly suggested).
 
