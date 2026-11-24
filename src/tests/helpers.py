@@ -1,6 +1,7 @@
 # pylint: disable=missing-function-docstring, missing-module-docstring
 
 import json
+import zipfile
 
 from treadmill_index.extract import extract_company
 
@@ -66,3 +67,48 @@ def company_bytes(**kwargs):
 
 def company_record(**kwargs):
     return extract_company(company_bytes(**kwargs))
+
+
+#
+# Insider-transaction data sets
+#
+
+
+INSIDER_TABLES = {
+    'SUBMISSION.tsv': ('ACCESSION_NUMBER', 'FILING_DATE', 'DOCUMENT_TYPE', 'ISSUERCIK'),
+    'REPORTINGOWNER.tsv': ('ACCESSION_NUMBER', 'RPTOWNERCIK', 'RPTOWNERNAME', 'RPTOWNER_RELATIONSHIP', 'RPTOWNER_TITLE'),
+    'NONDERIV_TRANS.tsv': (
+        'ACCESSION_NUMBER', 'TRANS_DATE', 'TRANS_CODE', 'TRANS_ACQUIRED_DISP_CD', 'TRANS_SHARES', 'TRANS_PRICEPERSHARE',
+        'DIRECT_INDIRECT_OWNERSHIP', 'NATURE_OF_OWNERSHIP'
+    ),
+    'DERIV_TRANS.tsv': (
+        'ACCESSION_NUMBER', 'TRANS_DATE', 'TRANS_CODE', 'TRANS_ACQUIRED_DISP_CD', 'TRANS_SHARES', 'TRANS_PRICEPERSHARE',
+        'DIRECT_INDIRECT_OWNERSHIP', 'NATURE_OF_OWNERSHIP', 'SECURITY_TITLE', 'CONV_EXERCISE_PRICE', 'UNDLYNG_SEC_SHARES'
+    )
+}
+
+CEO = ('0000001001', 'Doe Jane', 'Director,Officer', 'Chief Executive Officer')
+
+
+def insider_filing(accn, cik=1, filed='18-MAR-2024', form='4', owners=(CEO,), nonderiv=(), deriv=()):
+    """
+    Build a filing for insider_zip. A "nonderiv" row is (date, code, acquired/disposed, shares, price, direct/indirect,
+    nature); a "deriv" row adds (title, exercise price, underlying shares). Trailing values may be left off.
+    """
+
+    return {
+        'SUBMISSION.tsv': [(accn, filed, form, f'{cik:010d}' if isinstance(cik, int) else cik)],
+        'REPORTINGOWNER.tsv': [(accn, *owner) for owner in owners],
+        'NONDERIV_TRANS.tsv': [(accn, *row) for row in nonderiv],
+        'DERIV_TRANS.tsv': [(accn, *row) for row in deriv]
+    }
+
+
+def insider_zip(zip_path, filings):
+    with zipfile.ZipFile(zip_path, 'w') as archive:
+        for table, columns in INSIDER_TABLES.items():
+            lines = ['\t'.join(columns)]
+            for filing in filings:
+                for row in filing[table]:
+                    lines.append('\t'.join(str(value) for value in (*row, *([''] * (len(columns) - len(row))))))
+            archive.writestr(table, '\n'.join(lines) + '\n')

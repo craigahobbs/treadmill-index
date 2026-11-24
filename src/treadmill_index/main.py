@@ -3,14 +3,16 @@ The Treadmill Index build step's command-line script main module
 """
 
 import argparse
+import datetime
 import json
 import os
 import sys
 
 from .extract import load_records
+from .insider import INSIDER_PAGE_URL, download_insider, insider_summary, load_insider
 from .output import build_meta, file_sha256, write_output
-from .score import evaluate, loose_thresholds, run_screen, sensitivity
-from .sec import load_submissions
+from .score import THRESHOLDS, evaluate, loose_thresholds, run_screen, sensitivity
+from .sec import UserAgentError, load_submissions
 
 
 def main(argv=None):
@@ -29,9 +31,33 @@ def main(argv=None):
                         help='the output directory (default is "data")')
     parser.add_argument('--processes', metavar='N', type=int, default=os.cpu_count(),
                         help='the number of extraction processes (default is the CPU count)')
-    parser.add_argument('--user-agent', metavar='TEXT', default=os.environ.get('SEC_USER_AGENT', 'sec-data-client/1.0'),
-                        help='the User-Agent header for SEC requests (default is the SEC_USER_AGENT environment variable)')
+    parser.add_argument('--user-agent', metavar='TEXT', default=os.environ.get('SEC_USER_AGENT'),
+                        help='the User-Agent header for SEC requests, required if any are made: your name and a contact address '
+                        '(default is the SEC_USER_AGENT environment variable)')
+    parser.add_argument('--download-insider', action='store_true',
+                        help='download the SEC insider-transaction data sets to the "insider" directory of --raw, and exit')
     args = parser.parse_args(args=argv)
+    try:
+        return build(args)
+    except UserAgentError as exc:
+        print(exc, file=sys.stderr)
+        return 1
+
+
+def build(args):
+    """
+    Run the build step
+
+    :param args: The parsed command-line arguments
+    :returns: The exit code
+    """
+
+    # Download the insider-transaction data sets?
+    if args.download_insider:
+        missing = download_insider(args.raw, args.user_agent, datetime.date.today())
+        if missing:
+            print(f'{missing} insider-transaction data sets are missing', file=sys.stderr)
+        return 1 if missing else 0
 
     # Extract the companies
     zip_path = os.path.join(args.raw, 'companyfacts.zip')
@@ -44,8 +70,21 @@ def main(argv=None):
     infos = load_submissions(ciks, args.raw, args.user_agent)
     sics = {cik: info['sic'] for cik, info in infos.items()}
 
+    # Summarize the insiders' grants and sales over the latest whole calendar years, if the data sets are there
+    transactions, insider_files = load_insider(args.raw, ciks)
+    last_year = int(data_date[:4]) - 1
+    insiders = None
+    insider_years = None
+    if insider_files:
+        insiders = {}
+        insider_years = (last_year - THRESHOLDS['p3_years'] + 1, last_year)
+        for cik, cik_transactions in transactions.items():
+            summary = insider_summary(cik_transactions, last_year, THRESHOLDS)
+            if summary is not None:
+                insiders[int(cik)] = summary
+
     # Screen, score and write
-    results, funnel = run_screen(records, sics, data_date)
+    results, funnel = run_screen(records, sics, data_date, insiders=insiders)
     sources = {
         'companyfacts': {
             'url': 'https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip',
@@ -53,9 +92,10 @@ def main(argv=None):
             'bytes': os.path.getsize(zip_path),
             'latestFiling': data_date
         },
-        'submissions': {'url': 'https://data.sec.gov/submissions/', 'companies': len(infos)}
+        'submissions': {'url': 'https://data.sec.gov/submissions/', 'companies': len(infos)},
+        'insider': {'url': INSIDER_PAGE_URL, 'files': insider_files}
     }
-    meta = build_meta(results, funnel, in_file, sources, sensitivity(records, sics, data_date, results))
+    meta = build_meta(results, funnel, in_file, sources, sensitivity(records, sics, data_date, results), insider_years)
     problems = write_output(args.out, results, infos, meta)
     if problems:
         for problem in problems:

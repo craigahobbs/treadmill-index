@@ -5,11 +5,14 @@ import os
 from tempfile import TemporaryDirectory
 import unittest
 
-from treadmill_index.output import CSV_FIELDS, build_meta, check_output, company_json, fact_json, file_sha256, index_row, \
-    join_words, money, other_way, percent, ratio, summary_sentences, write_archive, write_json, write_output
+from treadmill_index.insider import insider_summary
+from treadmill_index.output import CSV_FIELDS, build_meta, check_output, company_json, dollars, fact_json, file_sha256, index_row, \
+    insider_json, insider_totals, join_words, money, other_way, percent, ratio, summary_sentences, write_archive, write_json, \
+    write_output
 from treadmill_index.score import THRESHOLDS, evaluate, run_screen, sensitivity
 
 from .helpers import DATA_DATE, REVENUE, annual, company_record
+from .test_insider import TRANSACTIONS
 
 
 INFO = {
@@ -67,8 +70,29 @@ ROW = {
     'capexToSbc': 0.167,
     'capitalLed': False,
     'shareGrowth': None,
+    'p3': None,
+    'p3Years': None,
+    'p3Ratio': None,
+    'insiderSales': None,
+    'insiderGrants': None,
+    'insiderOptionGrants': None,
+    'insiderPurchases': None,
+    'salesToGrants': None,
+    'insiderBothYears': None,
     'flags': [],
     'margins': [-0.02, -0.02, -0.02, -0.02, -0.02, -0.02, -0.02]
+}
+
+INSIDER_ROW = {
+    'p3': 2.4,
+    'p3Years': 2.4,
+    'p3Ratio': 0.0,
+    'insiderSales': 110200,
+    'insiderGrants': 110000,
+    'insiderOptionGrants': 300000,
+    'insiderPurchases': 4000,
+    'salesToGrants': 0.269,
+    'insiderBothYears': 1
 }
 
 SUMMARY = [
@@ -102,6 +126,12 @@ class TestOutput(unittest.TestCase):
             fact_json([240e6, '0000000001-26-000010', '2026-02-15', '10-K', '2025-01-01', 'ShareBasedCompensation']),
             {'v': 240e6, 'accn': '0000000001-26-000010', 'filed': '2026-02-15', 'form': '10-K', 'tag': 'ShareBasedCompensation'}
         )
+
+
+    def test_dollars(self):
+        self.assertIsNone(dollars(None))
+        self.assertEqual(dollars(110200.4), 110200)
+        self.assertIsInstance(dollars(110200.0), int)
 
 
     def test_ratio(self):
@@ -238,8 +268,10 @@ class TestOutput(unittest.TestCase):
         })
 
         # An excluded industry has its inputs but no scores
-        self.assertEqual(index_row(evaluate(company_record(), 6021, DATA_DATE), INFO), {
+        insider = insider_summary(TRANSACTIONS, 2025, THRESHOLDS)
+        self.assertEqual(index_row(evaluate(company_record(), 6021, DATA_DATE, insider=insider), INFO), {
             **ROW,
+            **INSIDER_ROW,
             'sic': 6021,
             'type': 'excluded',
             'excluded': 'bank',
@@ -248,7 +280,71 @@ class TestOutput(unittest.TestCase):
             'p1Years': None,
             'p1Cum': None,
             'p1Latest': None,
-            'p2b': None
+            'p2b': None,
+            'p3': None,
+            'p3Years': None,
+            'p3Ratio': None
+        })
+
+        # Insiders
+        self.assertEqual(index_row(evaluate(company_record(), 7372, DATA_DATE, insider=insider), INFO), {**ROW, **INSIDER_ROW})
+
+
+    def test_insider_json(self):
+        self.assertIsNone(insider_json(None))
+
+        def amounts(**kwargs):
+            return {'sales': 0, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 0, 'optionGrants': 0, **kwargs}
+
+        insider = insider_json(insider_summary(TRANSACTIONS, 2025, THRESHOLDS))
+        self.assertEqual(sorted(insider), [
+            'bothYears', 'giftShares', 'grantShares', 'grants', 'insiders', 'oddPrices', 'optionGrants', 'people', 'purchases',
+            'ratioReason', 'sales', 'salesToGrants', 'sellers', 'toIssuer', 'unvaluedShares', 'withheld', 'years'
+        ])
+        self.assertEqual({key: value for key, value in insider.items() if key not in ('people', 'years')}, {
+            'grantShares': 7000,
+            'giftShares': 305,
+            'bothYears': 1,
+            'ratioReason': None,
+            'unvaluedShares': 0,
+            'oddPrices': 1,
+            'insiders': 3,
+            'sellers': 2,
+            'salesToGrants': 0.269,
+            **amounts(sales=110200, purchases=4000, withheld=5500, toIssuer=540, grants=110000, optionGrants=300000)
+        })
+        self.assertEqual(insider['years'][3], {
+            'year': 2024, 'grantShares': 7000, 'giftShares': 300,
+            **amounts(sales=102000, withheld=5500, toIssuer=540, grants=110000, optionGrants=300000)
+        })
+        self.assertEqual([person['name'] for person in insider['people']], ['Doe Jane', 'Roe Rich'])
+        self.assertEqual(insider['people'][1], {
+            'cik': 1002,
+            'name': 'Roe Rich',
+            'title': 'Director',
+            **amounts(sales=8200),
+            'filings': [{'accn': 'B1', 'filed': '2025-02-04', **amounts(sales=8200)}]
+        })
+        self.assertIsInstance(insider['sales'], int)
+
+
+    def test_insider_totals(self):
+        insider = insider_summary(TRANSACTIONS, 2025, THRESHOLDS)
+        net_seller = {**insider, 'salesToGrants': 1.01}
+        no_ratio = {**insider, 'salesToGrants': None}
+        results = [{'insider': insider}, {'insider': None}, {'insider': net_seller}, {'insider': no_ratio}]
+        self.assertEqual(insider_totals(results), {
+            'companies': 3,
+            'soldMore': 1,
+            'sales': 330600,
+            'purchases': 12000,
+            'withheld': 16500,
+            'toIssuer': 1620,
+            'grants': 330000,
+            'optionGrants': 900000
+        })
+        self.assertEqual(insider_totals([]), {
+            'companies': 0, 'soldMore': 0, 'sales': 0, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 0, 'optionGrants': 0
         })
 
 
@@ -259,7 +355,10 @@ class TestOutput(unittest.TestCase):
             'NetIncomeLoss': [annual(2025, -30)]
         }), 7372, DATA_DATE)
         company = company_json(result, INFO, THRESHOLDS)
-        self.assertEqual(sorted(company), ['cost', 'formerNames', 'otherWay', 'row', 'shareReason', 'summary', 'ttm', 'ttmReason', 'years'])
+        self.assertEqual(sorted(company), [
+            'cost', 'formerNames', 'insider', 'otherWay', 'row', 'shareReason', 'summary', 'ttm', 'ttmReason', 'years'
+        ])
+        self.assertIsNone(company['insider'])
         self.assertEqual(company['row'], {**ROW, 'p1Ex': 18.63, 'cumMarginEx': -0.02, 'buybacks': 150e6, 'flags': ['one_off_years']})
         self.assertEqual(company['formerNames'], ['Old Test Co'])
         self.assertEqual(company['summary'], SUMMARY)
@@ -335,6 +434,11 @@ class TestOutput(unittest.TestCase):
         self.assertIsNone(company['years'][-1]['capex'])
         self.assertEqual(company['formerNames'], [])
 
+        # Insiders
+        result = evaluate(company_record(), None, DATA_DATE, insider=insider_summary(TRANSACTIONS, 2025, THRESHOLDS))
+        company = company_json(result, {}, THRESHOLDS)
+        self.assertEqual((company['insider']['sales'], len(company['insider']['people'])), (110200, 2))
+
 
     def test_check_output(self):
         _, _, results, funnel = screen()
@@ -384,9 +488,10 @@ class TestOutput(unittest.TestCase):
         report = sensitivity(records, sics, DATA_DATE, results)
         meta = build_meta(results, funnel, 20609, SOURCES, report)
         self.assertEqual(sorted(meta), [
-            'cost', 'costMethods', 'dataDate', 'excluded', 'funnel', 'latest', 'methodVersion', 'sensitivity', 'sicExclusions',
-            'sources', 'thresholds', 'totals', 'types'
+            'cost', 'costMethods', 'dataDate', 'excluded', 'funnel', 'insider', 'latest', 'methodVersion', 'sensitivity',
+            'sicExclusions', 'sources', 'thresholds', 'totals', 'types'
         ])
+        self.assertIsNone(meta['insider'])
         self.assertEqual(meta['methodVersion'], '1.0.0')
         self.assertEqual(meta['dataDate'], DATA_DATE)
         self.assertEqual(meta['sources'], SOURCES)
@@ -437,6 +542,27 @@ class TestOutput(unittest.TestCase):
         self.assertEqual(meta['latest'], {'cleared': 1, 'negative': 0, 'fiscalYearBasis': 1})
         self.assertEqual(meta['cost'], {'full': 0, 'zero': 1, 'missing': 0, 'missingAll': 0})
 
+        # Insiders: the first company is capital-led
+        insider = insider_summary(TRANSACTIONS, 2025, THRESHOLDS)
+        records, sics, _, _ = screen()
+        results, funnel = run_screen(records, sics, DATA_DATE, insiders={1: insider, 2: {**insider, 'salesToGrants': 2.0}})
+        meta = build_meta(results, funnel, 5, SOURCES, [], (2021, 2025))
+        self.assertEqual(meta['insider'], {
+            'firstYear': 2021,
+            'lastYear': 2025,
+            'screened': {
+                'companies': 2, 'soldMore': 1, 'sales': 220400, 'purchases': 8000, 'withheld': 11000, 'toIssuer': 1080,
+                'grants': 220000, 'optionGrants': 600000
+            },
+            'notCapitalLed': {
+                'companies': 1, 'soldMore': 0, 'sales': 110200, 'purchases': 4000, 'withheld': 5500, 'toIssuer': 540,
+                'grants': 110000, 'optionGrants': 300000
+            },
+            'cashGenerative': {
+                'companies': 0, 'soldMore': 0, 'sales': 0, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 0, 'optionGrants': 0
+            }
+        })
+
 
     def test_write_output(self):
         _, _, results, funnel = screen()
@@ -480,7 +606,7 @@ class TestOutput(unittest.TestCase):
                 lines[2],
                 '2,Test Co,TEST,1,stock_pay,,7372,Services-Prepackaged Software,37.27,18.63,10.0,3.73,4.9,13,,7,2019,2025,2025-12-31,'
                 '2000000000.0,2.0,7,-0.02,,-0.02,-0.02,ttm,2026-09-30,10150000000.0,1015000000.0,1218000000.0,203000000.0,'
-                '-203000000.0,0.1,0.12,0,0,0,0.167,False,,0.0,1,0.55,0.55,'
+                '-203000000.0,0.1,0.12,0,0,0,0.167,False,,0.0,1,0.55,0.55,,,,,,,,,,'
             )
             self.assertTrue(lines[3].endswith(',no_cost_line latest_is_fiscal_year'))
             self.assertTrue(lines[5].startswith(',Bank Co,TEST,5,excluded,bank,6021,Services-Prepackaged Software,,,,,,,,7,2019,'))

@@ -36,7 +36,16 @@ THRESHOLDS = {
     # P2b (13 points, scaled to 25 for the screen score)
     'p2b_points': 13,
     'p2b_window_years': 5,
-    'p2b_zero_drop': 10.0
+    'p2b_zero_drop': 10.0,
+
+    # P3 (25 points) - not part of the screen score
+    'p3_years': 5,                  # the latest calendar years
+    'p3_years_points': 12,
+    'p3_ratio_points': 13,
+    'p3_ratio_zero': 0.5,           # sales / grants
+    'p3_ratio_full': 1.5,
+    'p3_price_days': 90,            # a stock award is valued at a reported share price within this many days
+    'p3_unvalued_max': 0.05         # with more than this share of granted shares unvalued, there is no ratio
 }
 
 # The thresholds the sensitivity test moves by a fifth
@@ -365,6 +374,30 @@ def pillar_one(series, latest_margin, thresholds):
     }
 
 
+def pillar_three(insider, thresholds):
+    """
+    Score P3, "insiders granting and selling", from a company's insider summary. P3 is not part of the screen score.
+
+    :param dict insider: The company's insider summary, or None if it has no insider filings
+    :param dict thresholds: The thresholds
+    :returns: The dict of the two parts and the total, or None with no insider filings. The ratio part and the
+        total are None when the ratio of sales to grants cannot be built.
+    """
+
+    if insider is None:
+        return None
+    years_points = thresholds['p3_years_points'] * insider['bothYears'] / thresholds['p3_years']
+    ratio = insider['salesToGrants']
+    if ratio is not None:
+        ratio_points = lin(ratio, thresholds['p3_ratio_zero'], thresholds['p3_ratio_full'], thresholds['p3_ratio_points'])
+    elif insider['grantShares'] == 0:
+        # Sales with no grants at all are beyond any multiple of grants
+        ratio_points = thresholds['p3_ratio_points'] if insider['sales'] > 0 else 0.0
+    else:
+        return {'yearsPoints': years_points, 'ratioPoints': None, 'p3': None}
+    return {'yearsPoints': years_points, 'ratioPoints': ratio_points, 'p3': years_points + ratio_points}
+
+
 def share_change(record, series):
     """
     Compute the annualized change in the diluted share count over the series
@@ -387,7 +420,7 @@ def share_change(record, series):
     return (counts[-1][1] / counts[0][1]) ** (1 / span) - 1, None
 
 
-def evaluate(record, sic, data_date, thresholds=None, options=None):
+def evaluate(record, sic, data_date, thresholds=None, options=None, insider=None):
     """
     Apply the stage-1 screen and the screen score to one company
 
@@ -396,6 +429,7 @@ def evaluate(record, sic, data_date, thresholds=None, options=None):
     :param str data_date: The date of the latest filing in the data
     :param dict thresholds: The thresholds (default is THRESHOLDS)
     :param dict options: The scoring options (default is DEFAULT_OPTIONS)
+    :param dict insider: The company's insider summary, or None if it has no insider filings
     :returns: A dict with "stage", how far the company got through the basic tests: "no_data", "not_current",
         "small", "short", "slow_growth" or "scored". A "scored" company's dict has every input and score.
     """
@@ -512,6 +546,8 @@ def evaluate(record, sic, data_date, thresholds=None, options=None):
         'cost': cost,
         'p2b': p2b,
         'screenScore': screen_score,
+        'insider': insider,
+        'p3': pillar_three(insider, thresholds),
         'capexMissingYears': sum(1 for year in series if year['capexMissing']),
         'shareGrowth': share_growth,
         'shareReason': share_reason,
@@ -520,7 +556,7 @@ def evaluate(record, sic, data_date, thresholds=None, options=None):
     }
 
 
-def run_screen(records, sics, data_date, thresholds=None, options=None):
+def run_screen(records, sics, data_date, thresholds=None, options=None, insiders=None):
     """
     Screen and score every company
 
@@ -529,6 +565,7 @@ def run_screen(records, sics, data_date, thresholds=None, options=None):
     :param str data_date: The date of the latest filing in the data
     :param dict thresholds: The thresholds (default is THRESHOLDS)
     :param dict options: The scoring options (default is DEFAULT_OPTIONS)
+    :param dict insiders: The dict of CIK to insider summary, or None if there is no insider data
     :returns: The tuple of the "scored" results - the ranked companies, then the rest by P1, then the excluded
         industries - and the funnel: the count of companies left after each step of the screen
     """
@@ -536,9 +573,11 @@ def run_screen(records, sics, data_date, thresholds=None, options=None):
     stage_counts = dict.fromkeys(('no_data', 'not_current', 'small', 'short', 'slow_growth', 'scored'), 0)
     results = []
     for record in records:
-        result = evaluate(record, sics.get(record['cik']), data_date, thresholds, options)
+        result = evaluate(record, sics.get(record['cik']), data_date, thresholds, options, (insiders or {}).get(record['cik']))
         stage_counts[result['stage']] += 1
         if result['stage'] == 'scored':
+            if insiders is not None and result['insider'] is None:
+                result['flags'].append('no_insider_filings')
             results.append(result)
 
     # Rank the stock-pay companies that have a screen score

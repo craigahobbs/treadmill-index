@@ -31,15 +31,30 @@ def slim_submission(doc):
     }
 
 
+class UserAgentError(Exception):
+    """
+    An SEC request was needed and no User-Agent was given
+    """
+
+    def __init__(self):
+        super().__init__(
+            'SEC requests need a User-Agent that names you and gives a contact address. Set the SEC_USER_AGENT environment '
+            'variable, for example: SEC_USER_AGENT="Your Name you@example.com"'
+        )
+
+
 def fetch_url(url, user_agent):
     """
-    Fetch a URL
+    Fetch a URL from the SEC
 
     :param str url: The URL
-    :param str user_agent: The User-Agent header
+    :param str user_agent: The User-Agent header. There is no default: the requester must supply their own.
     :rtype: bytes
+    :raises UserAgentError: There is no User-Agent
     """
 
+    if not user_agent:
+        raise UserAgentError()
     request = urllib.request.Request(url, headers={'User-Agent': user_agent})
     with urllib.request.urlopen(request, timeout=60) as response:
         return response.read()
@@ -52,7 +67,7 @@ def load_submissions(ciks, raw_dir, user_agent, pause=0.15, log=print):
 
     :param list(int) ciks: The companies' CIKs
     :param str raw_dir: The raw data directory
-    :param str user_agent: The User-Agent header for SEC requests
+    :param str user_agent: The User-Agent header for SEC requests. It is needed only if a company is fetched.
     :param float pause: The seconds to pause between SEC requests (the SEC allows ten requests a second)
     :param log: The log function
     :returns: The dict of CIK to company information. Companies the SEC has nothing for are left out.

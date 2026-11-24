@@ -17,10 +17,10 @@ published figure links to the SEC filing it came from.
 
 | Part | Where | State |
 | --- | --- | --- |
-| Build step: extract, screen, score, write data files | `src/treadmill_index/` | Stage 1 and the screen score (P1 and P2b) |
+| Build step: extract, screen, score, write data files | `src/treadmill_index/` | Stage 1, the screen score (P1 and P2b), and a provisional P3 from insider filings |
 | Data files | `data/` | `index.json`, `index.csv`, `meta.json`, `company/<CIK>.json`, `archive/` |
 | Web application | `index.html`, `treadmillIndex.md`, `treadmillIndex.bare` | Index, company pages, group totals, threshold explorer, methodology, data and limits, downloads |
-| Full score (P2a, P3, P4) for the top 25 | | Not built. It needs insider-transaction data and hand-checked data. |
+| Full score (P2a, P3, P4) for the top 25 | | Not built. P2a and P4 need hand-checked data. |
 
 
 ## Building the data
@@ -40,8 +40,20 @@ industry codes and tickers, screens and scores every company, checks the result,
 is also copied to `data/archive/<data date>/`.
 
 Industry codes and tickers come from the SEC bulk file `submissions.zip` if it is in `data/raw/`, otherwise
-from the SEC's per-company API, one request per company (about 1,300, cached in `data/raw/`). Set the
-`SEC_USER_AGENT` environment variable to the User-Agent the SEC should see.
+from the SEC's per-company API, one request per company (about 1,300, cached in `data/raw/`).
+
+Any step that makes a request to the SEC requires the `SEC_USER_AGENT` environment variable: your name and a
+contact address, as the SEC asks of automated clients. There is no default, and it is never written to a
+file. Set it for the one command:
+
+~~~
+SEC_USER_AGENT="Your Name you@example.com" make data
+SEC_USER_AGENT="Your Name you@example.com" make insider-data
+~~~
+
+`make insider-data` downloads the SEC's quarterly insider-transaction data sets to `data/raw/insider/`. When they
+are there, `make data` adds each company's insider grants and sales, and a provisional P3, to the data files.
+Without them the build still runs and the pages say insiders are not measured.
 
 `data/raw/` and `*.zip` are git-ignored. Everything else in `data/` is published.
 
@@ -57,6 +69,7 @@ make cover            # Python coverage (100% required)
 make test-app         # the web application's unit tests (100% coverage required)
 make lint             # pylint, and static analysis of the web application
 make data             # build the data files
+make insider-data     # download the SEC insider-transaction data sets
 make test-data        # remake the web application's test data, test/data/
 make check-prototype  # check the build step reproduces the prototype's output
 make run              # serve the application at http://localhost:8080/

@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 import zipfile
 
-from treadmill_index.sec import fetch_url, load_submissions, slim_submission
+from treadmill_index.sec import UserAgentError, fetch_url, load_submissions, slim_submission
 
 
 SUBMISSION = {
@@ -48,6 +48,35 @@ class TestSec(unittest.TestCase):
         self.assertEqual(request.full_url, 'https://data.sec.gov/submissions/CIK0000000001.json')
         self.assertEqual(request.get_header('User-agent'), 'test-client/1.0')
         self.assertEqual(mock_urlopen.call_args.kwargs, {'timeout': 60})
+
+
+    def test_fetch_url_no_user_agent(self):
+        for user_agent in (None, ''):
+            with patch('urllib.request.urlopen') as mock_urlopen:
+                with self.assertRaises(UserAgentError) as cm_exc:
+                    fetch_url('https://data.sec.gov/submissions/CIK0000000001.json', user_agent)
+            mock_urlopen.assert_not_called()
+            self.assertEqual(
+                str(cm_exc.exception),
+                'SEC requests need a User-Agent that names you and gives a contact address. Set the SEC_USER_AGENT environment '
+                'variable, for example: SEC_USER_AGENT="Your Name you@example.com"'
+            )
+
+
+    def test_load_submissions_no_user_agent(self):
+        with TemporaryDirectory() as temp_dir:
+            # A company that must be fetched needs a User-Agent
+            with patch('urllib.request.urlopen') as mock_urlopen, \
+                 patch('time.sleep'):
+                with self.assertRaises(UserAgentError):
+                    load_submissions([1], temp_dir, None)
+            mock_urlopen.assert_not_called()
+            self.assertEqual(os.listdir(temp_dir), [])
+
+            # Cached companies do not
+            with open(os.path.join(temp_dir, 'submissions-cache.json'), 'w', encoding='utf-8') as cache_file:
+                json.dump({'1': SLIM}, cache_file)
+            self.assertEqual(load_submissions([1], temp_dir, None), {1: SLIM})
 
 
     def test_load_submissions(self):

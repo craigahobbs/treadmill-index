@@ -18,7 +18,8 @@ CSV_FIELDS = (
     'p1Latest', 'p2b', 'p1Ex', 'years', 'firstYear', 'lastYear', 'lastEnd', 'revenue', 'growth', 'lowYears', 'cumMargin',
     'cumMarginEx', 'fyMargin', 'latestMargin', 'latestBasis', 'latestEnd', 'cumRevenue', 'cumFcf', 'cumSbc', 'cumCapex',
     'cumOwnerCash', 'cumFcfMargin', 'sbcRevenue', 'buybacks', 'dividends', 'withholding', 'capexToSbc', 'capitalLed',
-    'shareGrowth', 'costChange', 'costMethod', 'costFirst', 'costLast', 'flags'
+    'shareGrowth', 'costChange', 'costMethod', 'costFirst', 'costLast', 'p3', 'p3Years', 'p3Ratio', 'insiderSales',
+    'insiderGrants', 'insiderOptionGrants', 'insiderPurchases', 'salesToGrants', 'insiderBothYears', 'flags'
 )
 
 
@@ -27,7 +28,10 @@ ARCHIVE_FILES = ('index.json', 'index.csv', 'meta.json')
 
 
 # The index.json row's scores
-SCORE_FIELDS = ('screenScore', 'p1', 'p1Years', 'p1Cum', 'p1Latest', 'p1Ex', 'p2b')
+SCORE_FIELDS = ('screenScore', 'p1', 'p1Years', 'p1Cum', 'p1Latest', 'p1Ex', 'p2b', 'p3', 'p3Years', 'p3Ratio')
+
+# The insider summary's dollar amounts
+INSIDER_AMOUNTS = ('sales', 'purchases', 'withheld', 'toIssuer', 'grants', 'optionGrants')
 
 
 def fact_json(fact):
@@ -41,6 +45,17 @@ def fact_json(fact):
     if fact is None:
         return None
     return {'v': fact[F_VAL], 'accn': fact[F_ACCN], 'filed': fact[F_FILED], 'form': fact[F_FORM], 'tag': fact[F_TAG]}
+
+
+def dollars(value):
+    """
+    Round dollars for output
+
+    :param float value: The dollar amount, or None
+    :rtype: int
+    """
+
+    return None if value is None else round(value)
 
 
 def ratio(value, digits=5):
@@ -181,6 +196,8 @@ def index_row(result, info):
 
     p1 = result['p1']
     p1_ex = result['p1Ex'] or {}
+    p3 = result['p3'] or {}
+    insider = result['insider'] or {}
     cost = result['cost'] or {}
     tickers = info.get('tickers') or [None]
     exchanges = info.get('exchanges') or [None]
@@ -231,12 +248,49 @@ def index_row(result, info):
         'capexToSbc': ratio(result['capexToSbc'], 3),
         'capitalLed': result['capitalLed'],
         'shareGrowth': ratio(result['shareGrowth']),
+        'p3': ratio(p3.get('p3'), 2),
+        'p3Years': ratio(p3.get('yearsPoints'), 2),
+        'p3Ratio': ratio(p3.get('ratioPoints'), 2),
+        'insiderSales': dollars(insider.get('sales')),
+        'insiderGrants': dollars(insider.get('grants')),
+        'insiderOptionGrants': dollars(insider.get('optionGrants')),
+        'insiderPurchases': dollars(insider.get('purchases')),
+        'salesToGrants': ratio(insider.get('salesToGrants'), 3),
+        'insiderBothYears': insider.get('bothYears'),
         'flags': result['flags'],
         'margins': [ratio(year['margin'], 4) for year in result['series']]
     }
     if result['excluded']:
         row.update(dict.fromkeys(SCORE_FIELDS))
     return row
+
+
+def insider_json(insider):
+    """
+    Build a company file's insider section: the yearly amounts, and the largest sellers with their filings
+
+    :param dict insider: The company's insider summary, or None
+    :rtype: dict
+    """
+
+    if insider is None:
+        return None
+
+    def amounts(item, keys):
+        return {**{key: item[key] for key in keys}, **{amount: dollars(item[amount]) for amount in INSIDER_AMOUNTS}}
+
+    return {
+        **amounts(insider, ('grantShares', 'giftShares', 'bothYears', 'ratioReason', 'unvaluedShares', 'oddPrices', 'insiders', 'sellers')),
+        'salesToGrants': ratio(insider['salesToGrants'], 3),
+        'years': [amounts(year, ('year', 'grantShares', 'giftShares')) for year in insider['years']],
+        'people': [
+            {
+                **amounts(person, ('cik', 'name', 'title')),
+                'filings': [amounts(filing, ('accn', 'filed')) for filing in person['filings']]
+            }
+            for person in insider['people']
+        ]
+    }
 
 
 def company_json(result, info, thresholds):
@@ -291,7 +345,8 @@ def company_json(result, info, thresholds):
             'lastFacts': [fact_json(fact) for fact in cost['lastFacts']],
             'change': ratio(cost['change'], 2)
         },
-        'shareReason': result['shareReason']
+        'shareReason': result['shareReason'],
+        'insider': insider_json(result['insider'])
     }
 
 
@@ -324,6 +379,23 @@ def check_output(rows, funnel, infos):
     return problems
 
 
+def insider_totals(results):
+    """
+    Total the insiders' amounts of a group of scored companies
+
+    :param list(dict) results: The scored results
+    :returns: The dict of the count of companies with insider filings, the count whose insiders sold more than they
+        were granted, and the total of each amount
+    """
+
+    insiders = [result['insider'] for result in results if result['insider'] is not None]
+    return {
+        'companies': len(insiders),
+        'soldMore': sum(1 for insider in insiders if insider['salesToGrants'] is not None and insider['salesToGrants'] > 1),
+        **{amount: dollars(sum(insider[amount] for insider in insiders)) for amount in INSIDER_AMOUNTS}
+    }
+
+
 def write_json(path, value):
     """
     Write a JSON file
@@ -353,7 +425,7 @@ def file_sha256(path):
     return digest.hexdigest()
 
 
-def build_meta(results, funnel, companies_in_file, sources, sensitivity_report):
+def build_meta(results, funnel, companies_in_file, sources, sensitivity_report, insider_years=None):
     """
     Build meta.json: the as-of date, sources, funnel, thresholds, group totals and sensitivity
 
@@ -362,6 +434,7 @@ def build_meta(results, funnel, companies_in_file, sources, sensitivity_report):
     :param int companies_in_file: The count of companies in the companyfacts file
     :param dict sources: The source files' descriptions - "companyfacts" has "latestFiling", the as-of date
     :param list(dict) sensitivity_report: The sensitivity report
+    :param tuple insider_years: The first and last calendar years of the insider summaries, or None with no insider data
     :rtype: dict
     """
 
@@ -386,6 +459,13 @@ def build_meta(results, funnel, companies_in_file, sources, sensitivity_report):
         'totals': {
             'screened': group_totals(screened),
             'notCapitalLed': group_totals([result for result in screened if not result['capitalLed']])
+        },
+        'insider': None if insider_years is None else {
+            'firstYear': insider_years[0],
+            'lastYear': insider_years[1],
+            'screened': insider_totals(screened),
+            'notCapitalLed': insider_totals([result for result in screened if not result['capitalLed']]),
+            'cashGenerative': insider_totals([result for result in results if result['type'] == 'cash_generative'])
         },
         'latest': {
             'cleared': sum(1 for result in screened if result['latestMargin'] >= line),

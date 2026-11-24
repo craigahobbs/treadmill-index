@@ -27,6 +27,33 @@ endfunction
 unittestRunTest('testMoney')
 
 
+function testDollars():
+    unittestEqual(tiDollars(0), '$0')
+    unittestEqual(tiDollars(5500), '$6K')
+    unittestEqual(tiDollars(999999), '$1,000K')
+    unittestEqual(tiDollars(1000000), '$1.0M')
+    unittestEqual(tiDollars(346022932), '$346.0M')
+    unittestEqual(tiDollars(32825940004), '$32.8B')
+endfunction
+unittestRunTest('testDollars')
+
+
+function testTimes():
+    unittestEqual(tiTimes(null), 'n/a')
+    unittestEqual(tiTimes(0.405), '0.4x')
+    unittestEqual(tiTimes(56.722), '56.7x')
+endfunction
+unittestRunTest('testTimes')
+
+
+function testInsiderAmounts():
+    item = {'sales': 110200, 'grants': 110000, 'optionGrants': 300000, 'withheld': 5500, 'toIssuer': 0, 'purchases': 4000000}
+    unittestDeepEqual(tiInsiderAmounts(['2024'], item), ['2024', '$110K', '$110K', '$300K', '$6K', '$0', '$4.0M'])
+    unittestEqual(arrayLength(tiInsiderHeaders), 6)
+endfunction
+unittestRunTest('testInsiderAmounts')
+
+
 function testBillions():
     unittestEqual(tiBillions(6533800000000), '$6,533.8B')
     unittestEqual(tiBillions(-20800000000), '-$20.8B')

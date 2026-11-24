@@ -65,10 +65,17 @@ async function testMain_index():
                 '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
                 'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
+                [ \
+                    '**What insiders did.** In 2021‑2025, the officers and directors of 2 of these companies sold $114K of shares on the open market.', \
+                    'Over the same years they were granted shares worth $110K, and options over shares worth $300K at the time. At 0 of the 2,', \
+                    'insiders sold more than they were granted; among the cash-generative companies it was 0 of 1.', \
+                    '(The 2 leave out the capital-led companies and those with no insider filings; [group totals](#var.vPage=\'totals\') has every figure.)' \
+                ], \
+                '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
-                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                'which way its numbers point.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -81,7 +88,7 @@ async function testMain_index():
             'markdownPrint', \
             [ \
                 '', \
-                '**Show:** Stock pay (5) | [Thin margin \\(1\\)](#var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vType=\'excluded\') | [All \\(9\\)](#var.vType=\'all\') \\\n**Sort:** Rank | [P1](#var.vSort=\'p1\') | [Cumulative margin](#var.vSort=\'cum\') | [Latest margin](#var.vSort=\'latest\') | [Stock pay](#var.vSort=\'pay\') | [Revenue](#var.vSort=\'revenue\') | [Name](#var.vSort=\'name\')', \
+                '**Show:** Stock pay (5) | [Thin margin \\(1\\)](#var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vType=\'excluded\') | [All \\(9\\)](#var.vType=\'all\') \\\n**Sort:** Rank | [P1](#var.vSort=\'p1\') | [Cumulative margin](#var.vSort=\'cum\') | [Latest margin](#var.vSort=\'latest\') | [Stock pay](#var.vSort=\'pay\') | [Revenue](#var.vSort=\'revenue\') | [Insider sales](#var.vSort=\'insider\') | [Sales / grants](#var.vSort=\'ratio\') | [Name](#var.vSort=\'name\')', \
                 '', \
                 '*Stock pay:* Passed the screen: owner cash is under the line and stock pay is the cause.' \
             ] \
@@ -122,13 +129,13 @@ async function testMain_index():
             [ \
                 '', \
                 [ \
-                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes |', \
-                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
-                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | 2019‑2025 | O F S |', \
-                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019‑2025 |  |', \
-                    '| 3 | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\') |  | 32.6 | 18.6 | 9.8 | -2.0% | -2.0% | 12.0% | $2,000M | 2019‑2025 | C |', \
-                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | 2019‑2025 |  |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019‑2025 | F N X |' \
+                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Insider sales | Insider sales / grants | Years | Notes |', \
+                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
+                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | $4K | n/a | 2019‑2025 | O F S |', \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | $110K | 0.3x | 2019‑2025 |  |', \
+                    '| 3 | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\') |  | 32.6 | 18.6 | 9.8 | -2.0% | -2.0% | 12.0% | $2,000M | n/a | n/a | 2019‑2025 | C I |', \
+                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | n/a | n/a | 2019‑2025 | I |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | n/a | n/a | 2019‑2025 | F N X I |' \
                 ] \
             ] \
         ], \
@@ -138,6 +145,8 @@ async function testMain_index():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
+                'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
                 '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
                 'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
@@ -194,6 +203,12 @@ async function testMain_index():
             'markdownPrint', \
             [ \
                 '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **I** - No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
             ] \
         ], \
         [ \
@@ -276,10 +291,17 @@ async function testMain_indexAll():
                 '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
                 'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
+                [ \
+                    '**What insiders did.** In 2021‑2025, the officers and directors of 2 of these companies sold $114K of shares on the open market.', \
+                    'Over the same years they were granted shares worth $110K, and options over shares worth $300K at the time. At 0 of the 2,', \
+                    'insiders sold more than they were granted; among the cash-generative companies it was 0 of 1.', \
+                    '(The 2 leave out the capital-led companies and those with no insider filings; [group totals](#var.vPage=\'totals\') has every figure.)' \
+                ], \
+                '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
-                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                'which way its numbers point.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -292,7 +314,7 @@ async function testMain_indexAll():
             'markdownPrint', \
             [ \
                 '', \
-                '**Show:** [Stock pay \\(5\\)](#var.vSort=\'p1\') | [Thin margin \\(1\\)](#var.vSort=\'p1\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vSort=\'p1\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vSort=\'p1\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vSort=\'p1\'&var.vType=\'excluded\') | All (9) \\\n**Sort:** [Rank](#var.vType=\'all\') | P1 | [Cumulative margin](#var.vSort=\'cum\'&var.vType=\'all\') | [Latest margin](#var.vSort=\'latest\'&var.vType=\'all\') | [Stock pay](#var.vSort=\'pay\'&var.vType=\'all\') | [Revenue](#var.vSort=\'revenue\'&var.vType=\'all\') | [Name](#var.vSort=\'name\'&var.vType=\'all\')', \
+                '**Show:** [Stock pay \\(5\\)](#var.vSort=\'p1\') | [Thin margin \\(1\\)](#var.vSort=\'p1\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vSort=\'p1\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vSort=\'p1\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vSort=\'p1\'&var.vType=\'excluded\') | All (9) \\\n**Sort:** [Rank](#var.vType=\'all\') | P1 | [Cumulative margin](#var.vSort=\'cum\'&var.vType=\'all\') | [Latest margin](#var.vSort=\'latest\'&var.vType=\'all\') | [Stock pay](#var.vSort=\'pay\'&var.vType=\'all\') | [Revenue](#var.vSort=\'revenue\'&var.vType=\'all\') | [Insider sales](#var.vSort=\'insider\'&var.vType=\'all\') | [Sales / grants](#var.vSort=\'ratio\'&var.vType=\'all\') | [Name](#var.vSort=\'name\'&var.vType=\'all\')', \
                 '', \
                 '*All companies that pass the basic tests.*' \
             ] \
@@ -333,11 +355,11 @@ async function testMain_indexAll():
             [ \
                 '', \
                 [ \
-                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes | Type |', \
-                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
-                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\') | BURN | 50.0 | 25.0 | 13.0 | -13.0% | -13.0% | 12.0% | $2,000M | 2019‑2025 |  | Cash burner |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019‑2025 | F N X | Stock pay |', \
-                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | 2019‑2025 | O F S | Stock pay |' \
+                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Insider sales | Insider sales / grants | Years | Notes | Type |', \
+                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
+                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\') | BURN | 50.0 | 25.0 | 13.0 | -13.0% | -13.0% | 12.0% | $2,000M | n/a | n/a | 2019‑2025 | I | Cash burner |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | n/a | n/a | 2019‑2025 | F N X I | Stock pay |', \
+                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | $4K | n/a | 2019‑2025 | O F S | Stock pay |' \
                 ] \
             ] \
         ], \
@@ -351,6 +373,8 @@ async function testMain_indexAll():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
+                'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
                 '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
                 'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
@@ -407,6 +431,12 @@ async function testMain_indexAll():
             'markdownPrint', \
             [ \
                 '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **I** - No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
             ] \
         ], \
         [ \
@@ -491,10 +521,17 @@ async function testMain_indexShowAll():
                 '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
                 'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
+                [ \
+                    '**What insiders did.** In 2021‑2025, the officers and directors of 2 of these companies sold $114K of shares on the open market.', \
+                    'Over the same years they were granted shares worth $110K, and options over shares worth $300K at the time. At 0 of the 2,', \
+                    'insiders sold more than they were granted; among the cash-generative companies it was 0 of 1.', \
+                    '(The 2 leave out the capital-led companies and those with no insider filings; [group totals](#var.vPage=\'totals\') has every figure.)' \
+                ], \
+                '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
-                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                'which way its numbers point.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -507,7 +544,7 @@ async function testMain_indexShowAll():
             'markdownPrint', \
             [ \
                 '', \
-                '**Show:** [Stock pay \\(5\\)](#var.vSort=\'name\') | [Thin margin \\(1\\)](#var.vSort=\'name\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vSort=\'name\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vSort=\'name\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vSort=\'name\'&var.vType=\'excluded\') | All (9) \\\n**Sort:** [Rank](#var.vAll=true&var.vType=\'all\') | [P1](#var.vAll=true&var.vSort=\'p1\'&var.vType=\'all\') | [Cumulative margin](#var.vAll=true&var.vSort=\'cum\'&var.vType=\'all\') | [Latest margin](#var.vAll=true&var.vSort=\'latest\'&var.vType=\'all\') | [Stock pay](#var.vAll=true&var.vSort=\'pay\'&var.vType=\'all\') | [Revenue](#var.vAll=true&var.vSort=\'revenue\'&var.vType=\'all\') | Name', \
+                '**Show:** [Stock pay \\(5\\)](#var.vSort=\'name\') | [Thin margin \\(1\\)](#var.vSort=\'name\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vSort=\'name\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vSort=\'name\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vSort=\'name\'&var.vType=\'excluded\') | All (9) \\\n**Sort:** [Rank](#var.vAll=true&var.vType=\'all\') | [P1](#var.vAll=true&var.vSort=\'p1\'&var.vType=\'all\') | [Cumulative margin](#var.vAll=true&var.vSort=\'cum\'&var.vType=\'all\') | [Latest margin](#var.vAll=true&var.vSort=\'latest\'&var.vType=\'all\') | [Stock pay](#var.vAll=true&var.vSort=\'pay\'&var.vType=\'all\') | [Revenue](#var.vAll=true&var.vSort=\'revenue\'&var.vType=\'all\') | [Insider sales](#var.vAll=true&var.vSort=\'insider\'&var.vType=\'all\') | [Sales / grants](#var.vAll=true&var.vSort=\'ratio\'&var.vType=\'all\') | Name', \
                 '', \
                 '*All companies that pass the basic tests.*' \
             ] \
@@ -548,17 +585,17 @@ async function testMain_indexShowAll():
             [ \
                 '', \
                 [ \
-                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes | Type |', \
-                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
-                    '|  | [Bank Co](#var.vCik=5&var.vPage=\'company\') | BANK | n/a | n/a | n/a | -10.0% | -10.0% | 20.0% | $2,000M | 2019‑2025 |  | Excluded industry |', \
-                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\') | BURN | 50.0 | 25.0 | 13.0 | -13.0% | -13.0% | 12.0% | $2,000M | 2019‑2025 |  | Cash burner |', \
-                    '| 3 | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\') |  | 32.6 | 18.6 | 9.8 | -2.0% | -2.0% | 12.0% | $2,000M | 2019‑2025 | C | Stock pay |', \
-                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\') | CASH | 0.0 | 0.0 | 0.0 | 8.0% | 8.0% | 2.0% | $2,000M | 2019‑2025 |  | Cash generative |', \
-                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | 2019‑2025 |  | Stock pay |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019‑2025 | F N X | Stock pay |', \
-                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | 2019‑2025 | O F S | Stock pay |', \
-                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019‑2025 |  | Stock pay |', \
-                    '|  | [Thin Co](#var.vCik=7&var.vPage=\'company\') | THIN | 30.9 | 15.4 | 13.0 | 0.6% | 0.6% | 1.9% | $2,000M | 2019‑2025 |  | Thin margin |' \
+                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Insider sales | Insider sales / grants | Years | Notes | Type |', \
+                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
+                    '|  | [Bank Co](#var.vCik=5&var.vPage=\'company\') | BANK | n/a | n/a | n/a | -10.0% | -10.0% | 20.0% | $2,000M | $1.2M | n/a | 2019‑2025 |  | Excluded industry |', \
+                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\') | BURN | 50.0 | 25.0 | 13.0 | -13.0% | -13.0% | 12.0% | $2,000M | n/a | n/a | 2019‑2025 | I | Cash burner |', \
+                    '| 3 | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\') |  | 32.6 | 18.6 | 9.8 | -2.0% | -2.0% | 12.0% | $2,000M | n/a | n/a | 2019‑2025 | C I | Stock pay |', \
+                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\') | CASH | 0.0 | 0.0 | 0.0 | 8.0% | 8.0% | 2.0% | $2,000M | $1.5B | n/a | 2019‑2025 |  | Cash generative |', \
+                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | n/a | n/a | 2019‑2025 | I | Stock pay |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | n/a | n/a | 2019‑2025 | F N X I | Stock pay |', \
+                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | $4K | n/a | 2019‑2025 | O F S | Stock pay |', \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | $110K | 0.3x | 2019‑2025 |  | Stock pay |', \
+                    '|  | [Thin Co](#var.vCik=7&var.vPage=\'company\') | THIN | 30.9 | 15.4 | 13.0 | 0.6% | 0.6% | 1.9% | $2,000M | n/a | n/a | 2019‑2025 | I | Thin margin |' \
                 ] \
             ] \
         ], \
@@ -568,6 +605,8 @@ async function testMain_indexShowAll():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
+                'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
                 '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
                 'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
@@ -624,6 +663,12 @@ async function testMain_indexShowAll():
             'markdownPrint', \
             [ \
                 '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **I** - No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
             ] \
         ], \
         [ \
@@ -708,10 +753,17 @@ async function testMain_indexFind():
                 '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
                 'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
+                [ \
+                    '**What insiders did.** In 2021‑2025, the officers and directors of 2 of these companies sold $114K of shares on the open market.', \
+                    'Over the same years they were granted shares worth $110K, and options over shares worth $300K at the time. At 0 of the 2,', \
+                    'insiders sold more than they were granted; among the cash-generative companies it was 0 of 1.', \
+                    '(The 2 leave out the capital-led companies and those with no insider filings; [group totals](#var.vPage=\'totals\') has every figure.)' \
+                ], \
+                '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
-                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                'which way its numbers point.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -724,7 +776,7 @@ async function testMain_indexFind():
             'markdownPrint', \
             [ \
                 '', \
-                '**Show:** [Stock pay \\(5\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\') | [Thin margin \\(1\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\'&var.vType=\'excluded\') | All (9) \\\n**Sort:** [Rank](#var.vFind=\'CO\'&var.vSic=7372&var.vType=\'all\') | [P1](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'p1\'&var.vType=\'all\') | [Cumulative margin](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'cum\'&var.vType=\'all\') | Latest margin | [Stock pay](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'pay\'&var.vType=\'all\') | [Revenue](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'revenue\'&var.vType=\'all\') | [Name](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'name\'&var.vType=\'all\') \\\n**Industry:** SIC code 7372 ([all industries](#var.vFind=\'CO\'&var.vSort=\'latest\'&var.vType=\'all\'))', \
+                '**Show:** [Stock pay \\(5\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\') | [Thin margin \\(1\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\'&var.vType=\'excluded\') | All (9) \\\n**Sort:** [Rank](#var.vFind=\'CO\'&var.vSic=7372&var.vType=\'all\') | [P1](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'p1\'&var.vType=\'all\') | [Cumulative margin](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'cum\'&var.vType=\'all\') | Latest margin | [Stock pay](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'pay\'&var.vType=\'all\') | [Revenue](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'revenue\'&var.vType=\'all\') | [Insider sales](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'insider\'&var.vType=\'all\') | [Sales / grants](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'ratio\'&var.vType=\'all\') | [Name](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'name\'&var.vType=\'all\') \\\n**Industry:** SIC code 7372 ([all industries](#var.vFind=\'CO\'&var.vSort=\'latest\'&var.vType=\'all\'))', \
                 '', \
                 '*All companies that pass the basic tests.*' \
             ] \
@@ -772,12 +824,12 @@ async function testMain_indexFind():
             [ \
                 '', \
                 [ \
-                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes | Type |', \
-                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019‑2025 | F N X | Stock pay |', \
-                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019‑2025 |  | Stock pay |', \
-                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | 2019‑2025 |  | Stock pay |', \
-                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\') | CASH | 0.0 | 0.0 | 0.0 | 8.0% | 8.0% | 2.0% | $2,000M | 2019‑2025 |  | Cash generative |' \
+                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Insider sales | Insider sales / grants | Years | Notes | Type |', \
+                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | n/a | n/a | 2019‑2025 | F N X I | Stock pay |', \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | $110K | 0.3x | 2019‑2025 |  | Stock pay |', \
+                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | n/a | n/a | 2019‑2025 | I | Stock pay |', \
+                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\') | CASH | 0.0 | 0.0 | 0.0 | 8.0% | 8.0% | 2.0% | $2,000M | $1.5B | n/a | 2019‑2025 |  | Cash generative |' \
                 ] \
             ] \
         ], \
@@ -787,6 +839,8 @@ async function testMain_indexFind():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
+                'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
                 '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
                 'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
@@ -843,6 +897,12 @@ async function testMain_indexFind():
             'markdownPrint', \
             [ \
                 '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **I** - No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
             ] \
         ], \
         [ \
@@ -921,10 +981,17 @@ async function testMain_indexFindTicker():
                 '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
                 'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
+                [ \
+                    '**What insiders did.** In 2021‑2025, the officers and directors of 2 of these companies sold $114K of shares on the open market.', \
+                    'Over the same years they were granted shares worth $110K, and options over shares worth $300K at the time. At 0 of the 2,', \
+                    'insiders sold more than they were granted; among the cash-generative companies it was 0 of 1.', \
+                    '(The 2 leave out the capital-led companies and those with no insider filings; [group totals](#var.vPage=\'totals\') has every figure.)' \
+                ], \
+                '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
-                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                'which way its numbers point.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -937,7 +1004,7 @@ async function testMain_indexFindTicker():
             'markdownPrint', \
             [ \
                 '', \
-                '**Show:** Stock pay (5) | [Thin margin \\(1\\)](#var.vFind=\'spay\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vFind=\'spay\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vFind=\'spay\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vFind=\'spay\'&var.vType=\'excluded\') | [All \\(9\\)](#var.vFind=\'spay\'&var.vType=\'all\') \\\n**Sort:** Rank | [P1](#var.vFind=\'spay\'&var.vSort=\'p1\') | [Cumulative margin](#var.vFind=\'spay\'&var.vSort=\'cum\') | [Latest margin](#var.vFind=\'spay\'&var.vSort=\'latest\') | [Stock pay](#var.vFind=\'spay\'&var.vSort=\'pay\') | [Revenue](#var.vFind=\'spay\'&var.vSort=\'revenue\') | [Name](#var.vFind=\'spay\'&var.vSort=\'name\')', \
+                '**Show:** Stock pay (5) | [Thin margin \\(1\\)](#var.vFind=\'spay\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vFind=\'spay\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vFind=\'spay\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vFind=\'spay\'&var.vType=\'excluded\') | [All \\(9\\)](#var.vFind=\'spay\'&var.vType=\'all\') \\\n**Sort:** Rank | [P1](#var.vFind=\'spay\'&var.vSort=\'p1\') | [Cumulative margin](#var.vFind=\'spay\'&var.vSort=\'cum\') | [Latest margin](#var.vFind=\'spay\'&var.vSort=\'latest\') | [Stock pay](#var.vFind=\'spay\'&var.vSort=\'pay\') | [Revenue](#var.vFind=\'spay\'&var.vSort=\'revenue\') | [Insider sales](#var.vFind=\'spay\'&var.vSort=\'insider\') | [Sales / grants](#var.vFind=\'spay\'&var.vSort=\'ratio\') | [Name](#var.vFind=\'spay\'&var.vSort=\'name\')', \
                 '', \
                 '*Stock pay:* Passed the screen: owner cash is under the line and stock pay is the cause.' \
             ] \
@@ -981,9 +1048,9 @@ async function testMain_indexFindTicker():
             [ \
                 '', \
                 [ \
-                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes |', \
-                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
-                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019‑2025 |  |' \
+                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Insider sales | Insider sales / grants | Years | Notes |', \
+                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | $110K | 0.3x | 2019‑2025 |  |' \
                 ] \
             ] \
         ], \
@@ -993,6 +1060,8 @@ async function testMain_indexFindTicker():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
+                'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
                 '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
                 'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
@@ -1049,6 +1118,12 @@ async function testMain_indexFindTicker():
             'markdownPrint', \
             [ \
                 '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **I** - No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
             ] \
         ], \
         [ \
@@ -1129,10 +1204,17 @@ async function testMain_indexNoMatch():
                 '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
                 'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
+                [ \
+                    '**What insiders did.** In 2021‑2025, the officers and directors of 2 of these companies sold $114K of shares on the open market.', \
+                    'Over the same years they were granted shares worth $110K, and options over shares worth $300K at the time. At 0 of the 2,', \
+                    'insiders sold more than they were granted; among the cash-generative companies it was 0 of 1.', \
+                    '(The 2 leave out the capital-led companies and those with no insider filings; [group totals](#var.vPage=\'totals\') has every figure.)' \
+                ], \
+                '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
-                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                'which way its numbers point.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -1145,7 +1227,7 @@ async function testMain_indexNoMatch():
             'markdownPrint', \
             [ \
                 '', \
-                '**Show:** [Stock pay \\(5\\)](#var.vFind=\'zzz\') | Thin margin (1) | [Cash burner \\(1\\)](#var.vFind=\'zzz\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vFind=\'zzz\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vFind=\'zzz\'&var.vType=\'excluded\') | [All \\(9\\)](#var.vFind=\'zzz\'&var.vType=\'all\') \\\n**Sort:** Rank | [P1](#var.vFind=\'zzz\'&var.vSort=\'p1\'&var.vType=\'thin_margin\') | [Cumulative margin](#var.vFind=\'zzz\'&var.vSort=\'cum\'&var.vType=\'thin_margin\') | [Latest margin](#var.vFind=\'zzz\'&var.vSort=\'latest\'&var.vType=\'thin_margin\') | [Stock pay](#var.vFind=\'zzz\'&var.vSort=\'pay\'&var.vType=\'thin_margin\') | [Revenue](#var.vFind=\'zzz\'&var.vSort=\'revenue\'&var.vType=\'thin_margin\') | [Name](#var.vFind=\'zzz\'&var.vSort=\'name\'&var.vType=\'thin_margin\')', \
+                '**Show:** [Stock pay \\(5\\)](#var.vFind=\'zzz\') | Thin margin (1) | [Cash burner \\(1\\)](#var.vFind=\'zzz\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vFind=\'zzz\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vFind=\'zzz\'&var.vType=\'excluded\') | [All \\(9\\)](#var.vFind=\'zzz\'&var.vType=\'all\') \\\n**Sort:** Rank | [P1](#var.vFind=\'zzz\'&var.vSort=\'p1\'&var.vType=\'thin_margin\') | [Cumulative margin](#var.vFind=\'zzz\'&var.vSort=\'cum\'&var.vType=\'thin_margin\') | [Latest margin](#var.vFind=\'zzz\'&var.vSort=\'latest\'&var.vType=\'thin_margin\') | [Stock pay](#var.vFind=\'zzz\'&var.vSort=\'pay\'&var.vType=\'thin_margin\') | [Revenue](#var.vFind=\'zzz\'&var.vSort=\'revenue\'&var.vType=\'thin_margin\') | [Insider sales](#var.vFind=\'zzz\'&var.vSort=\'insider\'&var.vType=\'thin_margin\') | [Sales / grants](#var.vFind=\'zzz\'&var.vSort=\'ratio\'&var.vType=\'thin_margin\') | [Name](#var.vFind=\'zzz\'&var.vSort=\'name\'&var.vType=\'thin_margin\')', \
                 '', \
                 '*Thin margin:* Owner cash is under the line, but stock pay is too small to be the cause.' \
             ] \
@@ -1198,6 +1280,8 @@ async function testMain_indexNoMatch():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
+                'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
                 '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
                 'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
@@ -1254,6 +1338,12 @@ async function testMain_indexNoMatch():
             'markdownPrint', \
             [ \
                 '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **I** - No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
             ] \
         ], \
         [ \
@@ -1334,10 +1424,17 @@ async function testMain_indexUnknownArgs():
                 '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
                 'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
+                [ \
+                    '**What insiders did.** In 2021‑2025, the officers and directors of 2 of these companies sold $114K of shares on the open market.', \
+                    'Over the same years they were granted shares worth $110K, and options over shares worth $300K at the time. At 0 of the 2,', \
+                    'insiders sold more than they were granted; among the cash-generative companies it was 0 of 1.', \
+                    '(The 2 leave out the capital-led companies and those with no insider filings; [group totals](#var.vPage=\'totals\') has every figure.)' \
+                ], \
+                '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
-                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                'which way its numbers point.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -1350,7 +1447,7 @@ async function testMain_indexUnknownArgs():
             'markdownPrint', \
             [ \
                 '', \
-                '**Show:** [Stock pay \\(5\\)](#var.vSort=\'bogus\') | [Thin margin \\(1\\)](#var.vSort=\'bogus\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vSort=\'bogus\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vSort=\'bogus\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vSort=\'bogus\'&var.vType=\'excluded\') | [All \\(9\\)](#var.vSort=\'bogus\'&var.vType=\'all\') \\\n**Sort:** [Rank](#var.vType=\'bogus\') | [P1](#var.vSort=\'p1\'&var.vType=\'bogus\') | [Cumulative margin](#var.vSort=\'cum\'&var.vType=\'bogus\') | [Latest margin](#var.vSort=\'latest\'&var.vType=\'bogus\') | [Stock pay](#var.vSort=\'pay\'&var.vType=\'bogus\') | [Revenue](#var.vSort=\'revenue\'&var.vType=\'bogus\') | [Name](#var.vSort=\'name\'&var.vType=\'bogus\')', \
+                '**Show:** [Stock pay \\(5\\)](#var.vSort=\'bogus\') | [Thin margin \\(1\\)](#var.vSort=\'bogus\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vSort=\'bogus\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vSort=\'bogus\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vSort=\'bogus\'&var.vType=\'excluded\') | [All \\(9\\)](#var.vSort=\'bogus\'&var.vType=\'all\') \\\n**Sort:** [Rank](#var.vType=\'bogus\') | [P1](#var.vSort=\'p1\'&var.vType=\'bogus\') | [Cumulative margin](#var.vSort=\'cum\'&var.vType=\'bogus\') | [Latest margin](#var.vSort=\'latest\'&var.vType=\'bogus\') | [Stock pay](#var.vSort=\'pay\'&var.vType=\'bogus\') | [Revenue](#var.vSort=\'revenue\'&var.vType=\'bogus\') | [Insider sales](#var.vSort=\'insider\'&var.vType=\'bogus\') | [Sales / grants](#var.vSort=\'ratio\'&var.vType=\'bogus\') | [Name](#var.vSort=\'name\'&var.vType=\'bogus\')', \
                 '', \
                 '*All companies that pass the basic tests.*' \
             ] \
@@ -1396,6 +1493,8 @@ async function testMain_indexUnknownArgs():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
+                'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
                 '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
                 'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
@@ -1452,6 +1551,12 @@ async function testMain_indexUnknownArgs():
             'markdownPrint', \
             [ \
                 '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **I** - No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
             ] \
         ], \
         [ \
@@ -1528,10 +1633,17 @@ async function testMain_indexFailed():
                 '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
                 'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
                 '', \
+                [ \
+                    '**What insiders did.** In 2021‑2025, the officers and directors of 2 of these companies sold $114K of shares on the open market.', \
+                    'Over the same years they were granted shares worth $110K, and options over shares worth $300K at the time. At 0 of the 2,', \
+                    'insiders sold more than they were granted; among the cash-generative companies it was 0 of 1.', \
+                    '(The 2 leave out the capital-led companies and those with no insider filings; [group totals](#var.vPage=\'totals\') has every figure.)' \
+                ], \
+                '', \
                 '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
                 'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
                 'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
-                'which way its numbers point. Insider grants and sales are not measured in this release.', \
+                'which way its numbers point.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
@@ -1544,7 +1656,7 @@ async function testMain_indexFailed():
             'markdownPrint', \
             [ \
                 '', \
-                '**Show:** Stock pay (5) | [Thin margin \\(1\\)](#var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vType=\'excluded\') | [All \\(9\\)](#var.vType=\'all\') \\\n**Sort:** Rank | [P1](#var.vSort=\'p1\') | [Cumulative margin](#var.vSort=\'cum\') | [Latest margin](#var.vSort=\'latest\') | [Stock pay](#var.vSort=\'pay\') | [Revenue](#var.vSort=\'revenue\') | [Name](#var.vSort=\'name\')', \
+                '**Show:** Stock pay (5) | [Thin margin \\(1\\)](#var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vType=\'excluded\') | [All \\(9\\)](#var.vType=\'all\') \\\n**Sort:** Rank | [P1](#var.vSort=\'p1\') | [Cumulative margin](#var.vSort=\'cum\') | [Latest margin](#var.vSort=\'latest\') | [Stock pay](#var.vSort=\'pay\') | [Revenue](#var.vSort=\'revenue\') | [Insider sales](#var.vSort=\'insider\') | [Sales / grants](#var.vSort=\'ratio\') | [Name](#var.vSort=\'name\')', \
                 '', \
                 '*Stock pay:* Passed the screen: owner cash is under the line and stock pay is the cause.' \
             ] \
@@ -1590,6 +1702,8 @@ async function testMain_indexFailed():
                 '', \
                 '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
                 'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
+                'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
                 '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
                 'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
@@ -1646,6 +1760,12 @@ async function testMain_indexFailed():
             'markdownPrint', \
             [ \
                 '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **I** - No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
             ] \
         ], \
         [ \
@@ -1783,6 +1903,75 @@ async function testMain_company():
                 '', \
                 '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
                 'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Insiders: grants and sales, 2021‑2025', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '2 officers and directors reported transactions, and 2 of them sold shares on the open market.', \
+                'Together they sold $110K, and were granted shares worth $110K and options over shares worth $300K at the time.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**P3. Insiders granting and selling: 2.4 of 25**', \
+                '', \
+                [ \
+                    '| Part | Input | Points |', \
+                    '| :-- | --: | --: |', \
+                    '| Years with both new grants and open-market sales | 1 of 5 | 2.4 of 12 |', \
+                    '| Open-market sales as a multiple of grants | 0.3x | 0.0 of 13 |' \
+                ], \
+                '', \
+                'P3 is a first, provisional measure. It is not part of the screen score, and no full score is published.', \
+                'Sales of 0.5 times grants score 0; 1.5 times scores 13.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Year | Sold on the open market | Stock granted | Options granted, at the price of the shares | Withheld for taxes | Sold to the company | Bought on the open market |', \
+                    '| :-- | --: | --: | --: | --: | --: | --: |', \
+                    '| 2021 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2022 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2023 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2024 | $102K | $110K | $300K | $6K | $1K | $0 |', \
+                    '| 2025 | $8K | $0 | $0 | $0 | $0 | $4K |', \
+                    '| **2021‑2025** | $110K | $110K | $300K | $6K | $1K | $4K |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**The largest sellers.** Select a name to list that person\'s filings.', \
+                '', \
+                [ \
+                    '| Insider | Latest title | Sold on the open market | Stock granted | Options granted, at the price of the shares | Withheld for taxes | Sold to the company | Bought on the open market |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: |', \
+                    '| [Doe Jane](#var.vCik=1&var.vPage=\'company\'&var.vPerson=1001&filings-of-the-selected-insider) | Chief Executive Officer | $102K | $110K | $300K | $6K | $1K | $4K |', \
+                    '| [Roe Rich](#var.vCik=1&var.vPage=\'company\'&var.vPerson=1002&filings-of-the-selected-insider) | Director | $8K | $0 | $0 | $0 | $0 | $0 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                'From the SEC insider filings (Forms 4 and 5) of officers and directors. A sale, purchase or tax withholding is valued at', \
+                'the price reported for it. A grant is valued at the market price of the shares it covers on the grant date: a stock award', \
+                'at the nearest share price insiders reported, an option at its exercise price. An option is worth less than the shares', \
+                'it covers, and a performance award may never vest, so grants are overstated and sales as a multiple of grants are', \
+                'understated. Shares held through an outside director\'s investment fund are left out. Amended filings are not used.' \
             ] \
         ], \
         [ \
@@ -1943,6 +2132,74 @@ async function testMain_companyOneOff():
                 '', \
                 '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
                 'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Insiders: grants and sales, 2021‑2025', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '1 officers and directors reported transactions, and 1 of them sold shares on the open market.', \
+                'Together they sold $4K, and were granted shares worth $0 and options over shares worth $0 at the time.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**P3. Insiders granting and selling: cannot be built**', \
+                '', \
+                [ \
+                    '| Part | Input | Points |', \
+                    '| :-- | --: | --: |', \
+                    '| Years with both new grants and open-market sales | 0 of 5 | 0.0 of 12 |', \
+                    '| Open-market sales as a multiple of grants | too many granted shares have no reported share price near the grant date | n/a |' \
+                ], \
+                '', \
+                'P3 is a first, provisional measure. It is not part of the screen score, and no full score is published.', \
+                'Sales of 0.5 times grants score 0; 1.5 times scores 13.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Year | Sold on the open market | Stock granted | Options granted, at the price of the shares | Withheld for taxes | Sold to the company | Bought on the open market |', \
+                    '| :-- | --: | --: | --: | --: | --: | --: |', \
+                    '| 2021 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2022 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2023 | $4K | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2024 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2025 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| **2021‑2025** | $4K | $0 | $0 | $0 | $0 | $0 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**The largest sellers.** Select a name to list that person\'s filings.', \
+                '', \
+                [ \
+                    '| Insider | Latest title | Sold on the open market | Stock granted | Options granted, at the price of the shares | Withheld for taxes | Sold to the company | Bought on the open market |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: |', \
+                    '| [Doe Jane](#var.vCik=6&var.vPage=\'company\'&var.vPerson=1001&filings-of-the-selected-insider) | Chief Executive Officer | $4K | $0 | $0 | $0 | $0 | $0 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                'From the SEC insider filings (Forms 4 and 5) of officers and directors. A sale, purchase or tax withholding is valued at', \
+                'the price reported for it. A grant is valued at the market price of the shares it covers on the grant date: a stock award', \
+                'at the nearest share price insiders reported, an option at its exercise price. An option is worth less than the shares', \
+                'it covers, and a performance award may never vest, so grants are overstated and sales as a multiple of grants are', \
+                'understated. Shares held through an outside director\'s investment fund are left out. Amended filings are not used.' \
             ] \
         ], \
         [ \
@@ -2112,6 +2369,17 @@ async function testMain_companyCapitalLed():
         ], \
         [ \
             'markdownPrint', \
+            ['', '## Insiders: grants and sales, 2021‑2025', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'No officer or director of this company reported a transaction in the SEC insider data sets for these years.', \
+                'Foreign companies have not had to file them.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
             ['', '## Year by year', ''] \
         ], \
         testChartCall(data, 'data/company/2.json'), \
@@ -2155,6 +2423,12 @@ async function testMain_companyCapitalLed():
             'markdownPrint', \
             [ \
                 '- Capital-led: capital spending is more than twice stock pay, so the shortfall is mostly investment.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
             ] \
         ], \
         [ \
@@ -2268,6 +2542,17 @@ async function testMain_companyNoCostLine():
         ], \
         [ \
             'markdownPrint', \
+            ['', '## Insiders: grants and sales, 2021‑2025', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'No officer or director of this company reported a transaction in the SEC insider data sets for these years.', \
+                'Foreign companies have not had to file them.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
             ['', '## Year by year', ''] \
         ], \
         testChartCall(data, 'data/company/3.json'), \
@@ -2321,6 +2606,12 @@ async function testMain_companyNoCostLine():
         [ \
             'markdownPrint', \
             ['- No capital spending tag in at least one year; that year counts capital spending as zero.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
+            ] \
         ], \
         [ \
             'markdownPrint', \
@@ -2444,6 +2735,74 @@ async function testMain_companyCashGenerative():
         ], \
         [ \
             'markdownPrint', \
+            ['', '## Insiders: grants and sales, 2021‑2025', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '1 officers and directors reported transactions, and 1 of them sold shares on the open market.', \
+                'Together they sold $1.5B, and were granted shares worth $0 and options over shares worth $0 at the time.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**P3. Insiders granting and selling: 13.0 of 25**', \
+                '', \
+                [ \
+                    '| Part | Input | Points |', \
+                    '| :-- | --: | --: |', \
+                    '| Years with both new grants and open-market sales | 0 of 5 | 0.0 of 12 |', \
+                    '| Open-market sales as a multiple of grants | no grants | 13.0 of 13 |' \
+                ], \
+                '', \
+                'P3 is a first, provisional measure. It is not part of the screen score, and no full score is published.', \
+                'Sales of 0.5 times grants score 0; 1.5 times scores 13.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Year | Sold on the open market | Stock granted | Options granted, at the price of the shares | Withheld for taxes | Sold to the company | Bought on the open market |', \
+                    '| :-- | --: | --: | --: | --: | --: | --: |', \
+                    '| 2021 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2022 | $1.5B | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2023 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2024 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2025 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| **2021‑2025** | $1.5B | $0 | $0 | $0 | $0 | $0 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**The largest sellers.** Select a name to list that person\'s filings.', \
+                '', \
+                [ \
+                    '| Insider | Latest title | Sold on the open market | Stock granted | Options granted, at the price of the shares | Withheld for taxes | Sold to the company | Bought on the open market |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: |', \
+                    '| [Doe Jane](#var.vCik=4&var.vPage=\'company\'&var.vPerson=1001&filings-of-the-selected-insider) | Chief Executive Officer | $1.5B | $0 | $0 | $0 | $0 | $0 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                'From the SEC insider filings (Forms 4 and 5) of officers and directors. A sale, purchase or tax withholding is valued at', \
+                'the price reported for it. A grant is valued at the market price of the shares it covers on the grant date: a stock award', \
+                'at the nearest share price insiders reported, an option at its exercise price. An option is worth less than the shares', \
+                'it covers, and a performance award may never vest, so grants are overstated and sales as a multiple of grants are', \
+                'understated. Shares held through an outside director\'s investment fund are left out. Amended filings are not used.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
             ['', '## Year by year', ''] \
         ], \
         testChartCall(data, 'data/company/4.json'), \
@@ -2540,6 +2899,57 @@ async function testMain_companyExcluded():
                 '', \
                 '**Not scored.** The index leaves this industry out, because its cash flows include customer money, loans, property', \
                 'or research spending that make free cash flow mean something different. The figures below are for reference only.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Insiders: grants and sales, 2021‑2025', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '1 officers and directors reported transactions, and 1 of them sold shares on the open market.', \
+                'Together they sold $1.2M, and were granted shares worth $0 and options over shares worth $0 at the time.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Year | Sold on the open market | Stock granted | Options granted, at the price of the shares | Withheld for taxes | Sold to the company | Bought on the open market |', \
+                    '| :-- | --: | --: | --: | --: | --: | --: |', \
+                    '| 2021 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2022 | $1.2M | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2023 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2024 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2025 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| **2021‑2025** | $1.2M | $0 | $0 | $0 | $0 | $0 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**The largest sellers.** Select a name to list that person\'s filings.', \
+                '', \
+                [ \
+                    '| Insider | Latest title | Sold on the open market | Stock granted | Options granted, at the price of the shares | Withheld for taxes | Sold to the company | Bought on the open market |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: |', \
+                    '| [Doe Jane](#var.vCik=5&var.vPage=\'company\'&var.vPerson=1001&filings-of-the-selected-insider) | Chief Executive Officer | $1.2M | $0 | $0 | $0 | $0 | $0 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                'From the SEC insider filings (Forms 4 and 5) of officers and directors. A sale, purchase or tax withholding is valued at', \
+                'the price reported for it. A grant is valued at the market price of the shares it covers on the grant date: a stock award', \
+                'at the nearest share price insiders reported, an option at its exercise price. An option is worth less than the shares', \
+                'it covers, and a performance award may never vest, so grants are overstated and sales as a multiple of grants are', \
+                'understated. Shares held through an outside director\'s investment fund are left out. Amended filings are not used.' \
             ] \
         ], \
         [ \
@@ -2697,6 +3107,17 @@ async function testMain_companyNoIndustryName():
         ], \
         [ \
             'markdownPrint', \
+            ['', '## Insiders: grants and sales, 2021‑2025', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'No officer or director of this company reported a transaction in the SEC insider data sets for these years.', \
+                'Foreign companies have not had to file them.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
             ['', '## Year by year', ''] \
         ], \
         testChartCall(data, 'data/company/7.json'), \
@@ -2734,6 +3155,12 @@ async function testMain_companyNoIndustryName():
                 '## Notes on the data', \
                 '', \
                 '- Diluted share count: no annual change is shown (share count missing for the first or last year).' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
             ] \
         ], \
         [ \
@@ -2850,6 +3277,17 @@ async function testMain_companyNoIndustry():
         ], \
         [ \
             'markdownPrint', \
+            ['', '## Insiders: grants and sales, 2021‑2025', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'No officer or director of this company reported a transaction in the SEC insider data sets for these years.', \
+                'Foreign companies have not had to file them.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
             ['', '## Year by year', ''] \
         ], \
         testChartCall(data, 'data/company/8.json'), \
@@ -2887,6 +3325,12 @@ async function testMain_companyNoIndustry():
                 '## Notes on the data', \
                 '', \
                 '- Diluted share count: no annual change is shown (share count missing for the first or last year).' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
             ] \
         ], \
         [ \
@@ -3013,6 +3457,1261 @@ endfunction
 unittestRunTest('testMain_companyNoCik')
 
 
+# A company's page with one insider's filings
+async function testMain_companyPerson():
+    data = testData(['data/meta.json', 'data/company/1.json'])
+    systemGlobalSet('vPage', 'company')
+    systemGlobalSet('vCik', 1)
+    systemGlobalSet('vPerson', 1001)
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    systemGlobalSet('vCik', null)
+    systemGlobalSet('vPerson', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/company/1.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Stock Pay Co - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Stock Pay Co', \
+                '', \
+                '**Ticker:** SPAY (Nasdaq) \\\n**SEC filings:** [CIK 1](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=1&type=10-K) \\\n**Industry:** Services\\-Prepackaged Software ([SIC 7372](#var.vSic=7372&var.vType=\'all\')) \\\n**Type:** Stock pay. Passed the screen: owner cash is under the line and stock pay is the cause.', \
+                '', \
+                'From fiscal 2019 to 2025, Stock Pay Co reported $10.2 billion of revenue and $1.0 billion of free cash flow. Stock pay was $1.2 billion, which leaves -$203 million of owner cash: -2.0% of revenue. Owner cash was under 3.0% of revenue in 7 of 7 years. In the 12 months to 2026-09-30 it was -2.0% of revenue.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## What cuts the other way', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Nothing in the numbers the index uses. Stated targets and one-off events are not yet reviewed by hand.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Screen score: 37.3 of 50 (rank 2 of 4)', \
+                '', \
+                '**P1. No meaningful cash for owners: 18.6 of 25**', \
+                '', \
+                [ \
+                    '| Part | Input | Points |', \
+                    '| :-- | --: | --: |', \
+                    '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
+                    '| Cumulative owner-cash margin, 2019‑2025 | -2.0% | 3.7 of 8 |', \
+                    '| Owner-cash margin, 12 months to 2026‑09‑30 | -2.0% | 4.9 of 7 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '**P2b. Operating costs as a share of revenue: 13.0 of 13**', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 55.0% in 2025: a change of 0.0 points.', \
+                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
+                'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $100M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
+                '', \
+                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 18.6 + (18.6 / 25) x 25.0 = 37.3' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
+                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Insiders: grants and sales, 2021‑2025', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '2 officers and directors reported transactions, and 2 of them sold shares on the open market.', \
+                'Together they sold $110K, and were granted shares worth $110K and options over shares worth $300K at the time.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**P3. Insiders granting and selling: 2.4 of 25**', \
+                '', \
+                [ \
+                    '| Part | Input | Points |', \
+                    '| :-- | --: | --: |', \
+                    '| Years with both new grants and open-market sales | 1 of 5 | 2.4 of 12 |', \
+                    '| Open-market sales as a multiple of grants | 0.3x | 0.0 of 13 |' \
+                ], \
+                '', \
+                'P3 is a first, provisional measure. It is not part of the screen score, and no full score is published.', \
+                'Sales of 0.5 times grants score 0; 1.5 times scores 13.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Year | Sold on the open market | Stock granted | Options granted, at the price of the shares | Withheld for taxes | Sold to the company | Bought on the open market |', \
+                    '| :-- | --: | --: | --: | --: | --: | --: |', \
+                    '| 2021 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2022 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2023 | $0 | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2024 | $102K | $110K | $300K | $6K | $1K | $0 |', \
+                    '| 2025 | $8K | $0 | $0 | $0 | $0 | $4K |', \
+                    '| **2021‑2025** | $110K | $110K | $300K | $6K | $1K | $4K |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**The largest sellers.** Select a name to list that person\'s filings.', \
+                '', \
+                [ \
+                    '| Insider | Latest title | Sold on the open market | Stock granted | Options granted, at the price of the shares | Withheld for taxes | Sold to the company | Bought on the open market |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: |', \
+                    '| [Doe Jane](#var.vCik=1&var.vPage=\'company\'&var.vPerson=1001&filings-of-the-selected-insider) | Chief Executive Officer | $102K | $110K | $300K | $6K | $1K | $4K |', \
+                    '| [Roe Rich](#var.vCik=1&var.vPage=\'company\'&var.vPerson=1002&filings-of-the-selected-insider) | Director | $8K | $0 | $0 | $0 | $0 | $0 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                'From the SEC insider filings (Forms 4 and 5) of officers and directors. A sale, purchase or tax withholding is valued at', \
+                'the price reported for it. A grant is valued at the market price of the shares it covers on the grant date: a stock award', \
+                'at the nearest share price insiders reported, an option at its exercise price. An option is worth less than the shares', \
+                'it covers, and a performance award may never vest, so grants are overstated and sales as a multiple of grants are', \
+                'understated. Shares held through an outside director\'s investment fund are left out. Amended filings are not used.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '### Filings of the selected insider', \
+                '', \
+                '**Doe Jane**, Chief Executive Officer. Each filing opens at the SEC.', \
+                '', \
+                [ \
+                    '| Filed | Filing | Sold on the open market | Stock granted | Options granted, at the price of the shares | Withheld for taxes | Sold to the company | Bought on the open market |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: |', \
+                    '| 2024‑03‑18 | [0000000001‑24‑000101](https://www.sec.gov/Archives/edgar/data/1/000000000124000101/0000000001-24-000101-index.htm) | $102K | $0 | $0 | $0 | $0 | $0 |', \
+                    '| 2024‑03‑25 | [0000000001‑24‑000102](https://www.sec.gov/Archives/edgar/data/1/000000000124000102/0000000001-24-000102-index.htm) | $0 | $110K | $300K | $6K | $1K | $0 |', \
+                    '| 2025‑02‑03 | [0000000001‑25‑000103](https://www.sec.gov/Archives/edgar/data/1/000000000125000103/0000000001-25-000103-index.htm) | $0 | $0 | $0 | $0 | $0 | $4K |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Year by year', ''] \
+        ], \
+        testChartCall(data, 'data/company/1.json'), \
+        [ \
+            'markdownPrint', \
+            [''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
+                    '| 2019 | 2019‑12‑31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$20M | -2.0% | n/a | n/a |  |', \
+                    '| 2020 | 2020‑12‑31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | $110M | -$22M | -2.0% | n/a | n/a |  |', \
+                    '| 2021 | 2021‑12‑31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$25M | -2.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022‑12‑31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$28M | -2.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023‑12‑31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$32M | -2.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | n/a | n/a |  |', \
+                    '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$40M | -2.0% | n/a | n/a |  |', \
+                    '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $258M | $215M | -$43M | -2.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/1/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/1/000000000125000030/0000000001-25-000030-index.htm) |' \
+                ], \
+                '', \
+                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
+                'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
+                '"n/a" means the filings have no tagged figure. History starts about 2009.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Notes on the data', \
+                '', \
+                '- Diluted share count: no annual change is shown (share count missing for the first or last year).' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no finding about any one company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_companyPerson')
+
+
+# All types, sorted by insider sales
+async function testMain_indexInsiderSort():
+    data = testData(['data/meta.json', 'data/index.json'])
+    systemGlobalSet('vType', 'all')
+    systemGlobalSet('vSort', 'insider')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vType', null)
+    systemGlobalSet('vSort', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Index | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# The Treadmill Index', \
+                '', \
+                'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
+                'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                'Of 10 companies in the SEC data, 5 pass the screen and 4 are ranked. [How it is computed](#var.vPage=\'method\').', \
+                '', \
+                '## What a high rank can mean for a shareholder', \
+                '', \
+                '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
+                'growth, and on profit measures that leave stock pay out. At that valuation its insiders are granted shares, and can sell', \
+                'them, every year. The view of this index is that at some companies this is the point: owner cash is kept near zero so', \
+                'that the company is never valued on it, while insiders turn grants into cash at the price that results. A valuation on', \
+                'owner cash, at the costs the company itself reports, would be far lower. Shareholders who take "investing in growth" on', \
+                'trust bear the cost. The numbers cannot say at which companies this is deliberate: a real bet on growth looks the same', \
+                'until it pays off.', \
+                '', \
+                '**How owner cash stays near zero.** Pay and spending are set by management and approved by the board every year. These', \
+                'are the ways the cash goes, each one visible in the filings:', \
+                '', \
+                '- **Stock pay.** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                '  Leaving out the capital-led companies, it was $5.3B against $4.1B.', \
+                '- **Spending that keeps pace with revenue.** Hiring in sales, marketing and development can absorb whatever growth', \
+                '  brings in. 3 of the 4 ranked companies kept operating costs flat or rising as a share of revenue over five years.', \
+                '- **Buybacks that only hold the line.** Free cash flow that does arrive can go to buying back the shares just granted,', \
+                '  and to employees\' vesting taxes ($0.0B and $0.0B here), rather than to owners.', \
+                '', \
+                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
+                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+                '', \
+                [ \
+                    '**What insiders did.** In 2021‑2025, the officers and directors of 2 of these companies sold $114K of shares on the open market.', \
+                    'Over the same years they were granted shares worth $110K, and options over shares worth $300K at the time. At 0 of the 2,', \
+                    'insiders sold more than they were granted; among the cash-generative companies it was 0 of 1.', \
+                    '(The 2 leave out the capital-led companies and those with no insider filings; [group totals](#var.vPage=\'totals\') has every figure.)' \
+                ], \
+                '', \
+                '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
+                'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
+                'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
+                'which way its numbers point.', \
+                '', \
+                '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
+                'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                'shortfall is mostly investment. Each company page lists what cuts the other way.', \
+                '', \
+                '## The index' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Show:** [Stock pay \\(5\\)](#var.vSort=\'insider\') | [Thin margin \\(1\\)](#var.vSort=\'insider\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vSort=\'insider\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vSort=\'insider\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vSort=\'insider\'&var.vType=\'excluded\') | All (9) \\\n**Sort:** [Rank](#var.vType=\'all\') | [P1](#var.vSort=\'p1\'&var.vType=\'all\') | [Cumulative margin](#var.vSort=\'cum\'&var.vType=\'all\') | [Latest margin](#var.vSort=\'latest\'&var.vType=\'all\') | [Stock pay](#var.vSort=\'pay\'&var.vType=\'all\') | [Revenue](#var.vSort=\'revenue\'&var.vType=\'all\') | Insider sales | [Sales / grants](#var.vSort=\'ratio\'&var.vType=\'all\') | [Name](#var.vSort=\'name\'&var.vType=\'all\')', \
+                '', \
+                '*All companies that pass the basic tests.*' \
+            ] \
+        ], \
+        [ \
+            'elementModelRender', \
+            [ \
+                { \
+                    'elem': [ \
+                        {'elem': {'text': 'Find a company or ticker: '}, 'html': 'b'}, \
+                        { \
+                            'attr': { \
+                                'autocomplete': 'off', \
+                                'id': 'tiFind', \
+                                'size': 30, \
+                                'style': 'font-size: inherit; border: thin solid black; padding: 0.4em;', \
+                                'type': 'text', \
+                                'value': '' \
+                            }, \
+                            'callback': {'keyup': '<function>'}, \
+                            'html': 'input' \
+                        }, \
+                        {'text': ' '}, \
+                        { \
+                            'attr': {'style': 'cursor: pointer; user-select: none;'}, \
+                            'callback': {'click': '<function>'}, \
+                            'elem': {'text': 'Find'}, \
+                            'html': 'a' \
+                        }, \
+                        [] \
+                    ], \
+                    'html': 'p' \
+                } \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Insider sales | Insider sales / grants | Years | Notes | Type |', \
+                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
+                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\') | CASH | 0.0 | 0.0 | 0.0 | 8.0% | 8.0% | 2.0% | $2,000M | $1.5B | n/a | 2019‑2025 |  | Cash generative |', \
+                    '|  | [Bank Co](#var.vCik=5&var.vPage=\'company\') | BANK | n/a | n/a | n/a | -10.0% | -10.0% | 20.0% | $2,000M | $1.2M | n/a | 2019‑2025 |  | Excluded industry |', \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | $110K | 0.3x | 2019‑2025 |  | Stock pay |', \
+                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | $4K | n/a | 2019‑2025 | O F S | Stock pay |', \
+                    '| 3 | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\') |  | 32.6 | 18.6 | 9.8 | -2.0% | -2.0% | 12.0% | $2,000M | n/a | n/a | 2019‑2025 | C I | Stock pay |', \
+                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | n/a | n/a | 2019‑2025 | I | Stock pay |', \
+                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\') | BURN | 50.0 | 25.0 | 13.0 | -13.0% | -13.0% | 12.0% | $2,000M | n/a | n/a | 2019‑2025 | I | Cash burner |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | n/a | n/a | 2019‑2025 | F N X I | Stock pay |', \
+                    '|  | [Thin Co](#var.vCik=7&var.vPage=\'company\') | THIN | 30.9 | 15.4 | 13.0 | 0.6% | 0.6% | 1.9% | $2,000M | n/a | n/a | 2019‑2025 | I | Thin margin |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
+                'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
+                'compares them with the shares and options granted over the same years; each company page has the detail.', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.', \
+                '', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\') lists every change.', \
+                '', \
+                '**Notes**', \
+                '' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **C** - Capital-led: capital spending is more than twice stock pay, so the shortfall is mostly investment.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **O** - Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows P1 with and without those years.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **F** - The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **N** - The cost line cannot be built from the filing tags, so there is no P2b and no screen score. The company has P1 alone and is unranked.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **X** - No capital spending tag in at least one year; that year counts capital spending as zero.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- **G** - At least one fiscal year is missing between the first and last year.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **J** - Revenue more than tripled in one year, which often marks a merger or a change of reporting entity.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **I** - No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no finding about any one company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_indexInsiderSort')
+
+
+# Sorted by insider sales as a multiple of grants
+async function testMain_indexRatioSort():
+    data = testData(['data/meta.json', 'data/index.json'])
+    systemGlobalSet('vSort', 'ratio')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vSort', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Index | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# The Treadmill Index', \
+                '', \
+                'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
+                'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                'Of 10 companies in the SEC data, 5 pass the screen and 4 are ranked. [How it is computed](#var.vPage=\'method\').', \
+                '', \
+                '## What a high rank can mean for a shareholder', \
+                '', \
+                '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
+                'growth, and on profit measures that leave stock pay out. At that valuation its insiders are granted shares, and can sell', \
+                'them, every year. The view of this index is that at some companies this is the point: owner cash is kept near zero so', \
+                'that the company is never valued on it, while insiders turn grants into cash at the price that results. A valuation on', \
+                'owner cash, at the costs the company itself reports, would be far lower. Shareholders who take "investing in growth" on', \
+                'trust bear the cost. The numbers cannot say at which companies this is deliberate: a real bet on growth looks the same', \
+                'until it pays off.', \
+                '', \
+                '**How owner cash stays near zero.** Pay and spending are set by management and approved by the board every year. These', \
+                'are the ways the cash goes, each one visible in the filings:', \
+                '', \
+                '- **Stock pay.** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                '  Leaving out the capital-led companies, it was $5.3B against $4.1B.', \
+                '- **Spending that keeps pace with revenue.** Hiring in sales, marketing and development can absorb whatever growth', \
+                '  brings in. 3 of the 4 ranked companies kept operating costs flat or rising as a share of revenue over five years.', \
+                '- **Buybacks that only hold the line.** Free cash flow that does arrive can go to buying back the shares just granted,', \
+                '  and to employees\' vesting taxes ($0.0B and $0.0B here), rather than to owners.', \
+                '', \
+                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
+                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+                '', \
+                [ \
+                    '**What insiders did.** In 2021‑2025, the officers and directors of 2 of these companies sold $114K of shares on the open market.', \
+                    'Over the same years they were granted shares worth $110K, and options over shares worth $300K at the time. At 0 of the 2,', \
+                    'insiders sold more than they were granted; among the cash-generative companies it was 0 of 1.', \
+                    '(The 2 leave out the capital-led companies and those with no insider filings; [group totals](#var.vPage=\'totals\') has every figure.)' \
+                ], \
+                '', \
+                '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
+                'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
+                'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
+                'which way its numbers point.', \
+                '', \
+                '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
+                'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                'shortfall is mostly investment. Each company page lists what cuts the other way.', \
+                '', \
+                '## The index' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Show:** Stock pay (5) | [Thin margin \\(1\\)](#var.vSort=\'ratio\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vSort=\'ratio\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vSort=\'ratio\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vSort=\'ratio\'&var.vType=\'excluded\') | [All \\(9\\)](#var.vSort=\'ratio\'&var.vType=\'all\') \\\n**Sort:** [Rank](#var=) | [P1](#var.vSort=\'p1\') | [Cumulative margin](#var.vSort=\'cum\') | [Latest margin](#var.vSort=\'latest\') | [Stock pay](#var.vSort=\'pay\') | [Revenue](#var.vSort=\'revenue\') | [Insider sales](#var.vSort=\'insider\') | Sales / grants | [Name](#var.vSort=\'name\')', \
+                '', \
+                '*Stock pay:* Passed the screen: owner cash is under the line and stock pay is the cause.' \
+            ] \
+        ], \
+        [ \
+            'elementModelRender', \
+            [ \
+                { \
+                    'elem': [ \
+                        {'elem': {'text': 'Find a company or ticker: '}, 'html': 'b'}, \
+                        { \
+                            'attr': { \
+                                'autocomplete': 'off', \
+                                'id': 'tiFind', \
+                                'size': 30, \
+                                'style': 'font-size: inherit; border: thin solid black; padding: 0.4em;', \
+                                'type': 'text', \
+                                'value': '' \
+                            }, \
+                            'callback': {'keyup': '<function>'}, \
+                            'html': 'input' \
+                        }, \
+                        {'text': ' '}, \
+                        { \
+                            'attr': {'style': 'cursor: pointer; user-select: none;'}, \
+                            'callback': {'click': '<function>'}, \
+                            'elem': {'text': 'Find'}, \
+                            'html': 'a' \
+                        }, \
+                        [] \
+                    ], \
+                    'html': 'p' \
+                } \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Insider sales | Insider sales / grants | Years | Notes |', \
+                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | $110K | 0.3x | 2019‑2025 |  |', \
+                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | $4K | n/a | 2019‑2025 | O F S |', \
+                    '| 3 | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\') |  | 32.6 | 18.6 | 9.8 | -2.0% | -2.0% | 12.0% | $2,000M | n/a | n/a | 2019‑2025 | C I |', \
+                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | n/a | n/a | 2019‑2025 | I |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | n/a | n/a | 2019‑2025 | F N X I |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
+                'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
+                'compares them with the shares and options granted over the same years; each company page has the detail.', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.', \
+                '', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\') lists every change.', \
+                '', \
+                '**Notes**', \
+                '' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **C** - Capital-led: capital spending is more than twice stock pay, so the shortfall is mostly investment.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **O** - Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows P1 with and without those years.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **F** - The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **N** - The cost line cannot be built from the filing tags, so there is no P2b and no screen score. The company has P1 alone and is unranked.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **X** - No capital spending tag in at least one year; that year counts capital spending as zero.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- **G** - At least one fiscal year is missing between the first and last year.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **J** - Revenue more than tripled in one year, which often marks a merger or a change of reporting entity.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **I** - No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no finding about any one company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_indexRatioSort')
+
+
+# The index page of a build without the insider data sets
+async function testMain_indexNoInsider():
+    data = testData(['data/meta.json', 'data/index.json'], 'noinsider/')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Index | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# The Treadmill Index', \
+                '', \
+                'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
+                'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                'Of 10 companies in the SEC data, 5 pass the screen and 4 are ranked. [How it is computed](#var.vPage=\'method\').', \
+                '', \
+                '## What a high rank can mean for a shareholder', \
+                '', \
+                '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
+                'growth, and on profit measures that leave stock pay out. At that valuation its insiders are granted shares, and can sell', \
+                'them, every year. The view of this index is that at some companies this is the point: owner cash is kept near zero so', \
+                'that the company is never valued on it, while insiders turn grants into cash at the price that results. A valuation on', \
+                'owner cash, at the costs the company itself reports, would be far lower. Shareholders who take "investing in growth" on', \
+                'trust bear the cost. The numbers cannot say at which companies this is deliberate: a real bet on growth looks the same', \
+                'until it pays off.', \
+                '', \
+                '**How owner cash stays near zero.** Pay and spending are set by management and approved by the board every year. These', \
+                'are the ways the cash goes, each one visible in the filings:', \
+                '', \
+                '- **Stock pay.** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow ([group totals](#var.vPage=\'totals\')).', \
+                '  Leaving out the capital-led companies, it was $5.3B against $4.1B.', \
+                '- **Spending that keeps pace with revenue.** Hiring in sales, marketing and development can absorb whatever growth', \
+                '  brings in. 3 of the 4 ranked companies kept operating costs flat or rising as a share of revenue over five years.', \
+                '- **Buybacks that only hold the line.** Free cash flow that does arrive can go to buying back the shares just granted,', \
+                '  and to employees\' vesting taxes ($0.0B and $0.0B here), rather than to owners.', \
+                '', \
+                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
+                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+                '', \
+                '**What insiders did.** Insider grants and sales are not measured in this build.', \
+                '', \
+                '**How to tell them apart.** A real growth bet shows up in time: costs fall as a share of revenue, owner cash appears as', \
+                'growth slows, and insiders keep what they are granted. A treadmill does the opposite: costs rise with revenue, owner', \
+                'cash stays near zero however large the company gets, and insiders sell what they are granted. Each company page shows', \
+                'which way its numbers point.', \
+                '', \
+                '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
+                'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months, and 1 are capital-led: their', \
+                'shortfall is mostly investment. Each company page lists what cuts the other way.', \
+                '', \
+                '## The index' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Show:** Stock pay (5) | [Thin margin \\(1\\)](#var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vType=\'excluded\') | [All \\(9\\)](#var.vType=\'all\') \\\n**Sort:** Rank | [P1](#var.vSort=\'p1\') | [Cumulative margin](#var.vSort=\'cum\') | [Latest margin](#var.vSort=\'latest\') | [Stock pay](#var.vSort=\'pay\') | [Revenue](#var.vSort=\'revenue\') | [Insider sales](#var.vSort=\'insider\') | [Sales / grants](#var.vSort=\'ratio\') | [Name](#var.vSort=\'name\')', \
+                '', \
+                '*Stock pay:* Passed the screen: owner cash is under the line and stock pay is the cause.' \
+            ] \
+        ], \
+        [ \
+            'elementModelRender', \
+            [ \
+                { \
+                    'elem': [ \
+                        {'elem': {'text': 'Find a company or ticker: '}, 'html': 'b'}, \
+                        { \
+                            'attr': { \
+                                'autocomplete': 'off', \
+                                'id': 'tiFind', \
+                                'size': 30, \
+                                'style': 'font-size: inherit; border: thin solid black; padding: 0.4em;', \
+                                'type': 'text', \
+                                'value': '' \
+                            }, \
+                            'callback': {'keyup': '<function>'}, \
+                            'html': 'input' \
+                        }, \
+                        {'text': ' '}, \
+                        { \
+                            'attr': {'style': 'cursor: pointer; user-select: none;'}, \
+                            'callback': {'click': '<function>'}, \
+                            'elem': {'text': 'Find'}, \
+                            'html': 'a' \
+                        }, \
+                        [] \
+                    ], \
+                    'html': 'p' \
+                } \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Insider sales | Insider sales / grants | Years | Notes |', \
+                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
+                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | n/a | n/a | 2019‑2025 | O F S |', \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | n/a | n/a | 2019‑2025 |  |', \
+                    '| 3 | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\') |  | 32.6 | 18.6 | 9.8 | -2.0% | -2.0% | 12.0% | $2,000M | n/a | n/a | 2019‑2025 | C |', \
+                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | n/a | n/a | 2019‑2025 |  |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | n/a | n/a | 2019‑2025 | F N X |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
+                'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
+                'compares them with the shares and options granted over the same years; each company page has the detail.', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.', \
+                '', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\') lists every change.', \
+                '', \
+                '**Notes**', \
+                '' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **C** - Capital-led: capital spending is more than twice stock pay, so the shortfall is mostly investment.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **O** - Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows P1 with and without those years.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **F** - The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **N** - The cost line cannot be built from the filing tags, so there is no P2b and no screen score. The company has P1 alone and is unranked.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **X** - No capital spending tag in at least one year; that year counts capital spending as zero.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- **G** - At least one fiscal year is missing between the first and last year.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **J** - Revenue more than tripled in one year, which often marks a merger or a change of reporting entity.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **I** - No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no finding about any one company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_indexNoInsider')
+
+
+# A company's page in a build without the insider data sets
+async function testMain_companyNoInsider():
+    data = testData(['data/meta.json', 'data/company/1.json'], 'noinsider/')
+    systemGlobalSet('vPage', 'company')
+    systemGlobalSet('vCik', 1)
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    systemGlobalSet('vCik', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/company/1.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Stock Pay Co - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Stock Pay Co', \
+                '', \
+                '**Ticker:** SPAY (Nasdaq) \\\n**SEC filings:** [CIK 1](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=1&type=10-K) \\\n**Industry:** Services\\-Prepackaged Software ([SIC 7372](#var.vSic=7372&var.vType=\'all\')) \\\n**Type:** Stock pay. Passed the screen: owner cash is under the line and stock pay is the cause.', \
+                '', \
+                'From fiscal 2019 to 2025, Stock Pay Co reported $10.2 billion of revenue and $1.0 billion of free cash flow. Stock pay was $1.2 billion, which leaves -$203 million of owner cash: -2.0% of revenue. Owner cash was under 3.0% of revenue in 7 of 7 years. In the 12 months to 2026-09-30 it was -2.0% of revenue.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## What cuts the other way', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Nothing in the numbers the index uses. Stated targets and one-off events are not yet reviewed by hand.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Screen score: 37.3 of 50 (rank 2 of 4)', \
+                '', \
+                '**P1. No meaningful cash for owners: 18.6 of 25**', \
+                '', \
+                [ \
+                    '| Part | Input | Points |', \
+                    '| :-- | --: | --: |', \
+                    '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
+                    '| Cumulative owner-cash margin, 2019‑2025 | -2.0% | 3.7 of 8 |', \
+                    '| Owner-cash margin, 12 months to 2026‑09‑30 | -2.0% | 4.9 of 7 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '**P2b. Operating costs as a share of revenue: 13.0 of 13**', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 55.0% in 2025: a change of 0.0 points.', \
+                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
+                'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $100M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
+                '', \
+                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 18.6 + (18.6 / 25) x 25.0 = 37.3' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
+                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Year by year', ''] \
+        ], \
+        testChartCall(data, 'data/company/1.json'), \
+        [ \
+            'markdownPrint', \
+            [''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
+                    '| 2019 | 2019‑12‑31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$20M | -2.0% | n/a | n/a |  |', \
+                    '| 2020 | 2020‑12‑31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | $110M | -$22M | -2.0% | n/a | n/a |  |', \
+                    '| 2021 | 2021‑12‑31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$25M | -2.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022‑12‑31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$28M | -2.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023‑12‑31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$32M | -2.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | n/a | n/a |  |', \
+                    '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$40M | -2.0% | n/a | n/a |  |', \
+                    '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $258M | $215M | -$43M | -2.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/1/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/1/000000000125000030/0000000001-25-000030-index.htm) |' \
+                ], \
+                '', \
+                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
+                'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
+                '"n/a" means the filings have no tagged figure. History starts about 2009.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Notes on the data', \
+                '', \
+                '- Diluted share count: no annual change is shown (share count missing for the first or last year).' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no finding about any one company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_companyNoInsider')
+
+
+# The group totals page of a build without the insider data sets
+async function testMain_totalsNoInsider():
+    data = testData(['data/meta.json'], 'noinsider/')
+    systemGlobalSet('vPage', 'totals')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | Group totals | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Group totals - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Group totals', \
+                '', \
+                'The 5 companies that pass the screen, added together over each company\'s own history', \
+                '(about 2009 onward). 1 of them are capital-led: their capital spending', \
+                'is more than twice their stock pay, so their shortfall is mostly investment. The last column leaves them out.', \
+                '', \
+                [ \
+                    '|  | All 5 | Without the capital-led (4) |', \
+                    '| :-- | --: | --: |', \
+                    '| Revenue | $50.8B | $40.6B |', \
+                    '| Free cash flow | $5.2B | $4.1B |', \
+                    '| Stock pay | $6.5B | $5.3B |', \
+                    '| Owner cash (free cash flow - stock pay) | -$1.4B | -$1.2B |', \
+                    '| Capital spending | $3.8B | $0.7B |', \
+                    '| Share buybacks | $0.0B | $0.0B |', \
+                    '| Cash paid for employees\' vesting taxes | $0.0B | $0.0B |', \
+                    '| Dividends | $0.0B | $0.0B |' \
+                ], \
+                '', \
+                'Buybacks and dividends are cash paid out, shown for comparison; they are not scored.', \
+                '', \
+                '', \
+                '## Latest 12 months', \
+                '', \
+                'Of the 5 companies:', \
+                '', \
+                '- Owner cash of 3.0% of revenue or more: 0', \
+                '- Negative owner cash: 4', \
+                '- The latest fiscal year stands in for the latest 12 months: 2', \
+                '', \
+                '## Operating costs', \
+                '', \
+                'Of the 5 companies, over the latest five fiscal years:', \
+                '', \
+                '- Flat or rising costs as a share of revenue (full P2b): 3', \
+                '- Costs cut by 10 points of revenue or more (P2b of zero): 0', \
+                '- No usable cost line (unranked): 1' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no finding about any one company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_totalsNoInsider')
+
+
+# The data and limits page of a build without the insider data sets
+async function testMain_dataNoInsider():
+    data = testData(['data/meta.json'], 'noinsider/')
+    systemGlobalSet('vPage', 'data')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | Data and limits | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Data and limits - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Data and limits', \
+                '', \
+                '## Sources', \
+                '', \
+                '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
+                '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
+                '  File size 123,456,789 bytes, SHA-256 `b325692a70fe9897eed75440a12c4b90d184c1434c7dfe089fda5b801e36b43b`.', \
+                '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
+                '- Insider transactions: not in this build.', \
+                '- Method version 1.0.0. A figure cited from this page can be reproduced from the same', \
+                '  SEC file and the same method version.', \
+                '', \
+                '## What is in the data', \
+                '', \
+                [ \
+                    '| Type | Companies | Meaning |', \
+                    '| :-- | --: | :-- |', \
+                    '| Stock pay | 5 | Passed the screen: owner cash is under the line and stock pay is the cause. |', \
+                    '| Thin margin | 1 | Owner cash is under the line, but stock pay is too small to be the cause. |', \
+                    '| Cash burner | 1 | Free cash flow is negative before any stock pay. |', \
+                    '| Cash generative | 1 | Owner cash is at or above the line. These companies are the baseline. |', \
+                    '| Excluded industry | 1 | A bank, insurer, lender, broker, asset manager, REIT or drug developer. |' \
+                ], \
+                '', \
+                'Excluded industries: bank 1.', \
+                '', \
+                '## Known limits', \
+                '', \
+                '- **History starts about 2009.** The SEC has collected financial statements as data only since then. A company\'s', \
+                '  "whole period" is the years it has in that data, which can be shorter than its life.', \
+                '- **Fiscal years.** A fiscal year ending in January, February or March is labelled with the prior calendar year.', \
+                '- **Revenue** is the largest of four revenue tags for the year. Pass-through revenue (for example, the face value', \
+                '  of cryptocurrency sold) makes revenue-based ratios look smaller.', \
+                '- **Capital spending** is purchases of property and equipment (or of productive assets) plus capitalized software.', \
+                '  A year with neither tag counts as zero and is noted.', \
+                '- **The cost line** cannot be built for 1 companies (1 of those that pass the screen) because of inconsistent tagging. They are unranked.', \
+                '- **Latest 12 months** fall back to the latest fiscal year when a quarterly figure is missing or tagged differently.', \
+                '- **Industry codes** are the SEC\'s and are coarse. Securities brokers are excluded along with asset managers, because', \
+                '  they hold customer money. Insurance agents and brokers are not excluded: they are not insurers. Some real-estate and', \
+                '  payment companies are not excluded.', \
+                '- **Restated years.** Each year uses its most recently filed value. When a company restates recent years for a', \
+                '  business it has left, older years are not restated, so the two can sit side by side.', \
+                '- **Foreign companies** that file financial data with the SEC in US dollars are included.', \
+                '- **Predecessor companies** are not combined, and **share counts** are not adjusted for splits.', \
+                '- **Founding dates** are not in the data. Some listed companies are less than ten years old.', \
+                '- **Capital-led companies** pass the screen but their shortfall is mostly capital spending. They are flagged.', \
+                '- **Insiders** are officers and directors who file as people. A filing made with an entity counts only if one of', \
+                '  its people is an officer, and an outside director\'s shares held through an entity are left out unless the filing', \
+                '  says the holder is a trust, family or a retirement account. Some fund sales may still be counted, and some personal', \
+                '  holdings left out.', \
+                '- **Insider grants** are valued at the market price of the shares they cover, not at their accounting fair value.', \
+                '  Options and performance awards are overstated. Amended insider filings are not used. A price far from the', \
+                '  company\'s other reported prices is treated as a filing error and left out.', \
+                '', \
+                '## If a threshold moves by a fifth', \
+                '', \
+                'Each threshold in the definition was moved down and up by a fifth, one at a time, and the index rebuilt. These are the', \
+                'changes in the top ten.', \
+                '', \
+                [ \
+                    '| Threshold moved | Value | Changes in the top ten |', \
+                    '| :-- | :-- | :-- |', \
+                    '| Least revenue growth, a fifth lower | `growth_min` = 0.4 | Slower Co enters at 1; One\\-Off Co 1 to 2; Stock Pay Co 2 to 3; Capital & Sons \\[Holdings\\] 3 to 4; Marginal Co 4 to 5 |', \
+                    '| Meaningful owner cash, a fifth lower | `meaningful_margin` = 0.024 | Marginal Co leaves (was 4) |', \
+                    '| Least stock pay, share of revenue, a fifth lower | `sbc_revenue_min` = 0.016 | Thin Co enters at 4; Marginal Co 4 to 5 |' \
+                ], \
+                '', \
+                'No change in the top ten: Least latest revenue, a fifth lower; Least latest revenue, a fifth higher; Least years of data, a fifth lower; Least years of data, a fifth higher; Least revenue growth, a fifth higher; Meaningful owner cash, a fifth higher; Least stock pay, share of revenue, a fifth higher; Least stock pay, share of free cash flow, a fifth lower; Least stock pay, share of free cash flow, a fifth higher; P1 cumulative margin that scores 0, a fifth lower; P1 cumulative margin that scores 0, a fifth higher; P1 cumulative margin that scores 8, a fifth lower; P1 cumulative margin that scores 8, a fifth higher; P1 latest margin that scores 0, a fifth lower; P1 latest margin that scores 0, a fifth higher; P1 latest margin that scores 7, a fifth lower; P1 latest margin that scores 7, a fifth higher; P2b window, in years, a fifth lower; P2b window, in years, a fifth higher; P2b cost fall that scores 0, a fifth lower; P2b cost fall that scores 0, a fifth higher.', \
+                '', \
+                'The thresholds, at the definition\'s values: `capital_led_ratio` = 2, `growth_min` = 0.5, `meaningful_margin` = 0.03, `one_off_ocf_share` = 0.25, `p1_cum_full` = -0.1, `p1_cum_points` = 8, `p1_cum_zero` = 0.05, `p1_latest_full` = -0.05, `p1_latest_points` = 7, `p1_latest_zero` = 0.05, `p1_years_points` = 10, `p2b_points` = 13, `p2b_window_years` = 5, `p2b_zero_drop` = 10, `p3_price_days` = 90, `p3_ratio_full` = 1.5, `p3_ratio_points` = 13, `p3_ratio_zero` = 0.5, `p3_unvalued_max` = 0.05, `p3_years` = 5, `p3_years_points` = 12, `prefilter_revenue` = 500000000, `revenue_min` = 1000000000, `sbc_fcf_min` = 0.5, `sbc_revenue_min` = 0.02, `still_filing_days` = 548, `years_min` = 5.', \
+                '', \
+                '## Corrections', \
+                '', \
+                'If a figure here does not match the linked SEC filing, it is an error in this index. Report it at the', \
+                '[project repository](https://github.com/craigahobbs/treadmill-index/issues) with the company and the year.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no finding about any one company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_dataNoInsider')
+
+
 # The group totals page
 async function testMain_totals():
     data = testData(['data/meta.json'])
@@ -3062,6 +4761,29 @@ async function testMain_totals():
                 ], \
                 '', \
                 'Buybacks and dividends are cash paid out, shown for comparison; they are not scored.', \
+                [ \
+                    '', \
+                    '## Insiders, 2021‑2025', \
+                    '', \
+                    'What the officers and directors of these companies reported to the SEC over five calendar years. The last column', \
+                    'is the baseline: the companies that pass the basic tests and do produce meaningful owner cash.', \
+                    '', \
+                    [ \
+                        '|  | All | Without the capital-led | Cash-generative companies |', \
+                        '| :-- | --: | --: | --: |', \
+                        '| Companies with insider filings | 2 | 2 | 1 |', \
+                        '| ...where insiders sold more than they were granted | 0 | 0 | 0 |', \
+                        '| Sold on the open market | $114K | $114K | $1.5B |', \
+                        '| Stock granted | $110K | $110K | $0 |', \
+                        '| Options granted, at the price of the shares | $300K | $300K | $0 |', \
+                        '| Withheld for taxes | $6K | $6K | $0 |', \
+                        '| Sold to the company | $1K | $1K | $0 |', \
+                        '| Bought on the open market | $4K | $4K | $0 |' \
+                    ], \
+                    '', \
+                    'Grants are valued at the market price of the shares they cover on the grant date. That overstates options, and', \
+                    'performance awards that may never vest: a single award can dominate the "stock granted" total.' \
+                ], \
                 '', \
                 '## Latest 12 months', \
                 '', \
@@ -3465,12 +5187,18 @@ async function testMain_method():
                 '', \
                 '## Not in this release', \
                 '', \
-                'The full index (100 points) for the top 25 adds three pillars. None has been scored, and their point scales are', \
+                'The full index (100 points) for the top 25 adds three pillars. No full score is published, and their point scales are', \
                 'untested judgment:', \
                 '', \
-                '- **P2a.** Real gross profit per employee, annual growth. Needs headcount from annual reports.', \
-                '- **P3.** Insiders granting and selling: grants and open-market sales by officers and directors as a group.', \
+                '- **P2a.** Real gross profit per employee, annual growth. Needs headcount from annual reports. Not measured.', \
+                '- **P3.** Insiders granting and selling, over the latest 5 calendar years: the share of', \
+                '  years with both new grants and open-market sales (0 to 12 points), and', \
+                '  open-market sales as a multiple of grants (0 points at 0.5 times, 13 at 1.5 times).', \
+                '  **Measured, and shown on each company page as provisional.** The definition calls for the grant-date fair value of', \
+                '  grants, which the SEC data does not give consistently. Grants are valued instead at the market price of the shares', \
+                '  they cover, which overstates options and so understates the multiple.', \
                 '- **P4.** Headline numbers that leave out stock pay: stock pay as a share of adjusted profit in earnings releases.', \
+                '  Not measured.', \
                 '', \
                 'Also not done: confirming each company was founded ten or more years ago, combining predecessor companies,', \
                 'adjusting share counts for splits, valuation, and governance facts.', \
@@ -3535,8 +5263,9 @@ async function testMain_data():
                 '', \
                 '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
                 '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
-                '  File size 123,456,789 bytes, SHA-256 `68a424a0706d010ada0039f1e5e9a0af40b7bf7566e7dbe894e47fc22a4e932b`.', \
+                '  File size 123,456,789 bytes, SHA-256 `b325692a70fe9897eed75440a12c4b90d184c1434c7dfe089fda5b801e36b43b`.', \
                 '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
+                '- Insider transactions: the SEC [insider transactions data sets](https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets), 1 quarterly files from `2025q4_form345.zip` to `2025q4_form345.zip`.', \
                 '- Method version 1.0.0. A figure cited from this page can be reproduced from the same', \
                 '  SEC file and the same method version.', \
                 '', \
@@ -3574,6 +5303,13 @@ async function testMain_data():
                 '- **Predecessor companies** are not combined, and **share counts** are not adjusted for splits.', \
                 '- **Founding dates** are not in the data. Some listed companies are less than ten years old.', \
                 '- **Capital-led companies** pass the screen but their shortfall is mostly capital spending. They are flagged.', \
+                '- **Insiders** are officers and directors who file as people. A filing made with an entity counts only if one of', \
+                '  its people is an officer, and an outside director\'s shares held through an entity are left out unless the filing', \
+                '  says the holder is a trust, family or a retirement account. Some fund sales may still be counted, and some personal', \
+                '  holdings left out.', \
+                '- **Insider grants** are valued at the market price of the shares they cover, not at their accounting fair value.', \
+                '  Options and performance awards are overstated. Amended insider filings are not used. A price far from the', \
+                '  company\'s other reported prices is treated as a filing error and left out.', \
                 '', \
                 '## If a threshold moves by a fifth', \
                 '', \
@@ -3590,7 +5326,7 @@ async function testMain_data():
                 '', \
                 'No change in the top ten: Least latest revenue, a fifth lower; Least latest revenue, a fifth higher; Least years of data, a fifth lower; Least years of data, a fifth higher; Least revenue growth, a fifth higher; Meaningful owner cash, a fifth higher; Least stock pay, share of revenue, a fifth higher; Least stock pay, share of free cash flow, a fifth lower; Least stock pay, share of free cash flow, a fifth higher; P1 cumulative margin that scores 0, a fifth lower; P1 cumulative margin that scores 0, a fifth higher; P1 cumulative margin that scores 8, a fifth lower; P1 cumulative margin that scores 8, a fifth higher; P1 latest margin that scores 0, a fifth lower; P1 latest margin that scores 0, a fifth higher; P1 latest margin that scores 7, a fifth lower; P1 latest margin that scores 7, a fifth higher; P2b window, in years, a fifth lower; P2b window, in years, a fifth higher; P2b cost fall that scores 0, a fifth lower; P2b cost fall that scores 0, a fifth higher.', \
                 '', \
-                'The thresholds, at the definition\'s values: `capital_led_ratio` = 2, `growth_min` = 0.5, `meaningful_margin` = 0.03, `one_off_ocf_share` = 0.25, `p1_cum_full` = -0.1, `p1_cum_points` = 8, `p1_cum_zero` = 0.05, `p1_latest_full` = -0.05, `p1_latest_points` = 7, `p1_latest_zero` = 0.05, `p1_years_points` = 10, `p2b_points` = 13, `p2b_window_years` = 5, `p2b_zero_drop` = 10, `prefilter_revenue` = 500000000, `revenue_min` = 1000000000, `sbc_fcf_min` = 0.5, `sbc_revenue_min` = 0.02, `still_filing_days` = 548, `years_min` = 5.', \
+                'The thresholds, at the definition\'s values: `capital_led_ratio` = 2, `growth_min` = 0.5, `meaningful_margin` = 0.03, `one_off_ocf_share` = 0.25, `p1_cum_full` = -0.1, `p1_cum_points` = 8, `p1_cum_zero` = 0.05, `p1_latest_full` = -0.05, `p1_latest_points` = 7, `p1_latest_zero` = 0.05, `p1_years_points` = 10, `p2b_points` = 13, `p2b_window_years` = 5, `p2b_zero_drop` = 10, `p3_price_days` = 90, `p3_ratio_full` = 1.5, `p3_ratio_points` = 13, `p3_ratio_zero` = 0.5, `p3_unvalued_max` = 0.05, `p3_years` = 5, `p3_years_points` = 12, `prefilter_revenue` = 500000000, `revenue_min` = 1000000000, `sbc_fcf_min` = 0.5, `sbc_revenue_min` = 0.02, `still_filing_days` = 548, `years_min` = 5.', \
                 '', \
                 '## Corrections', \
                 '', \

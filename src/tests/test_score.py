@@ -4,7 +4,7 @@ import unittest
 
 from treadmill_index.score import DEFAULT_OPTIONS, PROTOTYPE_OPTIONS, SENSITIVITY_KEYS, THRESHOLDS, company_series, cost_change, \
     cost_line, evaluate, find_period, group_totals, latest_twelve_months, lin, loose_thresholds, one_off_years, pillar_one, \
-    run_screen, sensitivity, share_change, sic_exclusion, year_label
+    pillar_three, run_screen, sensitivity, share_change, sic_exclusion, year_label
 
 from .helpers import DATA_DATE, REVENUE, annual, company_record, nine_months, unit
 
@@ -295,6 +295,30 @@ class TestScore(unittest.TestCase):
         self.assertEqual(p1['latestPoints'], 0)
 
 
+    def test_pillar_three(self):
+        # No insider filings
+        self.assertIsNone(pillar_three(None, THRESHOLDS))
+
+        # Grants and sales in three of five years; sales of 1.0 times grants
+        insider = {'bothYears': 3, 'salesToGrants': 1.0, 'grantShares': 1000, 'sales': 500}
+        self.assertEqual(pillar_three(insider, THRESHOLDS), {'yearsPoints': 7.2, 'ratioPoints': 6.5, 'p3': 13.7})
+
+        # The ratio scores 0 at 0.5 times and 13 at 1.5 times
+        for ratio, points in ((0, 0), (0.5, 0), (0.75, 3.25), (1.5, 13), (56.7, 13)):
+            insider = {'bothYears': 5, 'salesToGrants': ratio, 'grantShares': 1000, 'sales': 500}
+            self.assertEqual(pillar_three(insider, THRESHOLDS), {'yearsPoints': 12, 'ratioPoints': points, 'p3': 12 + points})
+
+        # Sales with no grants at all score the ratio in full; no sales and no grants score nothing
+        insider = {'bothYears': 0, 'salesToGrants': None, 'grantShares': 0, 'sales': 500}
+        self.assertEqual(pillar_three(insider, THRESHOLDS), {'yearsPoints': 0, 'ratioPoints': 13, 'p3': 13})
+        insider = {'bothYears': 0, 'salesToGrants': None, 'grantShares': 0, 'sales': 0}
+        self.assertEqual(pillar_three(insider, THRESHOLDS), {'yearsPoints': 0, 'ratioPoints': 0, 'p3': 0})
+
+        # Grants that cannot be valued: no ratio and no P3
+        insider = {'bothYears': 5, 'salesToGrants': None, 'grantShares': 1000, 'sales': 500}
+        self.assertEqual(pillar_three(insider, THRESHOLDS), {'yearsPoints': 12, 'ratioPoints': None, 'p3': None})
+
+
     def test_share_change(self):
         tag = 'WeightedAverageNumberOfDilutedSharesOutstanding'
 
@@ -365,6 +389,8 @@ class TestScore(unittest.TestCase):
             'oneOffs': {},
             'p1Ex': None,
             'p2b': 13,
+            'insider': None,
+            'p3': None,
             'capexMissingYears': 0,
             'shareGrowth': None,
             'shareReason': 'share count missing for the first or last year',
@@ -549,9 +575,20 @@ class TestScore(unittest.TestCase):
         self.assertEqual(results[1]['sic'], 7372)
         self.assertEqual(results[7]['sic'], 6021)
 
+        self.assertEqual([result['flags'] for result in results[:3]], [[], [], []])
+        self.assertEqual([(result['insider'], result['p3']) for result in results[:3]], [(None, None)] * 3)
+
         # The prototype's options
         _, funnel = run_screen(records, {}, DATA_DATE, None, PROTOTYPE_OPTIONS)
         self.assertEqual(funnel['industry'], 8)
+
+        # With insider data, a company's summary is scored and a company without one is flagged
+        insider = {'bothYears': 5, 'salesToGrants': 1.0, 'grantShares': 1000, 'sales': 500}
+        results, _ = run_screen(records[:2], {}, DATA_DATE, insiders={2: insider})
+        self.assertEqual([(result['cik'], result['flags']) for result in results], [(1, ['no_insider_filings']), (2, [])])
+        self.assertIsNone(results[0]['p3'])
+        self.assertIs(results[1]['insider'], insider)
+        self.assertEqual(results[1]['p3'], {'yearsPoints': 12, 'ratioPoints': 6.5, 'p3': 18.5})
 
 
     def test_group_totals(self):

@@ -12,7 +12,7 @@ import zipfile
 import treadmill_index.__main__
 from treadmill_index.main import main
 
-from .helpers import company_bytes
+from .helpers import company_bytes, insider_filing, insider_zip
 
 
 def fetch_submission(url, unused_user_agent):
@@ -79,7 +79,125 @@ class TestMain(unittest.TestCase):
             self.assertEqual(meta['sources']['companyfacts']['bytes'], os.path.getsize(zip_path))
             self.assertEqual(len(meta['sources']['companyfacts']['sha256']), 64)
             self.assertEqual(meta['sources']['submissions'], {'url': 'https://data.sec.gov/submissions/', 'companies': 3})
+            self.assertEqual(meta['sources']['insider'], {
+                'url': 'https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets',
+                'files': []
+            })
+            self.assertIsNone(meta['insider'])
             self.assertEqual(len(meta['sensitivity']), 24)
+            self.assertEqual([row['flags'] for row in index['companies']], [[], [], []])
+
+
+    def test_main_insider(self):
+        with TemporaryDirectory() as temp_dir:
+            raw_dir = os.path.join(temp_dir, 'raw')
+            out_dir = os.path.join(temp_dir, 'out')
+            os.makedirs(os.path.join(raw_dir, 'insider'))
+            write_companyfacts(raw_dir, [1, 2, 3])
+
+            # The first company's insiders sell in 2025; the second's only before the five years; the third has none
+            insider_zip(os.path.join(raw_dir, 'insider', '2025q1_form345.zip'), [
+                insider_filing('A1', cik=1, filed='18-MAR-2025', nonderiv=[
+                    ('14-MAR-2025', 'A', 'A', '1000.0', '0.0', 'D'),
+                    ('17-MAR-2025', 'S', 'D', '1000.0', '50.0', 'D')
+                ]),
+                insider_filing('B1', cik=2, filed='18-MAR-2020', nonderiv=[('17-MAR-2020', 'S', 'D', '1000.0', '50.0', 'D')])
+            ])
+            with patch('treadmill_index.extract.ProcessPoolExecutor', ThreadPoolExecutor), \
+                 patch('treadmill_index.sec.fetch_url', side_effect=fetch_submission), \
+                 patch('time.sleep'), \
+                 patch('sys.stdout', StringIO()) as stdout, \
+                 patch('sys.stderr', StringIO()):
+                self.assertEqual(main(['--raw', raw_dir, '--out', out_dir, '--processes', '1', '--user-agent', 'test-client/1.0']), 0)
+            self.assertIn('Reading 2025q1_form345.zip ...', stdout.getvalue().splitlines())
+
+            with open(os.path.join(out_dir, 'index.json'), 'r', encoding='utf-8') as index_file:
+                index = json.load(index_file)
+            self.assertEqual(
+                [(row['name'], row['insiderSales'], row['insiderGrants'], row['salesToGrants'], row['p3'], row['flags'])
+                 for row in index['companies']],
+                [
+                    ('Stock Pay Co', 50000, 50000, 1.0, 8.9, []),
+                    ('Cash Co', None, None, None, None, ['no_insider_filings']),
+                    ('Bank Co', None, None, None, None, ['no_insider_filings'])
+                ]
+            )
+            with open(os.path.join(out_dir, 'meta.json'), 'r', encoding='utf-8') as meta_file:
+                meta = json.load(meta_file)
+            self.assertEqual(meta['sources']['insider']['files'], ['2025q1_form345.zip'])
+            self.assertEqual((meta['insider']['firstYear'], meta['insider']['lastYear']), (2021, 2025))
+            self.assertEqual(meta['insider']['screened'], {
+                'companies': 1, 'soldMore': 0, 'sales': 50000, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 50000,
+                'optionGrants': 0
+            })
+            with open(os.path.join(out_dir, 'company', '1.json'), 'r', encoding='utf-8') as company_file:
+                company = json.load(company_file)
+            self.assertEqual(company['insider']['people'][0]['name'], 'Doe Jane')
+
+
+    def test_main_download_insider(self):
+        page = '<a href="/files/structureddata/data/insider-transactions-data-sets/2021q1_form345.zip">2021 Q1</a>'
+        with TemporaryDirectory() as temp_dir:
+            # Every data set but one is missing from the SEC's list
+            with patch('treadmill_index.insider.fetch_url', side_effect=[page.encode('utf-8'), b'zip']) as mock_fetch, \
+                 patch('treadmill_index.insider.insider_quarters', return_value=['2021q1', '2021q2']), \
+                 patch('time.sleep'), \
+                 patch('sys.stdout', StringIO()) as stdout, \
+                 patch('sys.stderr', StringIO()) as stderr:
+                self.assertEqual(main(['--raw', temp_dir, '--download-insider', '--user-agent', 'Test Person test@example.com']), 1)
+            self.assertEqual([call.args[1] for call in mock_fetch.call_args_list], ['Test Person test@example.com'] * 2)
+            self.assertEqual(stdout.getvalue().splitlines(), [
+                'Downloaded 2021q1 (3 bytes)',
+                'Warning: the SEC does not list a data set for 2021q2'
+            ])
+            self.assertEqual(stderr.getvalue(), '1 insider-transaction data sets are missing\n')
+            self.assertEqual(os.listdir(os.path.join(temp_dir, 'insider')), ['2021q1_form345.zip'])
+
+            # Every data set is downloaded
+            with patch('treadmill_index.insider.insider_quarters', return_value=['2021q1']), \
+                 patch('sys.stdout', StringIO()) as stdout, \
+                 patch('sys.stderr', StringIO()) as stderr:
+                self.assertEqual(main(['--raw', temp_dir, '--download-insider']), 0)
+            self.assertEqual(stdout.getvalue(), 'Every insider-transaction data set is already downloaded\n')
+            self.assertEqual(stderr.getvalue(), '')
+
+
+    def test_main_no_user_agent(self):
+        message = 'SEC requests need a User-Agent that names you and gives a contact address. Set the SEC_USER_AGENT ' \
+            'environment variable, for example: SEC_USER_AGENT="Your Name you@example.com"\n'
+        with TemporaryDirectory() as temp_dir, \
+             patch.dict('os.environ'):
+            os.environ.pop('SEC_USER_AGENT', None)
+            raw_dir = os.path.join(temp_dir, 'raw')
+            out_dir = os.path.join(temp_dir, 'out')
+            os.mkdir(raw_dir)
+            write_companyfacts(raw_dir, [1])
+
+            # The build needs SEC company information
+            with patch('treadmill_index.extract.ProcessPoolExecutor', ThreadPoolExecutor), \
+                 patch('urllib.request.urlopen') as mock_urlopen, \
+                 patch('sys.stdout', StringIO()), \
+                 patch('sys.stderr', StringIO()) as stderr:
+                self.assertEqual(main(['--raw', raw_dir, '--out', out_dir]), 1)
+            self.assertEqual(stderr.getvalue(), message)
+            self.assertFalse(os.path.exists(out_dir))
+
+            # The insider-transaction data sets need downloading
+            with patch('urllib.request.urlopen') as mock_urlopen_insider, \
+                 patch('sys.stdout', StringIO()), \
+                 patch('sys.stderr', StringIO()) as stderr:
+                self.assertEqual(main(['--raw', raw_dir, '--download-insider']), 1)
+            self.assertEqual(stderr.getvalue(), message)
+            mock_urlopen.assert_not_called()
+            mock_urlopen_insider.assert_not_called()
+
+            # The environment variable is the default
+            os.environ['SEC_USER_AGENT'] = 'Test Person test@example.com'
+            with patch('treadmill_index.insider.fetch_url', side_effect=OSError('HTTP Error 403')) as mock_fetch, \
+                 patch('sys.stdout', StringIO()), \
+                 patch('sys.stderr', StringIO()):
+                self.assertEqual(main(['--raw', raw_dir, '--download-insider']), 1)
+            self.assertEqual(mock_fetch.call_args.args[1], 'Test Person test@example.com')
 
 
     def test_main_check_failed(self):

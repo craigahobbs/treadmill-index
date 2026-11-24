@@ -13,11 +13,11 @@ This project was planned in an earlier chat session that you cannot see. Everyth
 
 ## Start here
 
-Phases 1 and 2 of docs/plan.md are built, with the threshold explorer and build archive from phase 5. Next is phase 3 (insider ledger and pillar 3), then phase 4 (curated pillars and the full score). Both wait on the owner: see "Waiting on the owner" below.
+Phases 1 to 3 of docs/plan.md are built, with the threshold explorer and build archive from phase 5. Next is phase 4 (curated pillars and the full score), which waits on the owner: see "Waiting on the owner" below.
 
 ## Layout
 
-- src/treadmill_index/: the build step. extract.py reads companyfacts.zip; score.py is the screen and the screen score, with every threshold in THRESHOLDS; sec.py fetches industry codes and tickers; output.py writes data/ and runs the pre-publish checks; main.py is the command line.
+- src/treadmill_index/: the build step. extract.py reads companyfacts.zip; score.py is the screen, the screen score and P3, with every threshold in THRESHOLDS; sec.py fetches industry codes and tickers; insider.py downloads, reads and summarizes the SEC insider-transaction data sets; output.py writes data/ and runs the pre-publish checks; main.py is the command line.
 - data/: the published data files (index.json, index.csv, meta.json, company/<CIK>.json, archive/). data/raw/ holds the SEC bulk file and caches and is git-ignored.
 - treadmillIndex.bare, treadmillIndex.md, index.html: the MarkdownUp application. All view state is in URL arguments.
 - test/: the application's unit tests. test/data/ is made by `make test-data` from the made-up companies in test/makeTestData.py; test/testTreadmillIndexPages.bare holds the expected render of every page state.
@@ -44,6 +44,14 @@ Local Makefile:
 - Capital-led flag, one-off-year P1, sensitivity test, group totals and pre-publish checks are implemented.
 - "Still filing" is the latest fiscal year ending within 548 days of the latest filing date in the data, not a fixed date.
 
+## Pillar 3 as built (provisional; not agreed with the owner)
+
+- Source: SEC insider-transaction data sets, Forms 4 and 5, latest five whole calendar years. Amended filings are not used.
+- Insiders: officers and directors who file as people. A joint filing with an entity counts only if one of its people is an officer. An outside director's indirect holdings are left out unless the nature of ownership names a trust, family or a retirement account (insider.py `filing_insider`, `_RE_PERSONAL`).
+- Grant value departs from the definition. The definition says grant-date value; the SEC financial data gives a usable stock-award fair value for only 7 of the 70 screened companies and an option fair value for 21 of the 39 that grant options to insiders. So every grant is valued at the market price of the shares it covers: a stock award at the nearest price insiders reported within 90 days, an option at its exercise price. This overstates options and performance awards and so understates sales / grants. Tesla's 2025 CEO award alone is about $180B on this basis.
+- P3 is shown on company pages as provisional and is not part of any published score. The owner has not reviewed the valuation choice or the fund rules.
+- Check on real data: Zillow's co-founder sales of about $30M in August 2025 (docs/findings.md) appear as $29.8M filed 2025-08-18.
+
 ## Rules that matter
 
 - Never call a company's conduct fraud, a scam, or misleading unless a court or regulator has. The index measures how owners were treated, not intent. The evidence gathered did not support fraud; what it supports is a governance and disclosure finding.
@@ -53,6 +61,7 @@ Local Makefile:
 - Include what cuts the other way: recent improvement, one-off causes, targets met.
 - Keep screen scores and full scores separate.
 - Recompute before quoting any number from findings.md.
+- Never put the owner's email address, or any real contact address, in a file. SEC requests take their User-Agent from the `SEC_USER_AGENT` environment variable only; there is no default, and a step that needs the SEC fails without it. The owner sets it for the one command.
 
 ## Why key choices were made
 
@@ -65,13 +74,14 @@ Local Makefile:
 
 ## Status
 
-- Tested on real data: stage 1 (P1 and P2b) across the market, including SIC exclusions, the capital-led flag, latest-12-month figures and the sensitivity test.
-- Never run: P2a, P3, P4, founding-age check, predecessor combining, split adjustment, long history. Their point scales are judgment and will need tuning.
+- Tested on real data: stage 1 (P1 and P2b) across the market, including SIC exclusions, the capital-led flag, latest-12-month figures and the sensitivity test; and P3 as described above.
+- Never run: P2a, P4, founding-age check, predecessor combining, split adjustment, long history. Their point scales, and P3's, are judgment and will need tuning.
 - The index and company pages have been checked as static renders (`bare -l` output, screenshot of the HTML file). The live application in MarkdownUp (navigation, the find box) has not been looked at in a browser.
 
 ## Waiting on the owner
 
-- A User-Agent with a contact address for SEC requests (`SEC_USER_AGENT`). www.sec.gov refuses bulk files, filing indexes and the insider-transaction data sets without one; data.sec.gov accepts a generic client name. Phase 3 cannot start without it.
+- A review of pillar 3's grant valuation and fund rules (see "Pillar 3 as built").
+- Refreshing the insider-transaction data sets each quarter: the owner runs `SEC_USER_AGENT="..." make insider-data` himself. www.sec.gov refuses these without a User-Agent that gives a contact address. The 23 files for 2021 Q1 to 2026 Q3 are in data/raw/insider/ (git-ignored).
 - The open decisions in docs/plan.md.
 - Curated data for phase 4 (headcount, earnings-release measures, founding years). Each item needs a date and a source.
 - A license, a corrections contact, and a lawyer's read of the methodology page before launch.

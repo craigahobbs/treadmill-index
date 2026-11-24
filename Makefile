@@ -20,7 +20,7 @@ TESTS_REQUIRE := bare-script
 
 
 help:
-	@echo "            [check-prototype|data|lint-app|run|test-app|test-data]"
+	@echo "            [check-prototype|data|insider-data|lint-app|run|test-app|test-data]"
 
 
 clean:
@@ -44,10 +44,18 @@ lint-app: $(DEFAULT_VENV_BUILD)
 
 
 # Build the web application's data files from the SEC bulk files in data/raw/. Python runs isolated (-I)
-# because it reads downloaded files.
+# because it reads downloaded files. If a company's industry code is not cached yet, SEC_USER_AGENT is required.
 .PHONY: data
 data: $(DEFAULT_VENV_BUILD)
 	$(DEFAULT_VENV_PYTHON) -I -m treadmill_index
+
+
+# Download the SEC insider-transaction data sets (Forms 3, 4 and 5) to data/raw/insider/. SEC_USER_AGENT is
+# required - your name and a contact address. It is read from the environment and never stored:
+#     SEC_USER_AGENT="Your Name you@example.com" make insider-data
+.PHONY: insider-data
+insider-data: $(DEFAULT_VENV_BUILD)
+	$(DEFAULT_VENV_PYTHON) -I -m treadmill_index --download-insider
 
 
 # Check that the build step, with the prototype's options, reproduces prototype/treadmill_market_screen.csv.
