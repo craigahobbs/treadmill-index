@@ -7,8 +7,8 @@ import unittest
 from unittest.mock import patch
 
 from treadmill_index.insider import INSIDER_PAGE_URL, buyback_quarters, download_insider, filing_insider, insider_links, \
-    insider_quarters, insider_summary, is_odd_price, load_insider, nearest_price, parse_number, parse_sec_date, price_series, \
-    read_insider_zip
+    insider_quarters, insider_summary, is_odd_price, load_insider, missing_quarters, nearest_price, parse_number, parse_sec_date, \
+    price_series, read_insider_zip
 
 from .helpers import insider_filing, insider_zip
 
@@ -117,7 +117,10 @@ TRANSACTIONS = [
     transaction('withheld', '2024-03-20', 100, 55, accn='A2', filed='2024-03-21'),
     transaction('grant', '2024-03-22', 2000, accn='A3', filed='2024-03-25'),
     transaction('option', '2024-03-22', 5000, 60, accn='A3', filed='2024-03-25'),
-    transaction('gift', '2024-04-01', 300, accn='A4', filed='2024-04-02'),
+    # Options exercised for $10 a share - and, left out, at more than the share price and at no price
+    transaction('exercise', '2024-03-15', 100, 10),
+    transaction('exercise', '2024-03-15', 100, 500),
+    transaction('exercise', '2024-03-15', 100),
     transaction('issuer', '2024-05-01', 50, accn='A5', filed='2024-05-03'),
     transaction('issuer', '2024-05-02', 10, 54, accn='A5', filed='2024-05-03'),
     transaction('purchase', '2025-02-01', 100, 40, accn='A6', filed='2025-02-03', title='Executive Chair'),
@@ -126,10 +129,11 @@ TRANSACTIONS = [
     # Before the five years
     transaction('sale', '2020-12-31', 1000, 30, accn='A0', filed='2021-01-04'),
     transaction('sale', '2025-02-03', 200, 41, accn='B1', filed='2025-02-04', owner=1002, name='Roe Rich', title='Director'),
-    transaction('gift', '2025-03-01', 5, accn='C1', filed='2025-03-03', owner=1003, name='Poe Pat', title='Director')
+    # A grant with no reported price near it has no value
+    transaction('grant', '2025-08-01', 5, accn='C1', filed='2025-08-04', owner=1003, name='Poe Pat', title='Director')
 ]
 
-THRESHOLDS = {'insider_years': 5, 'grant_price_days': 90}
+THRESHOLDS = {'grant_price_days': 90}
 
 
 class TestInsiderRead(unittest.TestCase):
@@ -194,8 +198,8 @@ class TestInsiderRead(unittest.TestCase):
                     ('15-MAR-2024', 'A', 'A', '2000.0', '0.0', 'D'),
                     ('15-MAR-2024', 'F', 'D', '100.0', '55.0', 'D'),
                     ('15-MAR-2024', 'D', 'D', '50.0', '', 'D'),
+                    # Left out: codes that are not counted (a gift, an option exercise), no date, and no shares
                     ('15-MAR-2024', 'G', 'D', '300.0', '', 'I', 'By LLC'),
-                    # Left out: a code that is not counted, no date, and no shares
                     ('15-MAR-2024', 'M', 'A', '500.0', '10.0', 'D'),
                     ('15-MAR-2024', 'S', 'A', '500.0', '10.0', 'D'),
                     ('', 'S', 'D', '500.0', '50.0', 'D'),
@@ -206,7 +210,10 @@ class TestInsiderRead(unittest.TestCase):
                     ('16-MAR-2024', 'A', 'A', '', '', 'D', '', 'Employee Stock Option (right to buy)', '', '700.0'),
                     ('16-MAR-2024', 'A', 'A', '400.0', '', 'D', '', 'Restricted Stock Units', '0.0', ''),
                     ('16-MAR-2024', 'A', 'A', '1.0', '', 'D', '', 'Performance Stock Units', '0.0', '250.0'),
-                    ('16-MAR-2024', 'M', 'D', '5000.0', '', 'D', '', 'Stock Option (Right to Buy)', '60.0', '5000.0')
+                    ('16-MAR-2024', 'M', 'D', '5000.0', '', 'D', '', 'Stock Option (Right to Buy)', '60.0', '5000.0'),
+                    ('16-MAR-2024', 'X', 'D', '30.0', '', 'D', '', 'Stock Appreciation Right', '20.0', ''),
+                    # Left out: share units convert for nothing
+                    ('16-MAR-2024', 'M', 'D', '400.0', '', 'D', '', 'Restricted Stock Units', '0.0', '400.0')
                 ]),
 
                 # An outside director: direct and family holdings count, other indirect holdings are a fund's
@@ -229,7 +236,7 @@ class TestInsiderRead(unittest.TestCase):
                 insider_filing('I1', cik='', nonderiv=[('15-MAR-2024', 'S', 'D', '1000.0', '50.0', 'D')]),
 
                 # A second company, on Form 5
-                insider_filing('J1', cik=2, form='5', nonderiv=[('31-DEC-2023', 'G', 'D', '25.0', '', 'D')])
+                insider_filing('J1', cik=2, form='5', nonderiv=[('31-DEC-2023', 'S', 'D', '25.0', '40.0', 'D')])
             ])
             transactions = read_insider_zip(zip_path, {1, 2})
 
@@ -243,16 +250,17 @@ class TestInsiderRead(unittest.TestCase):
             ceo('grant', '2024-03-15', 2000),
             ceo('withheld', '2024-03-15', 100, 55),
             ceo('issuer', '2024-03-15', 50),
-            ceo('gift', '2024-03-15', 300),
             transaction('sale', '2025-02-03', 200, 41, accn='B1', filed='2025-02-05', owner=1002, name='Roe Rich', title='Director'),
             transaction('sale', '2025-02-03', 300, 41, accn='B1', filed='2025-02-05', owner=1002, name='Roe Rich', title='Director'),
             transaction('sale', '2024-03-15', 7, 50, accn='D1', owner=1004, name='Low Lee', title='Officer'),
             ceo('option', '2024-03-16', 5000, 60),
             ceo('option', '2024-03-16', 700),
             ceo('grant', '2024-03-16', 400),
-            ceo('grant', '2024-03-16', 250)
+            ceo('grant', '2024-03-16', 250),
+            ceo('exercise', '2024-03-16', 5000, 60),
+            ceo('exercise', '2024-03-16', 30, 20)
         ])
-        self.assertEqual(transactions[2], [transaction('gift', '2023-12-31', 25, accn='J1')])
+        self.assertEqual(transactions[2], [transaction('sale', '2023-12-31', 25, 40, accn='J1')])
 
 
     def test_load_insider(self):
@@ -276,14 +284,14 @@ class TestInsiderRead(unittest.TestCase):
             ])
             insider_zip(os.path.join(insider_dir, '2023q4_form345.zip'), [
                 insider_filing('A0', filed='2-JAN-2024', nonderiv=[('29-DEC-2023', 'S', 'D', '500.0', '45.0', 'D')]),
-                insider_filing('J1', cik=2, nonderiv=[('31-DEC-2023', 'G', 'D', '25.0', '', 'D')])
+                insider_filing('J1', cik=2, nonderiv=[('31-DEC-2023', 'S', 'D', '25.0', '40.0', 'D')])
             ])
             expected = {
                 '1': [
                     transaction('sale', '2023-12-29', 500, 45, accn='A0', filed='2024-01-02'),
                     transaction('sale', '2024-03-15', 1000, 50)
                 ],
-                '2': [transaction('gift', '2023-12-31', 25, accn='J1')]
+                '2': [transaction('sale', '2023-12-31', 25, 40, accn='J1')]
             }
             names = ['2023q4_form345.zip', '2024q1_form345.zip']
             self.assertEqual(load_insider(temp_dir, [2, 1], log=logs.append), (expected, names))
@@ -347,32 +355,33 @@ class TestInsiderSummary(unittest.TestCase):
 
     def test_insider_summary(self):
         def amounts(**kwargs):
-            return {'cashOut': 0, 'sales': 0, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 0, 'optionGrants': 0, **kwargs}
+            return {
+                'cashOut': 0, 'sales': 0, 'purchases': 0, 'exercised': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 0, 'optionGrants': 0,
+                **kwargs
+            }
 
         def year(value, **kwargs):
-            return {'year': value, 'grantShares': 0, 'giftShares': 0, **amounts(**kwargs)}
+            return {'year': value, **amounts(**kwargs)}
 
-        # Cash-out is sales, shares withheld for taxes and shares sold to the company, less purchases
-        summary = insider_summary(TRANSACTIONS, 2025, THRESHOLDS)
+        # Cash-out is sales, shares withheld and shares sold to the company, less purchases and the cost of exercising options
+        summary = insider_summary(TRANSACTIONS, 2021, 2025, THRESHOLDS)
         self.assertEqual(summary, {
-            'cashOut': 112240,
+            'cashOut': 111240,
             'sales': 110200,
             'purchases': 4000,
+            'exercised': 1000,
             'withheld': 5500,
             'toIssuer': 540,
             'grants': 110000,
             'optionGrants': 300000,
-            'grantShares': 7000,
-            'giftShares': 305,
             'years': [
                 year(2021),
                 year(2022),
                 year(2023),
-                year(2024, grantShares=7000, giftShares=300, cashOut=108040, sales=102000, withheld=5500, toIssuer=540, grants=110000,
+                year(2024, cashOut=107040, sales=102000, exercised=1000, withheld=5500, toIssuer=540, grants=110000,
                      optionGrants=300000),
-                year(2025, giftShares=5, cashOut=4200, sales=8200, purchases=4000)
+                year(2025, cashOut=4200, sales=8200, purchases=4000)
             ],
-            'oddPrices': 1,
             'insiders': 3,
             'sellers': 2,
             'quarters': 0,
@@ -385,10 +394,10 @@ class TestInsiderSummary(unittest.TestCase):
                     'cik': 1001,
                     'name': 'Doe Jane',
                     'title': 'Executive Chair',
-                    **amounts(cashOut=104040, sales=102000, purchases=4000, withheld=5500, toIssuer=540, grants=110000,
+                    **amounts(cashOut=103040, sales=102000, purchases=4000, exercised=1000, withheld=5500, toIssuer=540, grants=110000,
                               optionGrants=300000),
                     'filings': [
-                        {'accn': 'A1', 'filed': '2024-03-18', **amounts(cashOut=102000, sales=102000)},
+                        {'accn': 'A1', 'filed': '2024-03-18', **amounts(cashOut=101000, sales=102000, exercised=1000)},
                         {'accn': 'A2', 'filed': '2024-03-21', **amounts(cashOut=5500, withheld=5500)},
                         {'accn': 'A3', 'filed': '2024-03-25', **amounts(grants=110000, optionGrants=300000)},
                         {'accn': 'A5', 'filed': '2024-05-03', **amounts(cashOut=540, toIssuer=540)},
@@ -406,13 +415,13 @@ class TestInsiderSummary(unittest.TestCase):
         })
 
         # Other years
-        summary = insider_summary(TRANSACTIONS, 2021, THRESHOLDS)
+        summary = insider_summary(TRANSACTIONS, 2017, 2021, THRESHOLDS)
         self.assertEqual([year['year'] for year in summary['years']], [2017, 2018, 2019, 2020, 2021])
         self.assertEqual((summary['sales'], summary['cashOut'], summary['insiders'], summary['grants']), (30000, 30000, 1, 0))
 
         # No insider reported a transaction in the years
-        self.assertIsNone(insider_summary(TRANSACTIONS, 2019, THRESHOLDS))
-        self.assertIsNone(insider_summary([], 2025, THRESHOLDS))
+        self.assertIsNone(insider_summary(TRANSACTIONS, 2015, 2019, THRESHOLDS))
+        self.assertIsNone(insider_summary([], 2021, 2025, THRESHOLDS))
 
 
     def test_buyback_quarters(self):
@@ -437,35 +446,42 @@ class TestInsiderSummary(unittest.TestCase):
             '2022-01-01|2022-06-30': fact(3e6, 'Q2'),
             '2022-01-01|2022-09-30': fact(9e6, 'Q3')
         }), [
-            {'start': '2022-01-01', 'end': '2022-03-31', 'buybacks': 4e6, 'accn': 'Q1'},
-            {'start': '2024-10-01', 'end': '2024-12-31', 'buybacks': 5e6, 'accn': 'Q4X'},
-            {'start': '2025-01-01', 'end': '2025-03-31', 'buybacks': 10e6, 'accn': 'Q1'},
-            {'start': '2025-04-01', 'end': '2025-06-30', 'buybacks': 20e6, 'accn': 'Q2'},
-            {'start': '2025-07-01', 'end': '2025-09-30', 'buybacks': 0, 'accn': 'Q3'},
-            {'start': '2025-10-01', 'end': '2025-12-31', 'buybacks': 40e6, 'accn': 'FY'}
+            {'start': '2022-01-01', 'end': '2022-03-31', 'buybacks': 4e6},
+            {'start': '2024-10-01', 'end': '2024-12-31', 'buybacks': 5e6},
+            {'start': '2025-01-01', 'end': '2025-03-31', 'buybacks': 10e6},
+            {'start': '2025-04-01', 'end': '2025-06-30', 'buybacks': 20e6},
+            {'start': '2025-07-01', 'end': '2025-09-30', 'buybacks': 0},
+            {'start': '2025-10-01', 'end': '2025-12-31', 'buybacks': 40e6}
         ])
 
 
     def test_insider_summary_quarters(self):
         quarters = [
-            {'start': '2020-10-01', 'end': '2020-12-31', 'buybacks': 1e6, 'accn': 'Q0'},
-            {'start': '2024-01-01', 'end': '2024-03-31', 'buybacks': 10e6, 'accn': 'Q1'},
-            {'start': '2024-04-01', 'end': '2024-06-30', 'buybacks': 0, 'accn': 'Q2'},
-            {'start': '2025-01-01', 'end': '2025-03-31', 'buybacks': 0, 'accn': 'Q5'},
-            {'start': '2025-10-01', 'end': '2026-01-03', 'buybacks': 7e6, 'accn': 'Q8'}
+            {'start': '2020-10-01', 'end': '2020-12-31', 'buybacks': 1e6},
+            {'start': '2024-01-01', 'end': '2024-03-31', 'buybacks': 10e6},
+            {'start': '2024-04-01', 'end': '2024-06-30', 'buybacks': 0},
+            {'start': '2025-01-01', 'end': '2025-03-31', 'buybacks': 0},
+            {'start': '2025-10-01', 'end': '2026-01-03', 'buybacks': 7e6}
         ]
         transactions = TRANSACTIONS + [
             transaction('sale', '2024-07-01', 100, 50, accn='A8', filed='2024-07-02'),
             transaction('sale', '2021-02-01', 100, 50, accn='A9', filed='2021-02-02')
         ]
-        summary = insider_summary(transactions, 2025, THRESHOLDS, quarters)
+        summary = insider_summary(transactions, 2021, 2025, THRESHOLDS, quarters)
 
         # Three quarters are wholly inside the five years, and one of them has a buyback. The open-market sales in
         # each are counted; other sales are in no quarter.
         self.assertEqual(summary['sales'], 120200)
         self.assertEqual((summary['quarters'], summary['buybacks'], summary['buybackQuarters']), (3, 10e6, 1))
         self.assertEqual((summary['salesInQuarters'], summary['salesInBuybackQuarters']), (110200, 102000))
-        self.assertEqual(quarters[1], {'start': '2024-01-01', 'end': '2024-03-31', 'buybacks': 10e6, 'accn': 'Q1'})
+        self.assertEqual(quarters[1], {'start': '2024-01-01', 'end': '2024-03-31', 'buybacks': 10e6})
+
+
+    def test_missing_quarters(self):
+        names = [f'{year}q{quarter}_form345.zip' for year in (2024, 2025, 2026) for quarter in (1, 2, 3, 4)]
+        self.assertEqual(missing_quarters(names, 2024, 2025), [])
+        self.assertEqual(missing_quarters(names[1:7], 2024, 2025), ['2024q1', '2025q4'])
+        self.assertEqual(missing_quarters([], 2025, 2025), ['2025q1', '2025q2', '2025q3', '2025q4'])
 
 
     def test_insider_summary_unvalued(self):
@@ -478,14 +494,17 @@ class TestInsiderSummary(unittest.TestCase):
             transaction('grant', '2024-06-14', 10),
             transaction('option', '2022-01-10', 10)
         ]
-        summary = insider_summary(transactions, 2025, THRESHOLDS)
-        self.assertEqual((summary['grants'], summary['optionGrants'], summary['grantShares']), (15000, 5000, 420))
-        self.assertEqual([year['grantShares'] for year in summary['years']], [0, 10, 0, 410, 0])
+        summary = insider_summary(transactions, 2021, 2025, THRESHOLDS)
+        self.assertEqual((summary['grants'], summary['optionGrants']), (15000, 5000))
+        self.assertEqual([(year['grants'], year['optionGrants']) for year in summary['years']],
+                         [(0, 0), (0, 0), (0, 0), (15000, 5000), (0, 0)])
         self.assertEqual(summary['people'][0]['filings'], [{
-            'accn': 'A1', 'filed': '2024-03-18', 'cashOut': 50000, 'sales': 50000, 'purchases': 0, 'withheld': 0, 'toIssuer': 0,
+            'accn': 'A1', 'filed': '2024-03-18', 'cashOut': 50000, 'sales': 50000, 'purchases': 0, 'exercised': 0, 'withheld': 0,
+            'toIssuer': 0,
             'grants': 15000, 'optionGrants': 5000
         }])
 
         # An insider who only bought, or only received grants, took nothing out
-        summary = insider_summary([transaction('purchase', '2024-06-14', 10, 50), transaction('grant', '2024-06-15', 10)], 2025, THRESHOLDS)
+        transactions = [transaction('purchase', '2024-06-14', 10, 50), transaction('grant', '2024-06-15', 10)]
+        summary = insider_summary(transactions, 2021, 2025, THRESHOLDS)
         self.assertEqual((summary['cashOut'], summary['grants'], summary['sellers'], summary['people']), (-500, 500, 0, []))

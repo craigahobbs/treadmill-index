@@ -34,6 +34,7 @@ function testDollars():
     unittestEqual(tiDollars(1000000), '$1.0M')
     unittestEqual(tiDollars(346022932), '$346.0M')
     unittestEqual(tiDollars(32825940004), '$32.8B')
+    unittestEqual(tiDollars(6533800000000), '$6,533.8B')
     unittestEqual(tiDollars(-5792453647), '-$5.8B')
     unittestEqual(tiDollars(-175000000), '-$175.0M')
     unittestEqual(tiDollars(-5500), '-$6K')
@@ -43,10 +44,10 @@ unittestRunTest('testDollars')
 
 function testInsiderAmounts():
     item = { \
-        'cashOut': -3883760, 'sales': 110200, 'grants': 110000, 'optionGrants': 300000, 'withheld': 5500, 'toIssuer': 540, \
-        'purchases': 4000000 \
+        'cashOut': -4883760, 'sales': 110200, 'grants': 110000, 'optionGrants': 300000, 'withheld': 5500, 'toIssuer': 540, \
+        'purchases': 4000000, 'exercised': 1000000 \
     }
-    unittestDeepEqual(tiInsiderAmounts(['2024'], item), ['2024', '-$3.9M', '$110K', '$6K', '$4.0M', '$110K', '$300K'])
+    unittestDeepEqual(tiInsiderAmounts(['2024'], item), ['2024', '-$4.9M', '$110K', '$6K', '$5.0M', '$110K', '$300K'])
     unittestEqual(arrayLength(tiInsiderHeaders), 6)
 endfunction
 unittestRunTest('testInsiderAmounts')
@@ -60,12 +61,14 @@ endfunction
 unittestRunTest('testCashOut')
 
 
-function testBillions():
-    unittestEqual(tiBillions(6533800000000), '$6,533.8B')
-    unittestEqual(tiBillions(-20800000000), '-$20.8B')
-    unittestEqual(tiBillions(500000000), '$0.5B')
+function testShares():
+    unittestEqual(tiShares(1617640, null), 'n/a')
+    unittestEqual( \
+        tiShares(1617640, {'v': 254321000, 'accn': '0001617640-26-000012'}), \
+        '[254.3M](https://www.sec.gov/Archives/edgar/data/1617640/000161764026000012/0001617640-26-000012-index.htm)' \
+    )
 endfunction
-unittestRunTest('testBillions')
+unittestRunTest('testShares')
 
 
 function testPercent():

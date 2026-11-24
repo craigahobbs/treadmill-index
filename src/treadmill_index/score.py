@@ -8,7 +8,7 @@ from .extract import F_ACCN, F_START, F_TAG, F_VAL, parse_date
 
 
 # The method version - bump when a scoring rule, threshold or source tag changes
-METHOD_VERSION = '1.0.0'
+METHOD_VERSION = '1.1.0'
 
 
 # Each of the three signs is scored out of this many points
@@ -103,6 +103,20 @@ def year_label(end):
     """
 
     return end[:4] if end[5:7] > '03' else str(int(end[:4]) - 1)
+
+
+def calendar_years(data_date, thresholds):
+    """
+    Get the latest whole calendar years: the years of the insider figures, and of the owner cash, buybacks and share
+    counts set beside them
+
+    :param str data_date: The date of the latest filing in the data
+    :param dict thresholds: The thresholds
+    :returns: The tuple of the first and last year
+    """
+
+    last_year = int(data_date[:4]) - 1
+    return last_year - thresholds['insider_years'] + 1, last_year
 
 
 def sic_exclusion(sic):
@@ -392,8 +406,9 @@ def pillar_one(series, latest_margin, thresholds):
     }
 
 
-# The kinds of operating spending reported beside the cost line, where a company tags them
-SPENDING = {'sm': 'sales and marketing', 'rnd': 'research and development', 'ga': 'general and administrative'}
+# The kinds of operating spending reported beside the cost line, where a company tags them: sales and marketing,
+# research and development, and general and administrative
+SPENDING = ('sm', 'rnd', 'ga')
 
 
 def spending_change(record, series, thresholds):
@@ -443,25 +458,23 @@ def low_run(series, thresholds):
     return run
 
 
-def five_years(record, series, last_year, thresholds):
+def five_years(record, series, first_year, last_year):
     """
-    Total a company's owner cash and buybacks over the calendar years of the insider summary, with the change in
-    its share count - what owners got, to set beside what insiders sold
+    Total a company's revenue, owner cash and buybacks over the fiscal years labelled with the calendar years of the
+    insider summary, with the change in its share count - what owners got, to set beside what insiders took out
 
     :param dict record: The company record
     :param list(dict) series: The company's yearly series
+    :param int first_year: The first calendar year
     :param int last_year: The last calendar year
-    :param dict thresholds: The thresholds
-    :returns: The dict of "years" (the fiscal years counted), "revenue", "ownerCash", "buybacks", "withholding" and
-        "shareGrowth" - the annualized change in the diluted share count, or None if it cannot be followed
+    :returns: The dict of "revenue", "ownerCash", "buybacks", "withholding" and "shareGrowth" - the annualized change
+        in the diluted share count, or None if it cannot be followed
     """
 
-    first_year = last_year - thresholds['insider_years'] + 1
     years = [year for year in series if first_year <= int(year['fy']) <= last_year]
     ends = {year['end'] for year in years}
     annual = record['annual']
     return {
-        'years': len(years),
         'revenue': sum(year['rev'][F_VAL] for year in years),
         'ownerCash': sum(year['ownerCash'] for year in years),
         'buybacks': sum(abs(fact[F_VAL]) for end, fact in annual['bb'].items() if end in ends),
@@ -548,7 +561,7 @@ def evaluate(record, sic, data_date, thresholds=None, insider=None):
     annual = record['annual']
     ends = {year['end'] for year in series}
     totals = {name: sum(abs(fact[F_VAL]) for end, fact in annual[name].items() if end in ends) for name in ('bb', 'div', 'wh')}
-    five = five_years(record, series, int(data_date[:4]) - 1, thresholds)
+    five = five_years(record, series, *calendar_years(data_date, thresholds))
 
     # The latest-12-month owner-cash margin (the latest fiscal year if the quarterly data is unusable)
     ttm, ttm_reason = latest_twelve_months(record, last)
@@ -571,13 +584,12 @@ def evaluate(record, sic, data_date, thresholds=None, insider=None):
 
     # The company type
     excluded = sic_exclusion(sic)
-    capital_led = sbc > 0 and capex > thresholds['capital_led_ratio'] * sbc
     if excluded:
         company_type = 'excluded'
     elif p1['cumMargin'] >= thresholds['meaningful_margin']:
         company_type = 'cash_generative'
     elif fcf >= 0 and sbc >= thresholds['sbc_revenue_min'] * revenue and sbc >= thresholds['sbc_fcf_min'] * fcf:
-        company_type = 'capital_led' if capital_led else 'stock_pay'
+        company_type = 'capital_led' if capex > thresholds['capital_led_ratio'] * sbc else 'stock_pay'
     elif fcf < 0:
         company_type = 'cash_burner'
     else:
@@ -615,14 +627,10 @@ def evaluate(record, sic, data_date, thresholds=None, insider=None):
         'cumSbc': sbc,
         'cumCapex': capex,
         'cumOwnerCash': fcf - sbc,
-        'cumFcfMargin': fcf / revenue,
-        'sbcRevenue': sbc / revenue,
         'buybacks': totals['bb'],
         'dividends': totals['div'],
         'withholding': totals['wh'],
         'capexToSbc': capex / sbc if sbc > 0 else None,
-        'capitalLed': capital_led,
-        'fyMargin': last['margin'],
         'latestMargin': latest_margin,
         'latestBasis': 'ttm' if ttm else 'fy',
         'latestEnd': ttm['end'] if ttm else last['end'],

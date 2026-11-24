@@ -12,7 +12,7 @@ import zipfile
 import treadmill_index.__main__
 from treadmill_index.main import main
 
-from .helpers import company_bytes, insider_filing, insider_zip, unit
+from .helpers import company_bytes, insider_filing, insider_zips, unit
 
 
 def fetch_submission(url, unused_user_agent):
@@ -99,7 +99,7 @@ class TestMain(unittest.TestCase):
             write_companyfacts(raw_dir, [1, 2, 3])
 
             # The first company's insiders sell in 2025; the second's only before the five years; the third has none
-            insider_zip(os.path.join(raw_dir, 'insider', '2025q1_form345.zip'), [
+            names = insider_zips(os.path.join(raw_dir, 'insider'), [
                 insider_filing('A1', cik=1, filed='18-MAR-2025', nonderiv=[
                     ('14-MAR-2025', 'A', 'A', '1000.0', '0.0', 'D'),
                     ('17-MAR-2025', 'S', 'D', '1000.0', '50.0', 'D')
@@ -112,7 +112,7 @@ class TestMain(unittest.TestCase):
                  patch('sys.stdout', StringIO()) as stdout, \
                  patch('sys.stderr', StringIO()):
                 self.assertEqual(main(['--raw', raw_dir, '--out', out_dir, '--processes', '1', '--user-agent', 'test-client/1.0']), 0)
-            self.assertIn('Reading 2025q1_form345.zip ...', stdout.getvalue().splitlines())
+            self.assertIn('Reading 2025q4_form345.zip ...', stdout.getvalue().splitlines())
 
             with open(os.path.join(out_dir, 'index.json'), 'r', encoding='utf-8') as index_file:
                 index = json.load(index_file)
@@ -127,11 +127,12 @@ class TestMain(unittest.TestCase):
             )
             with open(os.path.join(out_dir, 'meta.json'), 'r', encoding='utf-8') as meta_file:
                 meta = json.load(meta_file)
-            self.assertEqual(meta['sources']['insider']['files'], ['2025q1_form345.zip'])
-            self.assertEqual((meta['insider']['firstYear'], meta['insider']['lastYear']), (2021, 2025))
+            self.assertEqual(meta['sources']['insider']['files'], names)
+            self.assertEqual(meta['years'], {'first': 2021, 'last': 2025})
             self.assertEqual(meta['insider']['screened'], {
                 'companies': 1, 'revenue': 8050000000, 'ownerCash': -161000000, 'tookMore': 1, 'quarters': 2, 'buybackQuarters': 1,
-                'cashOut': 50000, 'sales': 50000, 'withheld': 0, 'toIssuer': 0, 'purchases': 0, 'grants': 50000, 'optionGrants': 0,
+                'cashOut': 50000, 'sales': 50000, 'withheld': 0, 'toIssuer': 0, 'purchases': 0, 'exercised': 0, 'grants': 50000,
+                'optionGrants': 0,
                 'buybacks': 20000000, 'salesInQuarters': 50000, 'salesInBuybackQuarters': 50000
             })
             self.assertEqual(meta['funnel']['ranked'], 1)
@@ -139,6 +140,20 @@ class TestMain(unittest.TestCase):
                 company = json.load(company_file)
             self.assertEqual(company['insider']['people'][0]['name'], 'Doe Jane')
             self.assertEqual(company['insider']['cashOut'], 50000)
+
+            # A quarter of the five years has no data set: its year's figures would be short, so nothing is built
+            os.remove(os.path.join(raw_dir, 'insider', '2023q2_form345.zip'))
+            os.remove(os.path.join(raw_dir, 'insider', '2025q4_form345.zip'))
+            with patch('treadmill_index.extract.ProcessPoolExecutor', ThreadPoolExecutor), \
+                 patch('treadmill_index.sec.fetch_url', side_effect=fetch_submission), \
+                 patch('time.sleep'), \
+                 patch('sys.stdout', StringIO()), \
+                 patch('sys.stderr', StringIO()) as stderr:
+                self.assertEqual(main(['--raw', raw_dir, '--out', out_dir, '--processes', '1', '--user-agent', 'test-client/1.0']), 1)
+            self.assertEqual(
+                stderr.getvalue(),
+                'The insider-transaction data sets of 2023q2, 2025q4 are missing: run "make insider-data"\n'
+            )
 
 
     def test_main_download_insider(self):

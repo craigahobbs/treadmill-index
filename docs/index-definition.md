@@ -10,7 +10,7 @@ Agreed with the owner on 2026-11-24, after the first build on real data. The aim
 
 - **P1, owner cash that stays near zero (25).** Unchanged from the definition below.
 - **Costs (25).** Operating expenses excluding cost of revenue, as a share of gross profit, in the latest fiscal year: 0 points at 70%, 25 at 100% or more (25 when gross profit is not positive). The cost line is built as in P2b below. This replaces P2a and P2b.
-- **Insiders (25).** Net cash officers and directors took out through stock over the latest five whole calendar years, as a share of the company's revenue in the fiscal years with the same labels: 0 points at 0.5%, 25 at 3% or more. Cash taken out = open-market sales + shares withheld for taxes + shares sold to the company - open-market purchases. This replaces P3.
+- **Insiders (25).** Net cash officers and directors took out through stock over the latest five whole calendar years, as a share of the company's revenue in the fiscal years with the same labels: 0 points at 0.5%, 25 at 3% or more. Cash taken out = open-market sales + shares withheld for taxes + shares sold to the company - open-market purchases - what was paid to exercise options. This replaces P3. (The exercise cost was added on 2026-11-24, method version 1.1.0, on the owner's "do as you see fit": without it, a sale of exercised options counted in full, and shares withheld to pay an exercise price counted as cash.)
 
 Other changes:
 
@@ -23,7 +23,7 @@ Why, from the 2026-11-20 data (screened companies against cash-generative ones):
 - Costs as a share of gross profit separate them: median 93% against 67%.
 - "Years with both grants and sales" did not separate them: 77% against 73%.
 - "Sold more than they were granted" was partly an artifact of how insiders settle vesting taxes. Some sell on the market, some have the company withhold shares; counting only market sales made the first kind look like heavier sellers. Grant values are also not consistently available.
-- Insider cash-out as a share of revenue separates them strongly: median 2.9% against 0.4%, and at or above 3% at 49% against 6%.
+- Insider cash-out as a share of revenue separates them strongly: median 2.9% against 0.4%, and at or above 3% at 49% against 6% (2.7% against 0.3%, and 44% against 5%, once exercise costs are deducted).
 
 The 70%/100% and 0.5%/3% scales are judgment set from those distributions. The owner approved the plan; he has not reviewed the scales number by number.
 

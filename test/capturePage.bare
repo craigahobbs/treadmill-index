@@ -1,0 +1,33 @@
+include <unittest.bare>
+include <unittestMock.bare>
+include '../treadmillIndex.bare'
+
+
+# Render one page state with every side effect mocked, and log the mock's call log as JSON. It is run by
+# makeTestPages.py, which sets:
+#
+#     vCapUrls - the JSON array of the data URLs that load (others fail to load)
+#     vCapGlobals - the JSON object of the global variables to set: the page's arguments
+#     vCapDir - the directory of test/data/ to load from, "" or "noinsider/"
+async function capturePage():
+    urls = jsonParse(vCapUrls)
+    paths = []
+    for url in urls:
+        arrayPush(paths, stringReplace(url, 'data/', 'data/' + vCapDir))
+    endfor
+    texts = systemFetch(paths)
+    data = {}
+    for url, ixURL in urls:
+        objectSet(data, url, arrayGet(texts, ixURL))
+    endfor
+    capGlobals = jsonParse(vCapGlobals)
+    for name in objectKeys(capGlobals):
+        systemGlobalSet(name, objectGet(capGlobals, name))
+    endfor
+    unittestMockAll({'systemFetch': data})
+    tiMain()
+    systemLog(jsonStringify(unittestMockEnd()))
+endfunction
+
+
+capturePage()

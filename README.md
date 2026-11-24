@@ -40,7 +40,7 @@ published figure links to the SEC filing it came from.
 
 The build reads the zip directly (about 15 seconds on 12 cores, cached in `data/raw/` afterward), looks up
 industry codes and tickers, screens and scores every company, checks the result, and writes `data/`. Each build
-is also copied to `data/archive/<data date>/`.
+is also copied to `data/archive/<data date>/<method version>/`.
 
 Industry codes and tickers come from the SEC bulk file `submissions.zip` if it is in `data/raw/`, otherwise
 from the SEC's per-company API, one request per company (about 1,300, cached in `data/raw/`).
@@ -56,7 +56,8 @@ SEC_USER_AGENT="Your Name you@example.com" make insider-data
 
 `make insider-data` downloads the SEC's quarterly insider-transaction data sets to `data/raw/insider/`. When they
 are there, `make data` adds what each company's insiders took out through stock, which is one of the three
-signs. Without them the build still runs, no company has a score, and the pages say so.
+signs. Without them the build still runs, no company has a score, and the pages say so. With some of them, the
+build stops if a quarter of the latest five calendar years is missing, because that year's figures would be short.
 
 `data/raw/` and `*.zip` are git-ignored. Everything else in `data/` is published.
 
@@ -74,9 +75,11 @@ make lint             # pylint, and static analysis of the web application
 make data             # build the data files
 make insider-data     # download the SEC insider-transaction data sets
 make test-data        # remake the web application's test data, test/data/
+make test-pages       # remake the web application's page render tests from the pages as they render now
 make run              # serve the application at http://localhost:8080/
 ~~~
 
 The web application's test data, `test/data/`, is made by the build step itself from the made-up companies in
-`test/makeTestData.py`. After a change to the content of the data files, run `make test-data` and update the
-expected page renders in `test/testTreadmillIndexPages.bare`.
+`test/makeTestData.py`. The page render tests, `test/testTreadmillIndexPages.bare`, are generated from the page
+states listed in `test/makeTestPages.py`. After a change to the content of the data files, or to what a page
+renders, run `make test-data` and `make test-pages`, and read the diff before committing it.

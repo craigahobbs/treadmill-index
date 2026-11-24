@@ -20,7 +20,7 @@ TESTS_REQUIRE := bare-script
 
 
 help:
-	@echo "            [data|insider-data|lint-app|run|test-app|test-data]"
+	@echo "            [data|insider-data|lint-app|run|test-app|test-data|test-pages]"
 
 
 clean:
@@ -35,12 +35,12 @@ test-app: $(DEFAULT_VENV_BUILD)
 
 
 # Lint the web application's scripts standalone. -x lints and executes (the scripts and the test files);
-# -s lints the test runner without executing it (that's the test-app target).
+# -s lints the test runner and the page capture script without executing them.
 .PHONY: lint-app
 lint: lint-app
 lint-app: $(DEFAULT_VENV_BUILD)
 	$(DEFAULT_VENV_BIN)/bare -x -m *.bare test/test*.bare
-	$(DEFAULT_VENV_BIN)/bare -s -m test/runTests.bare
+	$(DEFAULT_VENV_BIN)/bare -s -m test/runTests.bare test/capturePage.bare
 
 
 # Build the web application's data files from the SEC bulk files in data/raw/. Python runs isolated (-I)
@@ -62,6 +62,13 @@ insider-data: $(DEFAULT_VENV_BUILD)
 .PHONY: test-data
 test-data: $(DEFAULT_VENV_BUILD)
 	PYTHONPATH=src $(DEFAULT_VENV_PYTHON) test/makeTestData.py
+
+
+# Make the web application's page render tests, test/testTreadmillIndexPages.bare, from the pages as they render now.
+# Run it after "make test-data", or after a change to what a page renders, and read the diff.
+.PHONY: test-pages
+test-pages: $(DEFAULT_VENV_BUILD)
+	$(DEFAULT_VENV_PYTHON) test/makeTestPages.py $(DEFAULT_VENV_BIN)/bare
 
 
 # Run the web application locally

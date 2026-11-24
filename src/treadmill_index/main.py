@@ -9,9 +9,9 @@ import os
 import sys
 
 from .extract import load_records
-from .insider import INSIDER_PAGE_URL, buyback_quarters, download_insider, insider_summary, load_insider
+from .insider import INSIDER_PAGE_URL, buyback_quarters, download_insider, insider_summary, load_insider, missing_quarters
 from .output import build_meta, file_sha256, write_output
-from .score import THRESHOLDS, evaluate, loose_thresholds, run_screen, sensitivity
+from .score import THRESHOLDS, calendar_years, evaluate, loose_thresholds, run_screen, sensitivity
 from .sec import UserAgentError, load_submissions
 
 
@@ -70,17 +70,19 @@ def build(args):
     infos = load_submissions(ciks, args.raw, args.user_agent)
     sics = {cik: info['sic'] for cik, info in infos.items()}
 
-    # Summarize the insiders' grants and sales over the latest whole calendar years, if the data sets are there
+    # Summarize what insiders took out over the latest whole calendar years, if the data sets are there
     transactions, insider_files = load_insider(args.raw, ciks)
-    last_year = int(data_date[:4]) - 1
     insiders = None
-    insider_years = None
     if insider_files:
+        first_year, last_year = calendar_years(data_date, THRESHOLDS)
+        missing = missing_quarters(insider_files, first_year, last_year)
+        if missing:
+            print(f'The insider-transaction data sets of {", ".join(missing)} are missing: run "make insider-data"', file=sys.stderr)
+            return 1
         insiders = {}
-        insider_years = (last_year - THRESHOLDS['insider_years'] + 1, last_year)
         buybacks = {record['cik']: record['buybacks'] for record in records}
         for cik, cik_transactions in transactions.items():
-            summary = insider_summary(cik_transactions, last_year, THRESHOLDS, buyback_quarters(buybacks[int(cik)]))
+            summary = insider_summary(cik_transactions, first_year, last_year, THRESHOLDS, buyback_quarters(buybacks[int(cik)]))
             if summary is not None:
                 insiders[int(cik)] = summary
 
@@ -96,7 +98,7 @@ def build(args):
         'submissions': {'url': 'https://data.sec.gov/submissions/', 'companies': len(infos)},
         'insider': {'url': INSIDER_PAGE_URL, 'files': insider_files}
     }
-    meta = build_meta(results, funnel, in_file, sources, sensitivity(records, sics, data_date, results, insiders), insider_years)
+    meta = build_meta(results, funnel, in_file, sources, sensitivity(records, sics, data_date, results, insiders))
     problems = write_output(args.out, results, infos, meta)
     if problems:
         for problem in problems:

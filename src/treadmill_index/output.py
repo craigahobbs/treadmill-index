@@ -8,29 +8,18 @@ import json
 import os
 import shutil
 
-from .extract import F_ACCN, F_FILED, F_FORM, F_START, F_TAG, F_VAL, PREFILTER_REVENUE
-from .score import COST_METHODS, METHOD_VERSION, SIC_EXCLUSIONS, SIGN_POINTS, THRESHOLDS, group_totals
+from .extract import F_ACCN, F_FILED, F_FORM, F_TAG, F_VAL, PREFILTER_REVENUE
+from .score import COST_METHODS, METHOD_VERSION, SIC_EXCLUSIONS, SIGN_POINTS, THRESHOLDS, calendar_years, group_totals
 
-
-# The index.csv columns
-CSV_FIELDS = (
-    'rank', 'name', 'ticker', 'cik', 'type', 'excluded', 'sic', 'sicDescription', 'score', 'p1', 'p1Years', 'p1Cum', 'p1Latest',
-    'p1Ex', 'costs', 'insiders', 'years', 'firstYear', 'lastYear', 'lastEnd', 'revenue', 'growth', 'lowYears', 'lowRun', 'cumMargin',
-    'cumMarginEx', 'fyMargin', 'latestMargin', 'latestBasis', 'latestEnd', 'cumRevenue', 'cumFcf', 'cumSbc', 'cumCapex',
-    'cumOwnerCash', 'cumFcfMargin', 'sbcRevenue', 'buybacks', 'dividends', 'withholding', 'capexToSbc', 'capitalLed',
-    'shareGrowth', 'costLevel', 'costChange', 'costMethod', 'costFirst', 'costLast', 'cashOut', 'cashOutRevenue', 'insiderSales',
-    'insiderGrants', 'insiderOptionGrants', 'revenueFive', 'ownerCashFive', 'ownerMarginFive', 'buybacksFive', 'withholdingFive',
-    'shareGrowthFive', 'flags'
-)
 
 # The files copied to the archive of each build
 ARCHIVE_FILES = ('index.json', 'index.csv', 'meta.json')
 
-# The index.json row's scores - a company in an excluded industry has none
+# The index row's scores - a company in an excluded industry has none
 SCORE_FIELDS = ('score', 'p1', 'p1Years', 'p1Cum', 'p1Latest', 'p1Ex', 'costs', 'insiders')
 
 # The insider summary's dollar amounts, and its amounts over the quarters that have the company's buybacks
-INSIDER_AMOUNTS = ('cashOut', 'sales', 'withheld', 'toIssuer', 'purchases', 'grants', 'optionGrants')
+INSIDER_AMOUNTS = ('cashOut', 'sales', 'withheld', 'toIssuer', 'purchases', 'exercised', 'grants', 'optionGrants')
 INSIDER_QUARTER_AMOUNTS = ('buybacks', 'salesInQuarters', 'salesInBuybackQuarters')
 
 
@@ -136,23 +125,19 @@ def other_way(result, thresholds):
 
     :param dict result: The company's scored result
     :param dict thresholds: The thresholds
-    :returns: The list of {kind, text}
+    :returns: The list of sentences
     """
 
     items = []
     line = thresholds['meaningful_margin']
     period = 'latest 12 months' if result['latestBasis'] == 'ttm' else 'latest fiscal year'
     if result['latestMargin'] >= line:
-        items.append({
-            'kind': 'recent_improvement',
-            'text': f'Owner cash in the {period} was {percent(result["latestMargin"])} of revenue, above the {percent(line)} line.'
-        })
+        items.append(f'Owner cash in the {period} was {percent(result["latestMargin"])} of revenue, above the {percent(line)} line.')
     elif result['latestMargin'] > result['p1']['cumMargin'] + 0.02:
-        items.append({
-            'kind': 'recent_improvement',
-            'text': f'Owner cash in the {period} was {percent(result["latestMargin"])} of revenue, better than the '
+        items.append(
+            f'Owner cash in the {period} was {percent(result["latestMargin"])} of revenue, better than the '
             f'{percent(result["p1"]["cumMargin"])} over the whole period.'
-        })
+        )
     if result['oneOffs']:
         years = join_words(sorted(result['oneOffs']))
         causes = join_words(sorted({cause[0] for causes in result['oneOffs'].values() for cause in causes}))
@@ -160,13 +145,9 @@ def other_way(result, thresholds):
         if result['p1Ex']:
             text += f' Without those years the cumulative owner-cash margin is {percent(result["p1Ex"]["cumMargin"])}' \
                 f' and the owner-cash sign scores {result["p1Ex"]["p1"]:.1f} instead of {result["p1"]["p1"]:.1f}.'
-        items.append({'kind': 'one_off', 'text': text})
+        items.append(text)
     if result['type'] == 'capital_led':
-        items.append({
-            'kind': 'capital_led',
-            'text': f'Capital spending was {result["capexToSbc"]:.1f} times stock pay. The shortfall is mostly investment, '
-            'not stock pay.'
-        })
+        items.append(f'Capital spending was {result["capexToSbc"]:.1f} times stock pay. The shortfall is mostly investment, not stock pay.')
     returned = [
         text for amount, text in (
             (result['buybacks'], f'{money(result["buybacks"])} to buy back shares'),
@@ -174,20 +155,20 @@ def other_way(result, thresholds):
         ) if amount
     ]
     if returned:
-        items.append({'kind': 'cash_returned', 'text': f'The company paid {join_words(returned)} over the period.'})
+        items.append(f'The company paid {join_words(returned)} over the period.')
     cost = result['cost']
     if cost and cost['change'] <= -2:
-        items.append({
-            'kind': 'costs_fell',
-            'text': f'Operating costs fell from {percent(cost["firstRatio"])} of revenue in {cost["firstYear"]} to '
+        items.append(
+            f'Operating costs fell from {percent(cost["firstRatio"])} of revenue in {cost["firstYear"]} to '
             f'{percent(cost["lastRatio"])} in {cost["lastYear"]}.'
-        })
+        )
     return items
 
 
 def index_row(result, info):
     """
-    Build a company's row in index.json. A company in an excluded industry has its inputs but no scores.
+    Build a company's row of index.json and index.csv, in the order of the CSV's columns. A company in an excluded
+    industry has its inputs but no scores.
 
     :param dict result: The company's scored result
     :param dict info: The company's SEC company information
@@ -199,34 +180,25 @@ def index_row(result, info):
     costs = result['costs'] or {}
     insiders = result['insiders'] or {}
     insider = result['insider'] or {}
-    cost = result['cost'] or {}
     five = result['five']
-    tickers = info.get('tickers') or [None]
-    exchanges = info.get('exchanges') or [None]
     row = {
-        'cik': result['cik'],
+        'rank': result['rank'],
         'name': result['name'],
-        'ticker': tickers[0],
-        'exchange': exchanges[0],
-        'sic': result['sic'],
-        'sicDescription': info.get('sicDescription'),
+        'ticker': (info.get('tickers') or [None])[0],
+        'exchange': (info.get('exchanges') or [None])[0],
+        'cik': result['cik'],
         'type': result['type'],
         'excluded': result['excluded'],
-        'rank': result['rank'],
+        'sic': result['sic'],
+        'sicDescription': info.get('sicDescription'),
         'score': ratio(result['score'], 2),
         'p1': ratio(p1['p1'], 2),
         'p1Years': ratio(p1['yearsPoints'], 2),
         'p1Cum': ratio(p1['cumPoints'], 2),
         'p1Latest': ratio(p1['latestPoints'], 2),
         'p1Ex': ratio(p1_ex.get('p1'), 2),
-        'cumMarginEx': ratio(p1_ex.get('cumMargin')),
         'costs': ratio(costs.get('points'), 2),
         'insiders': ratio(insiders.get('points'), 2),
-        'costLevel': ratio(costs.get('level')),
-        'costChange': ratio(cost.get('change'), 2),
-        'costMethod': cost.get('method'),
-        'costFirst': ratio(cost.get('firstRatio')),
-        'costLast': ratio(cost.get('lastRatio')),
         'years': result['years'],
         'firstYear': result['firstYear'],
         'lastYear': result['lastYear'],
@@ -236,7 +208,7 @@ def index_row(result, info):
         'lowYears': p1['lowYears'],
         'lowRun': result['lowRun'],
         'cumMargin': ratio(p1['cumMargin']),
-        'fyMargin': ratio(result['fyMargin']),
+        'cumMarginEx': ratio(p1_ex.get('cumMargin')),
         'latestMargin': ratio(result['latestMargin']),
         'latestBasis': result['latestBasis'],
         'latestEnd': result['latestEnd'],
@@ -245,14 +217,12 @@ def index_row(result, info):
         'cumSbc': result['cumSbc'],
         'cumCapex': result['cumCapex'],
         'cumOwnerCash': result['cumOwnerCash'],
-        'cumFcfMargin': ratio(result['cumFcfMargin']),
-        'sbcRevenue': ratio(result['sbcRevenue']),
         'buybacks': result['buybacks'],
         'dividends': result['dividends'],
         'withholding': result['withholding'],
-        'capexToSbc': ratio(result['capexToSbc'], 3),
-        'capitalLed': result['capitalLed'],
         'shareGrowth': ratio(result['shareGrowth']),
+        'costLevel': ratio(costs.get('level')),
+        'costChange': ratio((result['cost'] or {}).get('change'), 2),
         'cashOut': dollars(insider.get('cashOut')),
         'cashOutRevenue': ratio(insiders.get('share')),
         'insiderSales': dollars(insider.get('sales')),
@@ -264,8 +234,7 @@ def index_row(result, info):
         'buybacksFive': dollars(five['buybacks']),
         'withholdingFive': dollars(five['withholding']),
         'shareGrowthFive': ratio(five['shareGrowth']),
-        'flags': result['flags'],
-        'margins': [ratio(year['margin'], 4) for year in result['series']]
+        'flags': result['flags']
     }
     if result['excluded']:
         row.update(dict.fromkeys(SCORE_FIELDS))
@@ -287,8 +256,8 @@ def insider_json(insider):
         return {**{key: item[key] for key in keys}, **{amount: dollars(item[amount]) for amount in INSIDER_AMOUNTS}}
 
     return {
-        **amounts(insider, ('grantShares', 'giftShares', 'oddPrices', 'insiders', 'sellers')),
-        'years': [amounts(year, ('year', 'grantShares', 'giftShares')) for year in insider['years']],
+        **amounts(insider, ('insiders', 'sellers')),
+        'years': [amounts(year, ('year',)) for year in insider['years']],
         'people': [
             {
                 **amounts(person, ('cik', 'name', 'title')),
@@ -314,7 +283,6 @@ def company_json(result, info, thresholds):
         entry = {
             'fy': year['fy'],
             'end': year['end'],
-            'start': year['rev'][F_START],
             'rev': fact_json(year['rev']),
             'ocf': fact_json(year['ocf']),
             'capexBase': fact_json(year['capexBase']),
@@ -328,7 +296,7 @@ def company_json(result, info, thresholds):
                 {'cause': cause, 'v': value, 'fact': fact_json(fact)} for cause, value, fact in result['oneOffs'].get(year['fy'], [])
             ]
         }
-        for name, concept in (('buybacks', 'bb'), ('dividends', 'div'), ('withholding', 'wh'), ('netIncome', 'ni'), ('shares', 'sh')):
+        for name, concept in (('buybacks', 'bb'), ('dividends', 'div'), ('withholding', 'wh'), ('shares', 'sh')):
             entry[name] = fact_json(result['annual'][concept].get(year['end']))
         years.append(entry)
 
@@ -386,9 +354,9 @@ def check_output(rows, funnel, infos):
         label = f'{row["name"]} (CIK {row["cik"]})'
         if row['cik'] not in infos:
             problems.append(f'{label}: no SEC company information, so the industry test was not applied')
-        if row['p1'] is not None and not 0 <= row['p1'] <= 25:
+        if row['p1'] is not None and not 0 <= row['p1'] <= SIGN_POINTS:
             problems.append(f'{label}: the owner-cash sign is out of range')
-        if row['score'] is not None and not 0 <= row['score'] <= 75:
+        if row['score'] is not None and not 0 <= row['score'] <= 3 * SIGN_POINTS:
             problems.append(f'{label}: the score is out of range')
         if row['rank'] is not None and (row['type'] != 'stock_pay' or row['score'] is None):
             problems.append(f'{label}: ranked without passing the screen')
@@ -447,8 +415,7 @@ def write_json(path, value):
 
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w', encoding='utf-8') as json_file:
-        json.dump(value, json_file, sort_keys=True, separators=(',', ':'))
-        json_file.write('\n')
+        json_file.write(json.dumps(value, sort_keys=True, separators=(',', ':')) + '\n')
 
 
 def file_sha256(path):
@@ -466,16 +433,16 @@ def file_sha256(path):
     return digest.hexdigest()
 
 
-def build_meta(results, funnel, companies_in_file, sources, sensitivity_report, insider_years=None):
+def build_meta(results, funnel, companies_in_file, sources, sensitivity_report):
     """
     Build meta.json: the as-of date, sources, funnel, thresholds, group totals and sensitivity
 
     :param list(dict) results: The scored results
     :param dict funnel: The screen funnel
     :param int companies_in_file: The count of companies in the companyfacts file
-    :param dict sources: The source files' descriptions - "companyfacts" has "latestFiling", the as-of date
+    :param dict sources: The source files' descriptions - "companyfacts" has "latestFiling", the as-of date, and
+        "insider" has "files", the insider-transaction data sets used (none means the build has no insider figures)
     :param list(dict) sensitivity_report: The sensitivity report
-    :param tuple insider_years: The first and last calendar years of the insider summaries, or None with no insider data
     :rtype: dict
     """
 
@@ -489,9 +456,12 @@ def build_meta(results, funnel, companies_in_file, sources, sensitivity_report, 
         if result['excluded']:
             excluded[result['excluded']] = excluded.get(result['excluded'], 0) + 1
     line = THRESHOLDS['meaningful_margin']
+    data_date = sources['companyfacts']['latestFiling']
+    first_year, last_year = calendar_years(data_date, THRESHOLDS)
     return {
         'methodVersion': METHOD_VERSION,
-        'dataDate': sources['companyfacts']['latestFiling'],
+        'dataDate': data_date,
+        'years': {'first': first_year, 'last': last_year},
         'sources': sources,
         'thresholds': {**THRESHOLDS, 'prefilter_revenue': PREFILTER_REVENUE},
         'sicExclusions': [{'first': first, 'last': last, 'group': group} for first, last, group in SIC_EXCLUSIONS],
@@ -500,16 +470,9 @@ def build_meta(results, funnel, companies_in_file, sources, sensitivity_report, 
         'types': types,
         'excluded': excluded,
         'totals': group_totals(screened),
-        'insider': None if insider_years is None else {
-            'firstYear': insider_years[0],
-            'lastYear': insider_years[1],
-            **{name: insider_totals(group) for name, group in groups.items()}
-        },
+        'insider': {name: insider_totals(group) for name, group in groups.items()} if sources['insider']['files'] else None,
         'buybackShares': {name: buyback_totals(group) for name, group in groups.items()},
-        'persistence': {
-            'fivePlus': sum(1 for result in screened if result['lowRun'] >= 5),
-            'latestAbove': sum(1 for result in screened if result['lowRun'] == 0)
-        },
+        'lowFiveYears': sum(1 for result in screened if result['lowRun'] >= 5),
         'latest': {
             'cleared': sum(1 for result in screened if result['latestMargin'] >= line),
             'negative': sum(1 for result in screened if result['latestMargin'] < 0),
@@ -543,7 +506,7 @@ def write_output(out_dir, results, infos, meta):
 
     write_json(os.path.join(out_dir, 'index.json'), {'dataDate': meta['dataDate'], 'methodVersion': METHOD_VERSION, 'companies': rows})
     with open(os.path.join(out_dir, 'index.csv'), 'w', encoding='utf-8', newline='') as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=CSV_FIELDS, extrasaction='ignore')
+        writer = csv.DictWriter(csv_file, fieldnames=list(rows[0]))
         writer.writeheader()
         for row in rows:
             writer.writerow({**row, 'flags': ' '.join(row['flags'])})
@@ -568,23 +531,25 @@ def write_output(out_dir, results, infos, meta):
 def write_archive(out_dir, meta):
     """
     Archive the build so a figure cited from it can be found again: copy index.json, index.csv and meta.json to
-    archive/<data date>/ and list the build in archive/builds.json. A build with the same data date is replaced.
+    archive/<data date>/<method version>/ and list the build in archive/builds.json, newest first. A build with the
+    same data date and method version is replaced.
 
     :param str out_dir: The output directory
     :param dict meta: The meta.json value
     """
 
-    data_date = meta['dataDate']
-    build_dir = os.path.join(out_dir, 'archive', data_date)
+    build = {'dataDate': meta['dataDate'], 'methodVersion': meta['methodVersion'], 'ranked': meta['funnel']['ranked']}
+    build_dir = os.path.join(out_dir, 'archive', build['dataDate'], build['methodVersion'])
     os.makedirs(build_dir, exist_ok=True)
     for name in ARCHIVE_FILES:
         shutil.copyfile(os.path.join(out_dir, name), os.path.join(build_dir, name))
+
+    def build_key(other):
+        return other['dataDate'], [int(part) for part in other['methodVersion'].split('.')]
 
     builds_path = os.path.join(out_dir, 'archive', 'builds.json')
     builds = []
     if os.path.exists(builds_path):
         with open(builds_path, 'r', encoding='utf-8') as builds_file:
-            builds = json.load(builds_file)
-    builds = [build for build in builds if build['dataDate'] != data_date]
-    builds.append({'dataDate': data_date, 'methodVersion': meta['methodVersion'], 'ranked': meta['funnel']['ranked']})
-    write_json(builds_path, sorted(builds, key=lambda build: build['dataDate'], reverse=True))
+            builds = [other for other in json.load(builds_file) if build_key(other) != build_key(build)]
+    write_json(builds_path, sorted([*builds, build], key=build_key, reverse=True))

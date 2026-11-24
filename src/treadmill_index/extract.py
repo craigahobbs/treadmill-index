@@ -10,7 +10,7 @@ import zipfile
 
 
 # The extract cache version - bump when the extracted record changes
-EXTRACT_VERSION = 4
+EXTRACT_VERSION = 5
 
 # Companies that never reported this much annual revenue are dropped at extraction. This is a speed filter that
 # sits below the definition's $1B revenue test (and below that test moved down by a fifth).
@@ -40,7 +40,6 @@ CONCEPTS = {
     'bb': ['PaymentsForRepurchaseOfCommonStock'],
     'div': ['PaymentsOfDividends', 'PaymentsOfDividendsCommonStock'],
     'wh': ['PaymentsRelatedToTaxWithholdingForShareBasedCompensation'],
-    'ni': ['NetIncomeLoss'],
     'sh': ['WeightedAverageNumberOfDilutedSharesOutstanding'],
     'sm': ['SellingAndMarketingExpense'],
     'rnd': ['ResearchAndDevelopmentExpense'],

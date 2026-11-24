@@ -2,9 +2,9 @@
 
 import unittest
 
-from treadmill_index.score import SENSITIVITY_KEYS, THRESHOLDS, company_series, cost_change, cost_line, costs_sign, evaluate, \
-    find_period, five_years, group_totals, insiders_sign, latest_twelve_months, lin, loose_thresholds, low_run, one_off_years, \
-    pillar_one, run_screen, sensitivity, share_change, sic_exclusion, spending_change, year_label
+from treadmill_index.score import SENSITIVITY_KEYS, THRESHOLDS, calendar_years, company_series, cost_change, cost_line, costs_sign, \
+    evaluate, find_period, five_years, group_totals, insiders_sign, latest_twelve_months, lin, loose_thresholds, low_run, \
+    one_off_years, pillar_one, run_screen, sensitivity, share_change, sic_exclusion, spending_change, year_label
 
 from .helpers import DATA_DATE, REVENUE, annual, company_record, nine_months, unit
 
@@ -353,24 +353,29 @@ class TestScore(unittest.TestCase):
         series = company_series(record)
 
         # The fiscal years 2021 to 2025: owner cash is -2% of revenue; the share count grows 10% a year
-        five = five_years(record, series, 2025, THRESHOLDS)
+        five = five_years(record, series, 2021, 2025)
         self.assertAlmostEqual(five.pop('ownerCash'), -161e6)
         self.assertAlmostEqual(five.pop('shareGrowth'), 0.1)
-        self.assertEqual(five, {'years': 5, 'revenue': 8050e6, 'buybacks': 250e6, 'withholding': 3e6})
+        self.assertEqual(five, {'revenue': 8050e6, 'buybacks': 250e6, 'withholding': 3e6})
 
         # Years the company does not have, and too few years to follow the share count
-        five = five_years(record, series, 2026, THRESHOLDS)
-        self.assertEqual((five['years'], five['buybacks']), (4, 220e6))
+        five = five_years(record, series, 2022, 2026)
+        self.assertEqual((five['revenue'], five['buybacks']), (6800e6, 220e6))
         self.assertAlmostEqual(five['shareGrowth'], 0.1)
-        five = five_years(record, series, 2029, THRESHOLDS)
-        self.assertEqual((five['years'], five['buybacks'], five['shareGrowth']), (1, 70e6, None))
+        five = five_years(record, series, 2025, 2029)
+        self.assertEqual((five['revenue'], five['buybacks'], five['shareGrowth']), (2000e6, 70e6, None))
         self.assertAlmostEqual(five['ownerCash'], -40e6)
-        self.assertEqual(five_years(record, series, 2035, THRESHOLDS), {
-            'years': 0, 'revenue': 0, 'ownerCash': 0, 'buybacks': 0, 'withholding': 0, 'shareGrowth': None
+        self.assertEqual(five_years(record, series, 2031, 2035), {
+            'revenue': 0, 'ownerCash': 0, 'buybacks': 0, 'withholding': 0, 'shareGrowth': None
         })
 
         # A share count that cannot be followed
-        self.assertIsNone(five_years(company_record(), series, 2025, THRESHOLDS)['shareGrowth'])
+        self.assertIsNone(five_years(company_record(), series, 2021, 2025)['shareGrowth'])
+
+
+    def test_calendar_years(self):
+        self.assertEqual(calendar_years('2026-11-20', THRESHOLDS), (2021, 2025))
+        self.assertEqual(calendar_years('2027-01-04', {**THRESHOLDS, 'insider_years': 3}), (2024, 2026))
 
 
     def test_insiders_sign(self):
@@ -424,17 +429,14 @@ class TestScore(unittest.TestCase):
         self.assertEqual(cost['method'], 1)
         self.assertAlmostEqual(p1['p1'], 10 + 8 * 0.07 / 0.15 + 4.9)
         self.assertEqual(ttm['end'], '2026-09-30')
-        self.assertAlmostEqual(result.pop('cumFcfMargin'), 0.1)
-        self.assertAlmostEqual(result.pop('sbcRevenue'), 0.12)
         self.assertAlmostEqual(result.pop('capexToSbc'), 1 / 6)
-        self.assertAlmostEqual(result.pop('fyMargin'), -0.02)
         self.assertAlmostEqual(result.pop('latestMargin'), -0.02)
         costs = result.pop('costs')
         self.assertAlmostEqual(costs['level'], 1100 / 1200)
         self.assertAlmostEqual(costs['points'], 25 * (1100 / 1200 - 0.7) / 0.3)
         five = result.pop('five')
         self.assertAlmostEqual(five.pop('ownerCash'), -161e6)
-        self.assertEqual(five, {'years': 5, 'revenue': 8050e6, 'buybacks': 0, 'withholding': 0, 'shareGrowth': None})
+        self.assertEqual(five, {'revenue': 8050e6, 'buybacks': 0, 'withholding': 0, 'shareGrowth': None})
         self.assertEqual(result, {
             'stage': 'scored',
             'cik': 5,
@@ -456,7 +458,6 @@ class TestScore(unittest.TestCase):
             'buybacks': 0,
             'dividends': 0,
             'withholding': 0,
-            'capitalLed': False,
             'latestBasis': 'ttm',
             'latestEnd': '2026-09-30',
             'ttmReason': None,
@@ -520,18 +521,18 @@ class TestScore(unittest.TestCase):
 
         # Capital-led: stock pay would be the cause, but capital spending is more than twice it
         result = evaluate(company_record(ocf=0.4, capex=0.3), None, DATA_DATE)
-        self.assertEqual((result['type'], result['capitalLed']), ('capital_led', True))
+        self.assertEqual(result['type'], 'capital_led')
         self.assertAlmostEqual(result['capexToSbc'], 2.5)
         thresholds = {**THRESHOLDS, 'capital_led_ratio': 2.5}
         self.assertEqual(evaluate(company_record(ocf=0.4, capex=0.3), None, DATA_DATE, thresholds)['type'], 'stock_pay')
 
         # A cash-generative company with heavy capital spending keeps its type
         result = evaluate(company_record(ocf=0.5, capex=0.3, sbc=0.02), None, DATA_DATE)
-        self.assertEqual((result['type'], result['capitalLed']), ('cash_generative', True))
+        self.assertEqual(result['type'], 'cash_generative')
 
         # No stock pay
         result = evaluate(company_record(sbc=0), None, DATA_DATE)
-        self.assertEqual((result['type'], result['capitalLed'], result['capexToSbc']), ('cash_generative', False, None))
+        self.assertEqual((result['type'], result['capexToSbc']), ('cash_generative', None))
 
 
     def test_evaluate_scores(self):
@@ -570,7 +571,6 @@ class TestScore(unittest.TestCase):
         result = evaluate(company_record(tags={
             'ShareBasedCompensation': annuals([value * 0.12 for value in REVENUE]) + [nine_months(2025, 180), nine_months(2026, 73)]
         }), None, DATA_DATE)
-        self.assertAlmostEqual(result['fyMargin'], -0.02)
         self.assertAlmostEqual(result['latestMargin'], (215 - 133) / 2150)
         self.assertAlmostEqual(result['p1']['latestPoints'], 7 * (0.05 - 82 / 2150) / 0.1)
 

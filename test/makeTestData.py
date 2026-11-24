@@ -12,7 +12,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 import zipfile
 
-from tests.helpers import REVENUE, annual, company_bytes, insider_filing, insider_zip, unit
+from tests.helpers import REVENUE, annual, company_bytes, insider_filing, insider_zips, unit
 from treadmill_index.main import main
 
 
@@ -102,7 +102,8 @@ INSIDER_FILINGS = [
         ('22-MAR-2024', 'G', 'D', '300.0', '', 'D'),
         ('22-MAR-2024', 'D', 'D', '10.0', '54.0', 'D')
     ], deriv=[
-        ('22-MAR-2024', 'A', 'A', '5000.0', '', 'D', '', 'Stock Option (Right to Buy)', '60.0', '5000.0')
+        ('22-MAR-2024', 'A', 'A', '5000.0', '', 'D', '', 'Stock Option (Right to Buy)', '60.0', '5000.0'),
+        ('22-MAR-2024', 'M', 'D', '200000.0', '', 'D', '', 'Stock Option (Right to Buy)', '10.0', '200000.0')
     ]),
     insider_filing('0000000001-25-000103', cik=1, filed='3-FEB-2025', nonderiv=[('1-FEB-2025', 'P', 'A', '100.0', '40.0', 'D')]),
     insider_filing('0000000001-25-000104', cik=1, filed='4-FEB-2025', owners=[DIRECTOR],
@@ -144,7 +145,7 @@ def make_test_data(out_dir):
                     archive.writestr(f'CIK{company["cik"]:010d}.json', company_bytes(**company))
             if insider:
                 os.mkdir(os.path.join(raw_dir, 'insider'))
-                insider_zip(os.path.join(raw_dir, 'insider', '2025q4_form345.zip'), INSIDER_FILINGS)
+                insider_zips(os.path.join(raw_dir, 'insider'), INSIDER_FILINGS)
             with patch('treadmill_index.extract.ProcessPoolExecutor', ThreadPoolExecutor), \
                  patch('treadmill_index.sec.fetch_url', side_effect=fetch_submission), \
                  patch('treadmill_index.output.file_sha256', return_value='0123456789abcdef'), \

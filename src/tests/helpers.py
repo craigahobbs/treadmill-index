@@ -1,6 +1,7 @@
 # pylint: disable=missing-function-docstring, missing-module-docstring
 
 import json
+import os
 import zipfile
 
 from treadmill_index.extract import extract_company
@@ -112,3 +113,14 @@ def insider_zip(zip_path, filings):
                 for row in filing[table]:
                     lines.append('\t'.join(str(value) for value in (*row, *([''] * (len(columns) - len(row))))))
             archive.writestr(table, '\n'.join(lines) + '\n')
+
+
+def insider_zips(insider_dir, filings, first_year=2021, last_year=2025):
+    """
+    Write a data set for every quarter of some calendar years: the filings in the last, and none in the rest
+    """
+
+    names = [f'{year}q{quarter}_form345.zip' for year in range(first_year, last_year + 1) for quarter in range(1, 5)]
+    for name in names:
+        insider_zip(os.path.join(insider_dir, name), filings if name == names[-1] else [])
+    return names

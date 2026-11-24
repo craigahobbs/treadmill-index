@@ -14,7 +14,7 @@ import time
 from urllib.parse import urljoin
 import zipfile
 
-from .extract import F_ACCN, F_VAL, parse_date
+from .extract import F_VAL, parse_date
 from .sec import fetch_url
 
 
@@ -110,7 +110,7 @@ def download_insider(raw_dir, user_agent, today, pause=0.5, log=print):
 
 
 # The insider cache version - bump when the parsed transactions change
-INSIDER_VERSION = 2
+INSIDER_VERSION = 4
 
 # The forms used. Amended filings (4/A, 5/A) are not used: they restate transactions already reported.
 INSIDER_FORMS = ('4', '5')
@@ -140,8 +140,9 @@ _KINDS = {
     ('NONDERIV_TRANS.tsv', 'A', 'A'): 'grant',
     ('NONDERIV_TRANS.tsv', 'F', 'D'): 'withheld',
     ('NONDERIV_TRANS.tsv', 'D', 'D'): 'issuer',
-    ('NONDERIV_TRANS.tsv', 'G', 'D'): 'gift',
-    ('DERIV_TRANS.tsv', 'A', 'A'): 'grant'
+    ('DERIV_TRANS.tsv', 'A', 'A'): 'grant',
+    ('DERIV_TRANS.tsv', 'M', 'D'): 'exercise',
+    ('DERIV_TRANS.tsv', 'X', 'D'): 'exercise'
 }
 
 _MONTHS = {
@@ -216,8 +217,8 @@ def read_insider_zip(zip_path, ciks):
     :param str zip_path: The data set's zip file path
     :param set(int) ciks: The companies (issuers) to read
     :returns: The dict of company CIK to the list of transactions. A transaction is a dict of "accn", "filed",
-        "owner" (the insider's CIK), "name", "title", "kind" ("sale", "purchase", "grant", "option", "withheld",
-        "issuer" or "gift"), "date", "shares" and "price" (as reported; for an option, its exercise price).
+        "owner" (the insider's CIK), "name", "title", "kind" ("sale", "purchase", "grant", "option", "exercise",
+        "withheld" or "issuer"), "date", "shares" and "price" (as reported; for an option, its exercise price).
     """
 
     transactions = {}
@@ -249,12 +250,15 @@ def read_insider_zip(zip_path, ciks):
                 shares = parse_number(row['TRANS_SHARES'])
                 price = parse_number(row['TRANS_PRICEPERSHARE'])
                 if table == 'DERIV_TRANS.tsv':
-                    # A derivative grant covers its underlying shares; an option's price is its exercise price
+                    # A derivative covers its underlying shares; an option's price is its exercise price. Only an
+                    # option costs anything to exercise: share units convert for nothing.
+                    is_option = _RE_OPTION.search(row['SECURITY_TITLE'])
+                    if kind == 'exercise' and not is_option:
+                        continue
                     shares = parse_number(row['UNDLYNG_SEC_SHARES']) or shares
-                    price = None
-                    if _RE_OPTION.search(row['SECURITY_TITLE']):
+                    price = parse_number(row['CONV_EXERCISE_PRICE']) if is_option else None
+                    if kind == 'grant' and is_option:
                         kind = 'option'
-                        price = parse_number(row['CONV_EXERCISE_PRICE'])
                 if not shares or shares <= 0:
                     continue
                 transactions.setdefault(filing['cik'], []).append({
@@ -307,6 +311,20 @@ def load_insider(raw_dir, ciks, log=print):
     return transactions, names
 
 
+def missing_quarters(names, first_year, last_year):
+    """
+    Get the quarters of some calendar years that have no data set. Without one, a year's figures would be short.
+
+    :param list(str) names: The data set file names
+    :param int first_year: The first calendar year
+    :param int last_year: The last calendar year
+    :returns: The list of quarters, for example "2025q4", oldest first
+    """
+
+    quarters = [f'{year}q{quarter}' for year in range(first_year, last_year + 1) for quarter in range(1, 5)]
+    return [quarter for quarter in quarters if f'{quarter}_form345.zip' not in names]
+
+
 #
 # Summarizing a company's insiders
 #
@@ -314,7 +332,8 @@ def load_insider(raw_dir, ciks, log=print):
 
 # The dollar amounts summed by year, by insider and by filing, and the transaction kind behind each
 _AMOUNTS = {
-    'sale': 'sales', 'purchase': 'purchases', 'withheld': 'withheld', 'issuer': 'toIssuer', 'grant': 'grants', 'option': 'optionGrants'
+    'sale': 'sales', 'purchase': 'purchases', 'exercise': 'exercised', 'withheld': 'withheld', 'issuer': 'toIssuer', 'grant': 'grants',
+    'option': 'optionGrants'
 }
 
 
@@ -380,7 +399,7 @@ def buyback_quarters(periods):
     year-to-date amount less the one before it. A fiscal year is used only as far as its periods step by a quarter.
 
     :param dict periods: The company record's buybacks: the dict of "start|end" to fact
-    :returns: The list of quarters, oldest first: dicts of "start", "end", "buybacks" and "accn"
+    :returns: The list of quarters, oldest first: dicts of "start", "end" and "buybacks"
     """
 
     by_start = {}
@@ -399,44 +418,46 @@ def buyback_quarters(periods):
             amount = abs(fact[F_VAL]) - previous
             if amount < 0:
                 break
-            quarters.setdefault(end, {'start': quarter_start, 'end': end, 'buybacks': amount, 'accn': fact[F_ACCN]})
+            quarters.setdefault(end, {'start': quarter_start, 'end': end, 'buybacks': amount})
             previous = abs(fact[F_VAL])
             quarter_start = (parse_date(end) + datetime.timedelta(days=1)).isoformat()
     return [quarters[end] for end in sorted(quarters)]
 
 
-def insider_summary(transactions, last_year, thresholds, quarters=()):
+def insider_summary(transactions, first_year, last_year, thresholds, quarters=()):
     """
-    Summarize a company's insiders' grants and sales over the latest calendar years
+    Summarize what a company's insiders took out through stock, and were granted, over some calendar years
 
-    Sales, purchases and tax withholdings are valued at the price reported for each. "cashOut" is what the insiders
-    took out through stock: open-market sales, shares withheld for taxes and shares sold to the company, less
-    open-market purchases. Shares withheld count because some companies have insiders sell on the market to cover
-    the same taxes; counting both makes companies comparable.
+    Sales, purchases and withholdings are valued at the price reported for each. "cashOut" is the net cash the
+    insiders took out through stock: open-market sales, shares withheld and shares sold to the company, less
+    open-market purchases and what they paid to exercise options ("exercised": the shares at the exercise price).
+    Shares withheld count because some companies have insiders sell on the market to cover the same taxes; counting
+    both makes companies comparable. Shares withheld to pay an option's exercise price are offset by that price.
 
     Grants are not scored. For display, a grant is valued at the market value of the shares it covers: a stock
     award at the company's nearest reported price, an option at its exercise price. An option is worth less than
     the shares it covers, so this overstates option grants. A grant with no reported price near it is left out.
 
+    A reported price far from the company's other reported prices is taken to be a filing error, and the transaction
+    is left out. So is an exercise price above the share price: nobody pays more than the market to exercise.
+
     :param list(dict) transactions: The company's transactions
+    :param int first_year: The first calendar year
     :param int last_year: The last calendar year
     :param dict thresholds: The thresholds
-    :param list(dict) quarters: The company's buybacks by quarter. The quarters wholly inside the calendar years are
-        returned with the insiders' open-market sales in each.
+    :param list(dict) quarters: The company's buybacks by quarter. The insiders' open-market sales are totalled over
+        the quarters wholly inside the calendar years, and over those of them that had a buyback.
     :returns: The summary dict, or None if no insider reported a transaction in those years
     """
 
-    first_year = last_year - thresholds['insider_years'] + 1
     quarters = [
         {**quarter, 'sales': 0} for quarter in quarters
         if quarter['start'] >= f'{first_year}-01-01' and quarter['end'] <= f'{last_year}-12-31'
     ]
     quarter_starts = [quarter['start'] for quarter in quarters]
-    years = {year: {'year': year, 'grantShares': 0, 'giftShares': 0, **dict.fromkeys(_AMOUNTS.values(), 0)}
-             for year in range(first_year, last_year + 1)}
+    years = {year: {'year': year, **dict.fromkeys(_AMOUNTS.values(), 0)} for year in range(first_year, last_year + 1)}
     series = price_series(transactions)
     people = {}
-    odd_prices = 0
     for transaction in sorted(transactions, key=lambda transaction: (transaction['filed'] or '', transaction['accn'])):
         year = years.get(int(transaction['date'][:4]))
         if year is None:
@@ -452,20 +473,17 @@ def insider_summary(transactions, last_year, thresholds, quarters=()):
         person['title'] = transaction['title']  # the title on the insider's latest filing
 
         # Value the transaction
-        if kind == 'gift':
-            year['giftShares'] += shares
-            continue
         if kind in ('grant', 'option'):
-            year['grantShares'] += shares
             if kind == 'grant' or price is None:
                 price = nearest_price(series, day, thresholds['grant_price_days'])
-            if price is None:
-                continue
-        elif price is None:
-            # Shares returned to the company for nothing are a forfeit, not a sale
-            continue
-        elif kind != 'issuer' and is_odd_price(series, day, price):
-            odd_prices += 1
+        elif kind == 'exercise':
+            market = nearest_price(series, day, thresholds['grant_price_days'])
+            if price is not None and market is not None and price > market:
+                price = None
+        elif price is not None and kind != 'issuer' and is_odd_price(series, day, price):
+            price = None
+        if price is None:
+            # No price to value it at. Shares returned to the company for nothing are a forfeit, not a sale.
             continue
 
         # Add it to the year, the insider and the filing
@@ -488,9 +506,9 @@ def insider_summary(transactions, last_year, thresholds, quarters=()):
 
     # The totals, and what each year, insider and filing took out
     def cash_out(item):
-        return item['sales'] + item['withheld'] + item['toIssuer'] - item['purchases']
+        return item['sales'] + item['withheld'] + item['toIssuer'] - item['purchases'] - item['exercised']
 
-    summary = {amount: sum(year[amount] for year in years.values()) for amount in ('grantShares', 'giftShares', *_AMOUNTS.values())}
+    summary = {amount: sum(year[amount] for year in years.values()) for amount in _AMOUNTS.values()}
     filings = [filing for person in people.values() for filing in person['filings'].values()]
     for item in (summary, *years.values(), *people.values(), *filings):
         item['cashOut'] = cash_out(item)
@@ -504,7 +522,6 @@ def insider_summary(transactions, last_year, thresholds, quarters=()):
     return {
         **summary,
         'years': list(years.values()),
-        'oddPrices': odd_prices,
         'insiders': len(people),
         'sellers': len(sellers),
         'people': sellers[:5],

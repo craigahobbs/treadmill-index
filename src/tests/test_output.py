@@ -6,10 +6,10 @@ from tempfile import TemporaryDirectory
 import unittest
 
 from treadmill_index.insider import insider_summary
-from treadmill_index.output import CSV_FIELDS, build_meta, buyback_totals, check_output, company_json, dollars, fact_json, \
+from treadmill_index.output import build_meta, buyback_totals, check_output, company_json, dollars, fact_json, \
     file_sha256, index_row, insider_json, insider_totals, join_words, money, other_way, percent, ratio, summary_sentences, \
     write_archive, write_json, write_output
-from treadmill_index.score import THRESHOLDS, evaluate, run_screen, sensitivity
+from treadmill_index.score import METHOD_VERSION, THRESHOLDS, evaluate, run_screen, sensitivity
 
 from .helpers import DATA_DATE, REVENUE, annual, company_record
 from .test_insider import TRANSACTIONS
@@ -24,29 +24,23 @@ INFO = {
 }
 
 ROW = {
-    'cik': 1,
+    'rank': None,
     'name': 'Test Co',
     'ticker': 'TEST',
     'exchange': 'Nasdaq',
-    'sic': 7372,
-    'sicDescription': 'Services-Prepackaged Software',
+    'cik': 1,
     'type': 'stock_pay',
     'excluded': None,
-    'rank': None,
+    'sic': 7372,
+    'sicDescription': 'Services-Prepackaged Software',
     'score': None,
     'p1': 18.63,
     'p1Years': 10.0,
     'p1Cum': 3.73,
     'p1Latest': 4.9,
     'p1Ex': None,
-    'cumMarginEx': None,
     'costs': 18.06,
     'insiders': None,
-    'costLevel': 0.91667,
-    'costChange': 0.0,
-    'costMethod': 1,
-    'costFirst': 0.55,
-    'costLast': 0.55,
     'years': 7,
     'firstYear': '2019',
     'lastYear': '2025',
@@ -56,7 +50,7 @@ ROW = {
     'lowYears': 7,
     'lowRun': 7,
     'cumMargin': -0.02,
-    'fyMargin': -0.02,
+    'cumMarginEx': None,
     'latestMargin': -0.02,
     'latestBasis': 'ttm',
     'latestEnd': '2026-09-30',
@@ -65,14 +59,12 @@ ROW = {
     'cumSbc': 1218e6,
     'cumCapex': 203e6,
     'cumOwnerCash': -203e6,
-    'cumFcfMargin': 0.1,
-    'sbcRevenue': 0.12,
     'buybacks': 0,
     'dividends': 0,
     'withholding': 0,
-    'capexToSbc': 0.167,
-    'capitalLed': False,
     'shareGrowth': None,
+    'costLevel': 0.91667,
+    'costChange': 0.0,
     'cashOut': None,
     'cashOutRevenue': None,
     'insiderSales': None,
@@ -84,17 +76,15 @@ ROW = {
     'buybacksFive': 0,
     'withholdingFive': 0,
     'shareGrowthFive': None,
-    'flags': [],
-    'margins': [-0.02, -0.02, -0.02, -0.02, -0.02, -0.02, -0.02]
+    'flags': []
 }
 
 # An insider summary whose cash-out is 1.75% of the test company's revenue over the five years, for half of the
 # insiders sign's points
 INSIDER = {
-    'cashOut': 140875000, 'sales': 140000000, 'withheld': 1000000, 'toIssuer': 875000, 'purchases': 1000000, 'grants': 110000,
-    'optionGrants': 300000, 'quarters': 2, 'buybackQuarters': 1, 'buybacks': 30000000, 'salesInQuarters': 90000000,
-    'salesInBuybackQuarters': 60000000, 'grantShares': 7000, 'giftShares': 0, 'oddPrices': 0, 'insiders': 3, 'sellers': 2,
-    'years': [], 'people': []
+    'cashOut': 140875000, 'sales': 140000000, 'withheld': 1000000, 'toIssuer': 1000000, 'purchases': 1000000, 'exercised': 125000,
+    'grants': 110000, 'optionGrants': 300000, 'quarters': 2, 'buybackQuarters': 1, 'buybacks': 30000000, 'salesInQuarters': 90000000,
+    'salesInBuybackQuarters': 60000000, 'insiders': 3, 'sellers': 2, 'years': [], 'people': []
 }
 
 INSIDER_ROW = {
@@ -109,7 +99,7 @@ INSIDER_ROW = {
 
 NO_INSIDERS = {
     'companies': 0, 'revenue': 0, 'ownerCash': 0, 'tookMore': 0, 'quarters': 0, 'buybackQuarters': 0, 'cashOut': 0, 'sales': 0,
-    'withheld': 0, 'toIssuer': 0, 'purchases': 0, 'grants': 0, 'optionGrants': 0, 'buybacks': 0, 'salesInQuarters': 0,
+    'withheld': 0, 'toIssuer': 0, 'purchases': 0, 'exercised': 0, 'grants': 0, 'optionGrants': 0, 'buybacks': 0, 'salesInQuarters': 0,
     'salesInBuybackQuarters': 0
 }
 
@@ -120,7 +110,11 @@ SUMMARY = [
     'In the 12 months to 2026-09-30 it was -2.0% of revenue.'
 ]
 
-SOURCES = {'companyfacts': {'latestFiling': DATA_DATE, 'sha256': 'abc'}, 'submissions': {'companies': 5}}
+SOURCES = {
+    'companyfacts': {'latestFiling': DATA_DATE, 'sha256': 'abc'},
+    'submissions': {'companies': 5},
+    'insider': {'files': ['2025q4_form345.zip']}
+}
 
 
 def screen():
@@ -200,18 +194,9 @@ class TestOutput(unittest.TestCase):
             tags={'PaymentsForRepurchaseOfCommonStock': [annual(2025, 150)], 'PaymentsOfDividends': [annual(2025, 20)]}
         ), None, DATA_DATE)
         self.assertEqual(other_way(result, THRESHOLDS), [
-            {
-                'kind': 'recent_improvement',
-                'text': 'Owner cash in the latest fiscal year was 5.0% of revenue, above the 3.0% line.'
-            },
-            {
-                'kind': 'cash_returned',
-                'text': 'The company paid $150 million to buy back shares and $20 million in dividends over the period.'
-            },
-            {
-                'kind': 'costs_fell',
-                'text': 'Operating costs fell from 55.0% of revenue in 2021 to 50.0% in 2025.'
-            }
+            'Owner cash in the latest fiscal year was 5.0% of revenue, above the 3.0% line.',
+            'The company paid $150 million to buy back shares and $20 million in dividends over the period.',
+            'Operating costs fell from 55.0% of revenue in 2021 to 50.0% in 2025.'
         ])
 
         # The latest 12 months are better than the whole period, capital-led, and one-off years
@@ -222,19 +207,10 @@ class TestOutput(unittest.TestCase):
             tags={'IncreaseDecreaseInInventories': [annual(2019, -300), annual(2020, 300)]}
         ), None, DATA_DATE)
         self.assertEqual(other_way(result, THRESHOLDS), [
-            {
-                'kind': 'recent_improvement',
-                'text': 'Owner cash in the latest 12 months was -1.0% of revenue, better than the -3.4% over the whole period.'
-            },
-            {
-                'kind': 'one_off',
-                'text': 'In 2019 and 2020, inventory moved operating cash flow by more than 25.0% of revenue. Without those years the '
-                'cumulative owner-cash margin is -3.3% and the owner-cash sign scores 18.6 instead of 18.7.'
-            },
-            {
-                'kind': 'capital_led',
-                'text': 'Capital spending was 2.1 times stock pay. The shortfall is mostly investment, not stock pay.'
-            }
+            'Owner cash in the latest 12 months was -1.0% of revenue, better than the -3.4% over the whole period.',
+            'In 2019 and 2020, inventory moved operating cash flow by more than 25.0% of revenue. Without those years the '
+                'cumulative owner-cash margin is -3.3% and the owner-cash sign scores 18.6 instead of 18.7.',
+            'Capital spending was 2.1 times stock pay. The shortfall is mostly investment, not stock pay.'
         ])
 
         # Every year is a one-off year
@@ -244,15 +220,9 @@ class TestOutput(unittest.TestCase):
             'PaymentsOfDividends': [annual(2025, 20)]
         }), None, DATA_DATE)
         self.assertEqual(other_way(result, THRESHOLDS), [
-            {
-                'kind': 'one_off',
-                'text': 'In 2019, 2020, 2021, 2022, 2023, 2024 and 2025, discontinued operations and inventory moved operating cash '
-                'flow by more than 25.0% of revenue.'
-            },
-            {
-                'kind': 'cash_returned',
-                'text': 'The company paid $20 million in dividends over the period.'
-            }
+            'In 2019, 2020, 2021, 2022, 2023, 2024 and 2025, discontinued operations and inventory moved operating cash '
+                'flow by more than 25.0% of revenue.',
+            'The company paid $20 million in dividends over the period.'
         ])
 
 
@@ -280,9 +250,6 @@ class TestOutput(unittest.TestCase):
             'costs': None,
             'costLevel': None,
             'costChange': None,
-            'costMethod': None,
-            'costFirst': None,
-            'costLast': None,
             'shareGrowth': 0.05,
             'shareGrowthFive': 0.05,
             'flags': ['no_cost_line', 'one_off_years']
@@ -317,24 +284,25 @@ class TestOutput(unittest.TestCase):
         self.assertIsNone(insider_json(None))
 
         def amounts(**kwargs):
-            return {'cashOut': 0, 'sales': 0, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 0, 'optionGrants': 0, **kwargs}
+            return {
+                'cashOut': 0, 'sales': 0, 'purchases': 0, 'exercised': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 0, 'optionGrants': 0,
+                **kwargs
+            }
 
-        insider = insider_json(insider_summary(TRANSACTIONS, 2025, THRESHOLDS))
+        insider = insider_json(insider_summary(TRANSACTIONS, 2021, 2025, THRESHOLDS))
         self.assertEqual(sorted(insider), [
-            'cashOut', 'giftShares', 'grantShares', 'grants', 'insiders', 'oddPrices', 'optionGrants', 'people', 'purchases', 'sales',
-            'sellers', 'toIssuer', 'withheld', 'years'
+            'cashOut', 'exercised', 'grants', 'insiders', 'optionGrants', 'people', 'purchases', 'sales', 'sellers', 'toIssuer',
+            'withheld', 'years'
         ])
         self.assertEqual({key: value for key, value in insider.items() if key not in ('people', 'years')}, {
-            'grantShares': 7000,
-            'giftShares': 305,
-            'oddPrices': 1,
             'insiders': 3,
             'sellers': 2,
-            **amounts(cashOut=112240, sales=110200, purchases=4000, withheld=5500, toIssuer=540, grants=110000, optionGrants=300000)
+            **amounts(cashOut=111240, sales=110200, purchases=4000, exercised=1000, withheld=5500, toIssuer=540, grants=110000,
+                      optionGrants=300000)
         })
         self.assertEqual(insider['years'][3], {
-            'year': 2024, 'grantShares': 7000, 'giftShares': 300,
-            **amounts(cashOut=108040, sales=102000, withheld=5500, toIssuer=540, grants=110000, optionGrants=300000)
+            'year': 2024,
+            **amounts(cashOut=107040, sales=102000, exercised=1000, withheld=5500, toIssuer=540, grants=110000, optionGrants=300000)
         })
         self.assertEqual([person['name'] for person in insider['people']], ['Doe Jane', 'Roe Rich'])
         self.assertEqual(insider['people'][1], {
@@ -363,8 +331,9 @@ class TestOutput(unittest.TestCase):
             'cashOut': 422625000,
             'sales': 420000000,
             'withheld': 3000000,
-            'toIssuer': 2625000,
+            'toIssuer': 3000000,
             'purchases': 3000000,
+            'exercised': 375000,
             'grants': 330000,
             'optionGrants': 900000,
             'buybacks': 90000000,
@@ -393,8 +362,7 @@ class TestOutput(unittest.TestCase):
     def test_company_json(self):
         result = evaluate(company_record(tags={
             'IncreaseDecreaseInInventories': [annual(2025, -600)],
-            'PaymentsForRepurchaseOfCommonStock': [annual(2025, 150)],
-            'NetIncomeLoss': [annual(2025, -30)]
+            'PaymentsForRepurchaseOfCommonStock': [annual(2025, 150)]
         }), 7372, DATA_DATE)
         company = company_json(result, INFO, THRESHOLDS)
         self.assertEqual(sorted(company), [
@@ -407,7 +375,11 @@ class TestOutput(unittest.TestCase):
         })
         self.assertEqual(company['formerNames'], ['Old Test Co'])
         self.assertEqual(company['summary'], SUMMARY)
-        self.assertEqual([item['kind'] for item in company['otherWay']], ['one_off', 'cash_returned'])
+        self.assertEqual(company['otherWay'], [
+            'In 2025, inventory moved operating cash flow by more than 25.0% of revenue. Without those years the cumulative '
+            'owner-cash margin is -2.0% and the owner-cash sign scores 18.6 instead of 18.6.',
+            'The company paid $150 million to buy back shares over the period.'
+        ])
         self.assertEqual(company['shareReason'], 'share count missing for the first or last year')
         self.assertIsNone(company['ttmReason'])
         self.assertEqual(company['ttm'], {
@@ -450,7 +422,6 @@ class TestOutput(unittest.TestCase):
         self.assertEqual(company['years'][-1], {
             'fy': '2025',
             'end': '2025-12-31',
-            'start': '2025-01-01',
             'rev': fact(2000e6, 'RevenueFromContractWithCustomerExcludingAssessedTax'),
             'ocf': fact(240e6, 'NetCashProvidedByUsedInOperatingActivities'),
             'capexBase': fact(40e6, 'PaymentsToAcquirePropertyPlantAndEquipment'),
@@ -464,7 +435,6 @@ class TestOutput(unittest.TestCase):
             'buybacks': fact(150e6, 'PaymentsForRepurchaseOfCommonStock'),
             'dividends': None,
             'withholding': None,
-            'netIncome': fact(-30e6, 'NetIncomeLoss'),
             'shares': None
         })
         self.assertEqual(company['years'][0]['oneOff'], [])
@@ -485,9 +455,9 @@ class TestOutput(unittest.TestCase):
         record = company_record(tags={
             'SellingAndMarketingExpense': [annual(2019 + index, value * 0.3) for index, value in enumerate(REVENUE)]
         })
-        result = evaluate(record, None, DATA_DATE, insider=insider_summary(TRANSACTIONS, 2025, THRESHOLDS))
+        result = evaluate(record, None, DATA_DATE, insider=insider_summary(TRANSACTIONS, 2021, 2025, THRESHOLDS))
         company = company_json(result, {}, THRESHOLDS)
-        self.assertEqual((company['insider']['cashOut'], len(company['insider']['people'])), (112240, 2))
+        self.assertEqual((company['insider']['cashOut'], len(company['insider']['people'])), (111240, 2))
         tag = 'SellingAndMarketingExpense'
         self.assertEqual(company['spending'], {'sm': {
             'firstRatio': 0.3,
@@ -544,12 +514,13 @@ class TestOutput(unittest.TestCase):
     def test_build_meta(self):
         records, sics, insiders, results, funnel = screen()
         report = sensitivity(records, sics, DATA_DATE, results, insiders)
-        meta = build_meta(results, funnel, 20609, SOURCES, report, (2021, 2025))
+        meta = build_meta(results, funnel, 20609, SOURCES, report)
         self.assertEqual(sorted(meta), [
-            'buybackShares', 'cost', 'costMethods', 'dataDate', 'excluded', 'funnel', 'insider', 'latest', 'methodVersion',
-            'persistence', 'sensitivity', 'sicExclusions', 'sources', 'thresholds', 'totals', 'types'
+            'buybackShares', 'cost', 'costMethods', 'dataDate', 'excluded', 'funnel', 'insider', 'latest', 'lowFiveYears',
+            'methodVersion', 'sensitivity', 'sicExclusions', 'sources', 'thresholds', 'totals', 'types', 'years'
         ])
-        self.assertEqual(meta['methodVersion'], '1.0.0')
+        self.assertEqual(meta['years'], {'first': 2021, 'last': 2025})
+        self.assertEqual(meta['methodVersion'], METHOD_VERSION)
         self.assertEqual(meta['dataDate'], DATA_DATE)
         self.assertEqual(meta['sources'], SOURCES)
         self.assertEqual(meta['thresholds'], {**THRESHOLDS, 'prefilter_revenue': 5e8})
@@ -588,17 +559,17 @@ class TestOutput(unittest.TestCase):
             'withholding': 0
         })
         self.assertEqual(meta['insider'], {
-            'firstYear': 2021,
-            'lastYear': 2025,
             'screened': {
                 'companies': 2, 'revenue': 16100000000, 'ownerCash': -966000000, 'tookMore': 2, 'quarters': 4, 'buybackQuarters': 2,
-                'cashOut': 281750000, 'sales': 280000000, 'withheld': 2000000, 'toIssuer': 1750000, 'purchases': 2000000,
+                'cashOut': 281750000, 'sales': 280000000, 'withheld': 2000000, 'toIssuer': 2000000, 'purchases': 2000000,
+                'exercised': 250000,
                 'grants': 220000, 'optionGrants': 600000, 'buybacks': 60000000, 'salesInQuarters': 180000000,
                 'salesInBuybackQuarters': 120000000
             },
             'cashGenerative': {
                 'companies': 1, 'revenue': 8050000000, 'ownerCash': 644000000, 'tookMore': 0, 'quarters': 2, 'buybackQuarters': 1,
-                'cashOut': 140875000, 'sales': 140000000, 'withheld': 1000000, 'toIssuer': 875000, 'purchases': 1000000,
+                'cashOut': 140875000, 'sales': 140000000, 'withheld': 1000000, 'toIssuer': 1000000, 'purchases': 1000000,
+                'exercised': 125000,
                 'grants': 110000, 'optionGrants': 300000, 'buybacks': 30000000, 'salesInQuarters': 90000000,
                 'salesInBuybackQuarters': 60000000
             }
@@ -607,7 +578,7 @@ class TestOutput(unittest.TestCase):
             'screened': {'companies': 0, 'rose': 0, 'spent': 0, 'spentRose': 0},
             'cashGenerative': {'companies': 0, 'rose': 0, 'spent': 0, 'spentRose': 0}
         })
-        self.assertEqual(meta['persistence'], {'fivePlus': 3, 'latestAbove': 0})
+        self.assertEqual(meta['lowFiveYears'], 3)
         self.assertEqual(meta['latest'], {'cleared': 0, 'negative': 3, 'fiscalYearBasis': 1})
         self.assertEqual(meta['cost'], {'allGross': 0, 'missing': 1, 'missingAll': 1})
         self.assertIs(meta['sensitivity'], report)
@@ -617,17 +588,17 @@ class TestOutput(unittest.TestCase):
             sbc=[120, 132, 150, 168, 192, 216, 100], quarters=False, operating=[50, 55, 62.5, 70, 80, 90, -5]
         )]
         results, funnel = run_screen(records, {}, DATA_DATE)
-        meta = build_meta(results, funnel, 1, SOURCES, [])
+        meta = build_meta(results, funnel, 1, {**SOURCES, 'insider': {'files': []}}, [])
         self.assertIsNone(meta['insider'])
         self.assertEqual(meta['latest'], {'cleared': 1, 'negative': 0, 'fiscalYearBasis': 1})
         self.assertEqual(meta['cost'], {'allGross': 1, 'missing': 0, 'missingAll': 0})
-        self.assertEqual(meta['persistence'], {'fivePlus': 0, 'latestAbove': 1})
+        self.assertEqual(meta['lowFiveYears'], 0)
 
 
     def test_write_output(self):
         _, _, _, results, funnel = screen()
         infos = dict.fromkeys(range(1, 7), INFO)
-        meta = build_meta(results, funnel, 20609, SOURCES, [], (2021, 2025))
+        meta = build_meta(results, funnel, 20609, SOURCES, [])
         with TemporaryDirectory() as temp_dir:
             # A file for a company no longer in the index, and a file that is not a company's
             os.makedirs(os.path.join(temp_dir, 'company'))
@@ -638,6 +609,7 @@ class TestOutput(unittest.TestCase):
             self.assertEqual(write_output(temp_dir, results, infos, meta), [])
             self.assertEqual(sorted(os.listdir(temp_dir)), ['archive', 'company', 'index.csv', 'index.json', 'meta.json'])
             self.assertEqual(sorted(os.listdir(os.path.join(temp_dir, 'archive'))), [DATA_DATE, 'builds.json'])
+            self.assertEqual(os.listdir(os.path.join(temp_dir, 'archive', DATA_DATE)), [METHOD_VERSION])
             self.assertEqual(
                 sorted(os.listdir(os.path.join(temp_dir, 'company'))),
                 ['1.json', '2.json', '3.json', '4.json', '5.json', '6.json', 'README.txt']
@@ -646,7 +618,7 @@ class TestOutput(unittest.TestCase):
             with open(os.path.join(temp_dir, 'index.json'), 'r', encoding='utf-8') as index_file:
                 index = json.load(index_file)
             self.assertEqual(sorted(index), ['companies', 'dataDate', 'methodVersion'])
-            self.assertEqual((index['dataDate'], index['methodVersion']), (DATA_DATE, '1.0.0'))
+            self.assertEqual((index['dataDate'], index['methodVersion']), (DATA_DATE, METHOD_VERSION))
             self.assertEqual([company['cik'] for company in index['companies']], [6, 1, 2, 3, 4, 5])
             self.assertEqual(index['companies'][1], {**ROW, **INSIDER_ROW, 'rank': 2})
 
@@ -660,29 +632,32 @@ class TestOutput(unittest.TestCase):
 
             with open(os.path.join(temp_dir, 'index.csv'), 'r', encoding='utf-8') as csv_file:
                 lines = csv_file.read().splitlines()
-            self.assertEqual(lines[0], ','.join(CSV_FIELDS))
+            self.assertEqual(lines[0], ','.join(ROW))
             self.assertEqual(len(lines), 7)
             self.assertEqual(
                 lines[2],
-                '2,Test Co,TEST,1,stock_pay,,7372,Services-Prepackaged Software,41.41,18.63,10.0,3.73,4.9,,18.06,12.5,7,2019,2025,'
-                '2025-12-31,2000000000.0,2.0,7,7,-0.02,,-0.02,-0.02,ttm,2026-09-30,10150000000.0,1015000000.0,1218000000.0,'
-                '203000000.0,-203000000.0,0.1,0.12,0,0,0,0.167,False,,0.91667,0.0,1,0.55,0.55,140875000,0.0175,140000000,110000,'
-                '300000,8050000000,-161000000,-0.02,0,0,,'
+                '2,Test Co,TEST,Nasdaq,1,stock_pay,,7372,Services-Prepackaged Software,41.41,18.63,10.0,3.73,4.9,,18.06,12.5,7,2019,'
+                '2025,2025-12-31,2000000000.0,2.0,7,7,-0.02,,-0.02,ttm,2026-09-30,10150000000.0,1015000000.0,1218000000.0,'
+                '203000000.0,-203000000.0,0,0,0,,0.91667,0.0,140875000,0.0175,140000000,110000,300000,8050000000,-161000000,-0.02,'
+                '0,0,,'
             )
             self.assertTrue(lines[4].endswith(',no_cost_line latest_is_fiscal_year no_insider_filings'))
-            self.assertTrue(lines[6].startswith(',Bank Co,TEST,5,excluded,bank,6021,Services-Prepackaged Software,,,,,,,,,7,2019,'))
+            self.assertTrue(lines[6].startswith(',Bank Co,TEST,Nasdaq,5,excluded,bank,6021,Services-Prepackaged Software,,,,,,,,,7,2019,'))
 
-            # An earlier build stays in the archive; a build with the same data date is replaced
-            write_archive(temp_dir, {'dataDate': '2026-08-14', 'methodVersion': '0.9.0', 'funnel': {'ranked': 1}})
-            write_archive(temp_dir, {'dataDate': DATA_DATE, 'methodVersion': '1.0.1', 'funnel': {'ranked': 3}})
+            # Builds with another data date or method version stay in the archive; the same build again replaces itself
+            for data_date, version, ranked in (('2026-08-14', '0.9.0', 1), (DATA_DATE, '0.10.0', 3), (DATA_DATE, METHOD_VERSION, 4)):
+                write_archive(temp_dir, {'dataDate': data_date, 'methodVersion': version, 'funnel': {'ranked': ranked}})
             archive_dir = os.path.join(temp_dir, 'archive')
             self.assertEqual(sorted(os.listdir(archive_dir)), ['2026-08-14', DATA_DATE, 'builds.json'])
-            self.assertEqual(sorted(os.listdir(os.path.join(archive_dir, DATA_DATE))), ['index.csv', 'index.json', 'meta.json'])
-            with open(os.path.join(archive_dir, DATA_DATE, 'meta.json'), 'r', encoding='utf-8') as meta_file:
+            self.assertEqual(sorted(os.listdir(os.path.join(archive_dir, DATA_DATE))), ['0.10.0', METHOD_VERSION])
+            build_dir = os.path.join(archive_dir, DATA_DATE, METHOD_VERSION)
+            self.assertEqual(sorted(os.listdir(build_dir)), ['index.csv', 'index.json', 'meta.json'])
+            with open(os.path.join(build_dir, 'meta.json'), 'r', encoding='utf-8') as meta_file:
                 self.assertEqual(json.load(meta_file), meta)
             with open(os.path.join(archive_dir, 'builds.json'), 'r', encoding='utf-8') as builds_file:
                 self.assertEqual(json.load(builds_file), [
-                    {'dataDate': DATA_DATE, 'methodVersion': '1.0.1', 'ranked': 3},
+                    {'dataDate': DATA_DATE, 'methodVersion': METHOD_VERSION, 'ranked': 4},
+                    {'dataDate': DATA_DATE, 'methodVersion': '0.10.0', 'ranked': 3},
                     {'dataDate': '2026-08-14', 'methodVersion': '0.9.0', 'ranked': 1}
                 ])
 
