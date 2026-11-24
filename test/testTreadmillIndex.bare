@@ -34,6 +34,9 @@ function testDollars():
     unittestEqual(tiDollars(1000000), '$1.0M')
     unittestEqual(tiDollars(346022932), '$346.0M')
     unittestEqual(tiDollars(32825940004), '$32.8B')
+    unittestEqual(tiDollars(-5792453647), '-$5.8B')
+    unittestEqual(tiDollars(-175000000), '-$175.0M')
+    unittestEqual(tiDollars(-5500), '-$6K')
 endfunction
 unittestRunTest('testDollars')
 

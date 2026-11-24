@@ -3,8 +3,8 @@
 import unittest
 
 from treadmill_index.score import DEFAULT_OPTIONS, PROTOTYPE_OPTIONS, SENSITIVITY_KEYS, THRESHOLDS, company_series, cost_change, \
-    cost_line, evaluate, find_period, group_totals, latest_twelve_months, lin, loose_thresholds, one_off_years, pillar_one, \
-    pillar_three, run_screen, sensitivity, share_change, sic_exclusion, year_label
+    cost_line, evaluate, find_period, five_years, group_totals, latest_twelve_months, lin, loose_thresholds, low_run, one_off_years, \
+    pillar_one, pillar_three, run_screen, sensitivity, share_change, sic_exclusion, spending_change, year_label
 
 from .helpers import DATA_DATE, REVENUE, annual, company_record, nine_months, unit
 
@@ -295,6 +295,72 @@ class TestScore(unittest.TestCase):
         self.assertEqual(p1['latestPoints'], 0)
 
 
+    def test_spending_change(self):
+        record = company_record(tags={
+            'SellingAndMarketingExpense': annuals([value * 0.3 for value in REVENUE[:6]] + [500]),
+            'ResearchAndDevelopmentExpense': annuals([value * 0.2 for value in REVENUE[:6]]),
+            'GeneralAndAdministrativeExpense': annuals([100, 100], first_year=2024)
+        })
+        series = company_series(record)
+
+        # Sales and marketing is tagged in the first and last of the latest five years; the others are not
+        spending = spending_change(record, series, THRESHOLDS)
+        self.assertEqual(sorted(spending), ['sm'])
+        self.assertAlmostEqual(spending['sm']['firstRatio'], 0.3)
+        self.assertAlmostEqual(spending['sm']['lastRatio'], 0.25)
+        self.assertEqual((spending['sm']['firstFact'][0], spending['sm']['firstFact'][5]), (375e6, 'SellingAndMarketingExpense'))
+        self.assertEqual(spending['sm']['lastFact'][0], 500e6)
+
+        # A window of two years
+        spending = spending_change(record, series, {**THRESHOLDS, 'p2b_window_years': 2})
+        self.assertEqual(sorted(spending), ['ga', 'sm'])
+        self.assertAlmostEqual(spending['ga']['firstRatio'], 100 / 1800)
+
+        # Fewer years than the window, and no spending tags
+        self.assertEqual(spending_change(record, series[-4:], THRESHOLDS), {})
+        self.assertEqual(spending_change(company_record(), series, THRESHOLDS), {})
+
+
+    def test_low_run(self):
+        # Under 3% every year
+        self.assertEqual(low_run(company_series(company_record()), THRESHOLDS), 7)
+
+        # Above it in the latest year, in an earlier year, and never under it
+        self.assertEqual(low_run(company_series(company_record(sbc=[120, 132, 150, 168, 192, 216, 100])), THRESHOLDS), 0)
+        self.assertEqual(low_run(company_series(company_record(sbc=[120, 132, 150, 68, 192, 216, 240])), THRESHOLDS), 3)
+        self.assertEqual(low_run(company_series(company_record(sbc=0.02)), THRESHOLDS), 0)
+        self.assertEqual(low_run([], THRESHOLDS), 0)
+
+
+    def test_five_years(self):
+        record = company_record(tags={
+            'PaymentsForRepurchaseOfCommonStock': annuals([10, -20, 30, 40, 50, 60, 70]),
+            'PaymentsRelatedToTaxWithholdingForShareBasedCompensation': annuals([1, 2, 3]),
+            'WeightedAverageNumberOfDilutedSharesOutstanding': annuals([100, 100, 100, 110, 121, 133.1, 146.41])
+        })
+        series = company_series(record)
+
+        # The fiscal years 2021 to 2025: owner cash is -2% of revenue; the share count grows 10% a year
+        five = five_years(record, series, 2025, THRESHOLDS)
+        self.assertAlmostEqual(five.pop('ownerCash'), -161e6)
+        self.assertAlmostEqual(five.pop('shareGrowth'), 0.1)
+        self.assertEqual(five, {'years': 5, 'buybacks': 250e6, 'withholding': 3e6})
+
+        # Years the company does not have, and too few years to follow the share count
+        five = five_years(record, series, 2026, THRESHOLDS)
+        self.assertEqual((five['years'], five['buybacks']), (4, 220e6))
+        self.assertAlmostEqual(five['shareGrowth'], 0.1)
+        five = five_years(record, series, 2029, THRESHOLDS)
+        self.assertEqual((five['years'], five['buybacks'], five['shareGrowth']), (1, 70e6, None))
+        self.assertAlmostEqual(five['ownerCash'], -40e6)
+        self.assertEqual(five_years(record, series, 2035, THRESHOLDS), {
+            'years': 0, 'ownerCash': 0, 'buybacks': 0, 'withholding': 0, 'shareGrowth': None
+        })
+
+        # A share count that cannot be followed
+        self.assertIsNone(five_years(company_record(), series, 2025, THRESHOLDS)['shareGrowth'])
+
+
     def test_pillar_three(self):
         # No insider filings
         self.assertIsNone(pillar_three(None, THRESHOLDS))
@@ -361,6 +427,9 @@ class TestScore(unittest.TestCase):
         self.assertAlmostEqual(result.pop('capexToSbc'), 1 / 6)
         self.assertAlmostEqual(result.pop('fyMargin'), -0.02)
         self.assertAlmostEqual(result.pop('latestMargin'), -0.02)
+        five = result.pop('five')
+        self.assertAlmostEqual(five.pop('ownerCash'), -161e6)
+        self.assertEqual(five, {'years': 5, 'buybacks': 0, 'withholding': 0, 'shareGrowth': None})
         self.assertEqual(result, {
             'stage': 'scored',
             'cik': 5,
@@ -391,6 +460,10 @@ class TestScore(unittest.TestCase):
             'p2b': 13,
             'insider': None,
             'p3': None,
+            'threeScore': None,
+            'threeRank': None,
+            'lowRun': 7,
+            'spending': {},
             'capexMissingYears': 0,
             'shareGrowth': None,
             'shareReason': 'share count missing for the first or last year',
@@ -556,7 +629,8 @@ class TestScore(unittest.TestCase):
             'industry': 7,
             'lowMargin': 6,
             'stockPay': 4,
-            'ranked': 3
+            'ranked': 3,
+            'rankedThree': 0
         })
         self.assertEqual(
             [(result['rank'], result['name'], result['type']) for result in results],
@@ -589,6 +663,16 @@ class TestScore(unittest.TestCase):
         self.assertIsNone(results[0]['p3'])
         self.assertIs(results[1]['insider'], insider)
         self.assertEqual(results[1]['p3'], {'yearsPoints': 12, 'ratioPoints': 6.5, 'p3': 18.5})
+
+        # The three-pillar score is the screen score plus P3 to the extent of P1, and has its own rank
+        self.assertAlmostEqual(results[1]['threeScore'], results[1]['screenScore'] + (results[1]['p1']['p1'] / 25) * 18.5)
+        self.assertEqual([(result['rank'], result['threeRank'], result['threeScore'] is None) for result in results],
+                         [(1, None, True), (2, 1, False)])
+        results, funnel = run_screen(records[:3], {}, DATA_DATE, insiders={
+            1: {**insider, 'salesToGrants': 0.6}, 2: insider, 3: {**insider, 'salesToGrants': None}, 4: insider
+        })
+        self.assertEqual([(result['cik'], result['rank'], result['threeRank']) for result in results], [(3, 1, None), (1, 2, 2), (2, 3, 1)])
+        self.assertEqual((funnel['ranked'], funnel['rankedThree']), (3, 2))
 
 
     def test_group_totals(self):

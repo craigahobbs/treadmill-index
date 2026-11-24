@@ -14,12 +14,13 @@ from .score import COST_METHODS, METHOD_VERSION, SIC_EXCLUSIONS, THRESHOLDS, gro
 
 # The index.csv columns
 CSV_FIELDS = (
-    'rank', 'name', 'ticker', 'cik', 'type', 'excluded', 'sic', 'sicDescription', 'screenScore', 'p1', 'p1Years', 'p1Cum',
-    'p1Latest', 'p2b', 'p1Ex', 'years', 'firstYear', 'lastYear', 'lastEnd', 'revenue', 'growth', 'lowYears', 'cumMargin',
-    'cumMarginEx', 'fyMargin', 'latestMargin', 'latestBasis', 'latestEnd', 'cumRevenue', 'cumFcf', 'cumSbc', 'cumCapex',
+    'rank', 'threeRank', 'name', 'ticker', 'cik', 'type', 'excluded', 'sic', 'sicDescription', 'screenScore', 'threeScore', 'p1',
+    'p1Years', 'p1Cum', 'p1Latest', 'p2b', 'p1Ex', 'years', 'firstYear', 'lastYear', 'lastEnd', 'revenue', 'growth', 'lowYears',
+    'cumMargin', 'cumMarginEx', 'fyMargin', 'latestMargin', 'latestBasis', 'latestEnd', 'cumRevenue', 'cumFcf', 'cumSbc', 'cumCapex',
     'cumOwnerCash', 'cumFcfMargin', 'sbcRevenue', 'buybacks', 'dividends', 'withholding', 'capexToSbc', 'capitalLed',
     'shareGrowth', 'costChange', 'costMethod', 'costFirst', 'costLast', 'p3', 'p3Years', 'p3Ratio', 'insiderSales',
-    'insiderGrants', 'insiderOptionGrants', 'insiderPurchases', 'salesToGrants', 'insiderBothYears', 'flags'
+    'insiderGrants', 'insiderOptionGrants', 'insiderPurchases', 'salesToGrants', 'salesToStockGrants', 'insiderBothYears',
+    'lowRun', 'ownerCashFive', 'buybacksFive', 'withholdingFive', 'shareGrowthFive', 'flags'
 )
 
 
@@ -28,7 +29,7 @@ ARCHIVE_FILES = ('index.json', 'index.csv', 'meta.json')
 
 
 # The index.json row's scores
-SCORE_FIELDS = ('screenScore', 'p1', 'p1Years', 'p1Cum', 'p1Latest', 'p1Ex', 'p2b', 'p3', 'p3Years', 'p3Ratio')
+SCORE_FIELDS = ('screenScore', 'threeScore', 'p1', 'p1Years', 'p1Cum', 'p1Latest', 'p1Ex', 'p2b', 'p3', 'p3Years', 'p3Ratio')
 
 # The insider summary's dollar amounts, and its amounts over the quarters that have the company's buybacks
 INSIDER_AMOUNTS = ('sales', 'purchases', 'withheld', 'toIssuer', 'grants', 'optionGrants')
@@ -212,7 +213,9 @@ def index_row(result, info):
         'type': result['type'],
         'excluded': result['excluded'],
         'rank': result['rank'],
+        'threeRank': result['threeRank'],
         'screenScore': ratio(result['screenScore'], 2),
+        'threeScore': ratio(result['threeScore'], 2),
         'p1': ratio(p1['p1'], 2),
         'p1Years': ratio(p1['yearsPoints'], 2),
         'p1Cum': ratio(p1['cumPoints'], 2),
@@ -257,7 +260,13 @@ def index_row(result, info):
         'insiderOptionGrants': dollars(insider.get('optionGrants')),
         'insiderPurchases': dollars(insider.get('purchases')),
         'salesToGrants': ratio(insider.get('salesToGrants'), 3),
+        'salesToStockGrants': ratio(insider.get('salesToStockGrants'), 3),
         'insiderBothYears': insider.get('bothYears'),
+        'lowRun': result['lowRun'],
+        'ownerCashFive': dollars(result['five']['ownerCash']),
+        'buybacksFive': dollars(result['five']['buybacks']),
+        'withholdingFive': dollars(result['five']['withholding']),
+        'shareGrowthFive': ratio(result['five']['shareGrowth']),
         'flags': result['flags'],
         'margins': [ratio(year['margin'], 4) for year in result['series']]
     }
@@ -283,6 +292,7 @@ def insider_json(insider):
     return {
         **amounts(insider, ('grantShares', 'giftShares', 'bothYears', 'ratioReason', 'unvaluedShares', 'oddPrices', 'insiders', 'sellers')),
         'salesToGrants': ratio(insider['salesToGrants'], 3),
+        'salesToStockGrants': ratio(insider['salesToStockGrants'], 3),
         'buybackQuarters': insider['buybackQuarters'],
         **{amount: dollars(insider[amount]) for amount in INSIDER_QUARTER_AMOUNTS},
         'quarters': [
@@ -352,7 +362,16 @@ def company_json(result, info, thresholds):
             'change': ratio(cost['change'], 2)
         },
         'shareReason': result['shareReason'],
-        'insider': insider_json(result['insider'])
+        'insider': insider_json(result['insider']),
+        'spending': {
+            kind: {
+                'firstRatio': ratio(item['firstRatio']),
+                'firstFact': fact_json(item['firstFact']),
+                'lastRatio': ratio(item['lastRatio']),
+                'lastFact': fact_json(item['lastFact'])
+            }
+            for kind, item in result['spending'].items()
+        }
     }
 
 
@@ -391,17 +410,39 @@ def insider_totals(results):
 
     :param list(dict) results: The scored results
     :returns: The dict of the count of companies with insider filings, the count whose insiders sold more than they
-        were granted, the counts of quarters with the company's buybacks given and with a buyback, and the total of
-        each amount
+        were granted, the companies' owner cash over the same years and the count whose insiders sold more than
+        that, the counts of quarters with the company's buybacks given and with a buyback, and the total of each amount
     """
 
-    insiders = [result['insider'] for result in results if result['insider'] is not None]
+    with_insiders = [result for result in results if result['insider'] is not None]
+    insiders = [result['insider'] for result in with_insiders]
     return {
         'companies': len(insiders),
         'soldMore': sum(1 for insider in insiders if insider['salesToGrants'] is not None and insider['salesToGrants'] > 1),
+        'ownerCash': dollars(sum(result['five']['ownerCash'] for result in with_insiders)),
+        'tookMore': sum(1 for result in with_insiders if result['insider']['sales'] > result['five']['ownerCash']),
         'quarters': sum(len(insider['quarters']) for insider in insiders),
         'buybackQuarters': sum(insider['buybackQuarters'] for insider in insiders),
         **{amount: dollars(sum(insider[amount] for insider in insiders)) for amount in (*INSIDER_AMOUNTS, *INSIDER_QUARTER_AMOUNTS)}
+    }
+
+
+def buyback_totals(results):
+    """
+    Set a group of scored companies' buybacks beside their share counts, over the five calendar years
+
+    :param list(dict) results: The scored results
+    :returns: The dict of the count of companies that bought back shares and whose share count can be followed, the
+        count of those whose share count still rose, and what each spent on buybacks and employees' vesting taxes
+    """
+
+    bought = [result['five'] for result in results if result['five']['buybacks'] > 0 and result['five']['shareGrowth'] is not None]
+    rose = [five for five in bought if five['shareGrowth'] > 0]
+    return {
+        'companies': len(bought),
+        'rose': len(rose),
+        'spent': dollars(sum(five['buybacks'] + five['withholding'] for five in bought)),
+        'spentRose': dollars(sum(five['buybacks'] + five['withholding'] for five in rose))
     }
 
 
@@ -448,6 +489,11 @@ def build_meta(results, funnel, companies_in_file, sources, sensitivity_report, 
     """
 
     screened = [result for result in results if result['type'] == 'stock_pay']
+    groups = {
+        'screened': screened,
+        'notCapitalLed': [result for result in screened if not result['capitalLed']],
+        'cashGenerative': [result for result in results if result['type'] == 'cash_generative']
+    }
     types = {}
     excluded = {}
     for result in results:
@@ -467,14 +513,17 @@ def build_meta(results, funnel, companies_in_file, sources, sensitivity_report, 
         'excluded': excluded,
         'totals': {
             'screened': group_totals(screened),
-            'notCapitalLed': group_totals([result for result in screened if not result['capitalLed']])
+            'notCapitalLed': group_totals(groups['notCapitalLed'])
         },
         'insider': None if insider_years is None else {
             'firstYear': insider_years[0],
             'lastYear': insider_years[1],
-            'screened': insider_totals(screened),
-            'notCapitalLed': insider_totals([result for result in screened if not result['capitalLed']]),
-            'cashGenerative': insider_totals([result for result in results if result['type'] == 'cash_generative'])
+            **{name: insider_totals(group) for name, group in groups.items()}
+        },
+        'buybackShares': {name: buyback_totals(group) for name, group in groups.items()},
+        'persistence': {
+            'fivePlus': sum(1 for result in screened if result['lowRun'] >= 5),
+            'latestAbove': sum(1 for result in screened if result['lowRun'] == 0)
         },
         'latest': {
             'cleared': sum(1 for result in screened if result['latestMargin'] >= line),

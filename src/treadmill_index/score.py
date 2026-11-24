@@ -374,6 +374,83 @@ def pillar_one(series, latest_margin, thresholds):
     }
 
 
+# The kinds of operating spending reported beside the cost line, where a company tags them
+SPENDING = {'sm': 'sales and marketing', 'rnd': 'research and development', 'ga': 'general and administrative'}
+
+
+def spending_change(record, series, thresholds):
+    """
+    Get each kind of operating spending as a share of revenue in the first and last of the latest fiscal years - the
+    same years as the cost line. These are reported, not scored.
+
+    :param dict record: The company record
+    :param list(dict) series: The company's yearly series
+    :param dict thresholds: The thresholds
+    :returns: The dict of spending kind to a dict of "firstRatio", "firstFact", "lastRatio" and "lastFact". A kind
+        the company does not tag in both years is left out.
+    """
+
+    window = thresholds['p2b_window_years']
+    spending = {}
+    if len(series) >= window:
+        first = series[-window]
+        last = series[-1]
+        for kind in SPENDING:
+            first_fact = record['annual'][kind].get(first['end'])
+            last_fact = record['annual'][kind].get(last['end'])
+            if first_fact is not None and last_fact is not None:
+                spending[kind] = {
+                    'firstRatio': first_fact[F_VAL] / first['rev'][F_VAL],
+                    'firstFact': first_fact,
+                    'lastRatio': last_fact[F_VAL] / last['rev'][F_VAL],
+                    'lastFact': last_fact
+                }
+    return spending
+
+
+def low_run(series, thresholds):
+    """
+    Count the latest fiscal years running with an owner-cash margin under the meaningful line
+
+    :param list(dict) series: The company's yearly series
+    :param dict thresholds: The thresholds
+    :rtype: int
+    """
+
+    run = 0
+    for year in reversed(series):
+        if year['margin'] >= thresholds['meaningful_margin']:
+            break
+        run += 1
+    return run
+
+
+def five_years(record, series, last_year, thresholds):
+    """
+    Total a company's owner cash and buybacks over the calendar years of the insider summary, with the change in
+    its share count - what owners got, to set beside what insiders sold
+
+    :param dict record: The company record
+    :param list(dict) series: The company's yearly series
+    :param int last_year: The last calendar year
+    :param dict thresholds: The thresholds
+    :returns: The dict of "years" (the fiscal years counted), "ownerCash", "buybacks", "withholding" and
+        "shareGrowth" - the annualized change in the diluted share count, or None if it cannot be followed
+    """
+
+    first_year = last_year - thresholds['p3_years'] + 1
+    years = [year for year in series if first_year <= int(year['fy']) <= last_year]
+    ends = {year['end'] for year in years}
+    annual = record['annual']
+    return {
+        'years': len(years),
+        'ownerCash': sum(year['ownerCash'] for year in years),
+        'buybacks': sum(abs(fact[F_VAL]) for end, fact in annual['bb'].items() if end in ends),
+        'withholding': sum(abs(fact[F_VAL]) for end, fact in annual['wh'].items() if end in ends),
+        'shareGrowth': share_change(record, years)[0] if len(years) > 1 else None
+    }
+
+
 def pillar_three(insider, thresholds):
     """
     Score P3, "insiders granting and selling", from a company's insider summary. P3 is not part of the screen score.
@@ -482,6 +559,13 @@ def evaluate(record, sic, data_date, thresholds=None, options=None, insider=None
         p2b = lin(-cost['change'], thresholds['p2b_zero_drop'], 0, thresholds['p2b_points'])
         screen_score = p1['p1'] + (p1['p1'] / 25) * (p2b * 25 / thresholds['p2b_points'])
 
+    # The three-pillar score: the screen score with P3, in the form of the definition's full score. It is the
+    # goal of the index in one number - no cash for owners, costs that keep pace, and insiders granting and selling.
+    p3 = pillar_three(insider, thresholds)
+    three_score = None
+    if screen_score is not None and p3 is not None and p3['p3'] is not None:
+        three_score = screen_score + (p1['p1'] / 25) * p3['p3']
+
     # The company type
     excluded = sic_exclusion(sic)
     if excluded:
@@ -547,7 +631,12 @@ def evaluate(record, sic, data_date, thresholds=None, options=None, insider=None
         'p2b': p2b,
         'screenScore': screen_score,
         'insider': insider,
-        'p3': pillar_three(insider, thresholds),
+        'p3': p3,
+        'threeScore': three_score,
+        'threeRank': None,
+        'lowRun': low_run(series, thresholds),
+        'five': five_years(record, series, int(data_date[:4]) - 1, thresholds),
+        'spending': spending_change(record, series, thresholds),
         'capexMissingYears': sum(1 for year in series if year['capexMissing']),
         'shareGrowth': share_growth,
         'shareReason': share_reason,
@@ -585,6 +674,14 @@ def run_screen(records, sics, data_date, thresholds=None, options=None, insiders
     ranked.sort(key=lambda result: (-result['screenScore'], result['name'], result['cik']))
     for rank, result in enumerate(ranked, 1):
         result['rank'] = rank
+
+    # Rank the same companies that also have P3 by the three-pillar score
+    ranked_three = sorted(
+        (result for result in ranked if result['threeScore'] is not None),
+        key=lambda result: (-result['threeScore'], result['name'], result['cik'])
+    )
+    for rank, result in enumerate(ranked_three, 1):
+        result['threeRank'] = rank
     results.sort(key=lambda result: (
         result['rank'] is None, result['rank'] or 0, result['type'] == 'excluded', -result['p1']['p1'], result['name'], result['cik']
     ))
@@ -600,6 +697,7 @@ def run_screen(records, sics, data_date, thresholds=None, options=None, insiders
     funnel['lowMargin'] = sum(1 for result in included if result['type'] != 'cash_generative')
     funnel['stockPay'] = sum(1 for result in included if result['type'] == 'stock_pay')
     funnel['ranked'] = len(ranked)
+    funnel['rankedThree'] = len(ranked_three)
     return results, funnel
 
 

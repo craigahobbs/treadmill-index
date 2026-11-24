@@ -411,7 +411,9 @@ def insider_summary(transactions, last_year, thresholds, quarters=()):
 
     Sales, purchases and tax withholdings are valued at the price reported for each. A grant is valued at the
     market value of the shares it covers: for a stock award, the company's nearest reported price; for an option,
-    its exercise price. An option is worth less than the shares it covers, so this overstates option grants.
+    its exercise price. An option is worth less than the shares it covers, so this overstates option grants, and
+    "salesToGrants" is the least the insiders' sales can be as a multiple of their grants. "salesToStockGrants"
+    counts options as worth nothing and is the most it can be.
 
     :param list(dict) transactions: The company's transactions
     :param int last_year: The last calendar year
@@ -504,6 +506,7 @@ def insider_summary(transactions, last_year, thresholds, quarters=()):
         'years': list(years.values()),
         'bothYears': sum(1 for year in years.values() if year['grantShares'] > 0 and year['sales'] > 0),
         'salesToGrants': ratio,
+        'salesToStockGrants': summary['sales'] / summary['grants'] if ratio is not None and summary['grants'] > 0 else None,
         'ratioReason': ratio_reason,
         'unvaluedShares': unvalued_shares,
         'oddPrices': odd_prices,

@@ -6,9 +6,9 @@ from tempfile import TemporaryDirectory
 import unittest
 
 from treadmill_index.insider import insider_summary
-from treadmill_index.output import CSV_FIELDS, build_meta, check_output, company_json, dollars, fact_json, file_sha256, index_row, \
-    insider_json, insider_totals, join_words, money, other_way, percent, ratio, summary_sentences, write_archive, write_json, \
-    write_output
+from treadmill_index.output import CSV_FIELDS, build_meta, buyback_totals, check_output, company_json, dollars, fact_json, \
+    file_sha256, index_row, insider_json, insider_totals, join_words, money, other_way, percent, ratio, summary_sentences, \
+    write_archive, write_json, write_output
 from treadmill_index.score import THRESHOLDS, evaluate, run_screen, sensitivity
 
 from .helpers import DATA_DATE, REVENUE, annual, company_record
@@ -33,7 +33,9 @@ ROW = {
     'type': 'stock_pay',
     'excluded': None,
     'rank': None,
+    'threeRank': None,
     'screenScore': 37.27,
+    'threeScore': None,
     'p1': 18.63,
     'p1Years': 10.0,
     'p1Cum': 3.73,
@@ -78,12 +80,20 @@ ROW = {
     'insiderOptionGrants': None,
     'insiderPurchases': None,
     'salesToGrants': None,
+    'salesToStockGrants': None,
     'insiderBothYears': None,
+    'lowRun': 7,
+    'ownerCashFive': -161000000,
+    'buybacksFive': 0,
+    'withholdingFive': 0,
+    'shareGrowthFive': None,
     'flags': [],
     'margins': [-0.02, -0.02, -0.02, -0.02, -0.02, -0.02, -0.02]
 }
 
 INSIDER_ROW = {
+    'threeScore': 39.06,
+    'salesToStockGrants': 1.002,
     'p3': 2.4,
     'p3Years': 2.4,
     'p3Ratio': 0.0,
@@ -96,7 +106,8 @@ INSIDER_ROW = {
 }
 
 NO_INSIDERS = {
-    'companies': 0, 'soldMore': 0, 'quarters': 0, 'buybackQuarters': 0, 'sales': 0, 'purchases': 0, 'withheld': 0, 'toIssuer': 0,
+    'companies': 0, 'soldMore': 0, 'ownerCash': 0, 'tookMore': 0, 'quarters': 0, 'buybackQuarters': 0, 'sales': 0, 'purchases': 0,
+    'withheld': 0, 'toIssuer': 0,
     'grants': 0, 'optionGrants': 0, 'buybacks': 0, 'salesInQuarters': 0, 'salesInBuybackQuarters': 0
 }
 
@@ -269,6 +280,7 @@ class TestOutput(unittest.TestCase):
             'costFirst': None,
             'costLast': None,
             'shareGrowth': 0.05,
+            'shareGrowthFive': 0.05,
             'flags': ['no_cost_line', 'one_off_years']
         })
 
@@ -288,7 +300,8 @@ class TestOutput(unittest.TestCase):
             'p2b': None,
             'p3': None,
             'p3Years': None,
-            'p3Ratio': None
+            'p3Ratio': None,
+            'threeScore': None
         })
 
         # Insiders
@@ -310,7 +323,7 @@ class TestOutput(unittest.TestCase):
         self.assertEqual(sorted(insider), [
             'bothYears', 'buybackQuarters', 'buybacks', 'giftShares', 'grantShares', 'grants', 'insiders', 'oddPrices', 'optionGrants',
             'people', 'purchases', 'quarters', 'ratioReason', 'sales', 'salesInBuybackQuarters', 'salesInQuarters', 'salesToGrants',
-            'sellers', 'toIssuer', 'unvaluedShares', 'withheld', 'years'
+            'salesToStockGrants', 'sellers', 'toIssuer', 'unvaluedShares', 'withheld', 'years'
         ])
         self.assertEqual(insider['quarters'], [
             {'start': '2024-01-01', 'end': '2024-03-31', 'buybacks': 10000000, 'accn': 'Q1', 'sales': 102000},
@@ -330,6 +343,7 @@ class TestOutput(unittest.TestCase):
             'insiders': 3,
             'sellers': 2,
             'salesToGrants': 0.269,
+            'salesToStockGrants': 1.002,
             **amounts(sales=110200, purchases=4000, withheld=5500, toIssuer=540, grants=110000, optionGrants=300000)
         })
         self.assertEqual(insider['years'][3], {
@@ -355,10 +369,17 @@ class TestOutput(unittest.TestCase):
         insider = insider_summary(TRANSACTIONS, 2025, THRESHOLDS, quarters)
         net_seller = {**insider, 'salesToGrants': 1.01}
         no_ratio = {**insider, 'salesToGrants': None}
-        results = [{'insider': insider}, {'insider': None}, {'insider': net_seller}, {'insider': no_ratio}]
+        results = [
+            {'insider': insider, 'five': {'ownerCash': 110200}},
+            {'insider': None, 'five': {'ownerCash': 5e9}},
+            {'insider': net_seller, 'five': {'ownerCash': -1e6}},
+            {'insider': no_ratio, 'five': {'ownerCash': 110199.6}}
+        ]
         self.assertEqual(insider_totals(results), {
             'companies': 3,
             'soldMore': 1,
+            'ownerCash': -779600,
+            'tookMore': 2,
             'quarters': 6,
             'buybackQuarters': 3,
             'sales': 330600,
@@ -374,6 +395,22 @@ class TestOutput(unittest.TestCase):
         self.assertEqual(insider_totals([]), NO_INSIDERS)
 
 
+    def test_buyback_totals(self):
+        def result(buybacks, withholding, share_growth):
+            return {'five': {'buybacks': buybacks, 'withholding': withholding, 'shareGrowth': share_growth}}
+
+        self.assertEqual(buyback_totals([
+            # Bought back shares: the share count rose, fell, and did not change
+            result(100e6, 10e6, 0.02),
+            result(200e6, 0, -0.01),
+            result(50e6, 5e6, 0),
+            # Left out: no buybacks, and a share count that cannot be followed
+            result(0, 7e6, 0.05),
+            result(900e6, 0, None)
+        ]), {'companies': 3, 'rose': 1, 'spent': 365000000, 'spentRose': 110000000})
+        self.assertEqual(buyback_totals([]), {'companies': 0, 'rose': 0, 'spent': 0, 'spentRose': 0})
+
+
     def test_company_json(self):
         result = evaluate(company_record(tags={
             'IncreaseDecreaseInInventories': [annual(2025, -600)],
@@ -382,10 +419,13 @@ class TestOutput(unittest.TestCase):
         }), 7372, DATA_DATE)
         company = company_json(result, INFO, THRESHOLDS)
         self.assertEqual(sorted(company), [
-            'cost', 'formerNames', 'insider', 'otherWay', 'row', 'shareReason', 'summary', 'ttm', 'ttmReason', 'years'
+            'cost', 'formerNames', 'insider', 'otherWay', 'row', 'shareReason', 'spending', 'summary', 'ttm', 'ttmReason', 'years'
         ])
         self.assertIsNone(company['insider'])
-        self.assertEqual(company['row'], {**ROW, 'p1Ex': 18.63, 'cumMarginEx': -0.02, 'buybacks': 150e6, 'flags': ['one_off_years']})
+        self.assertEqual(company['spending'], {})
+        self.assertEqual(company['row'], {
+            **ROW, 'p1Ex': 18.63, 'cumMarginEx': -0.02, 'buybacks': 150e6, 'buybacksFive': 150000000, 'flags': ['one_off_years']
+        })
         self.assertEqual(company['formerNames'], ['Old Test Co'])
         self.assertEqual(company['summary'], SUMMARY)
         self.assertEqual([item['kind'] for item in company['otherWay']], ['one_off', 'cash_returned'])
@@ -460,10 +500,20 @@ class TestOutput(unittest.TestCase):
         self.assertIsNone(company['years'][-1]['capex'])
         self.assertEqual(company['formerNames'], [])
 
-        # Insiders
-        result = evaluate(company_record(), None, DATA_DATE, insider=insider_summary(TRANSACTIONS, 2025, THRESHOLDS))
+        # Insiders, and spending by kind
+        record = company_record(tags={
+            'SellingAndMarketingExpense': [annual(2019 + index, value * 0.3) for index, value in enumerate(REVENUE)]
+        })
+        result = evaluate(record, None, DATA_DATE, insider=insider_summary(TRANSACTIONS, 2025, THRESHOLDS))
         company = company_json(result, {}, THRESHOLDS)
         self.assertEqual((company['insider']['sales'], len(company['insider']['people'])), (110200, 2))
+        tag = 'SellingAndMarketingExpense'
+        self.assertEqual(company['spending'], {'sm': {
+            'firstRatio': 0.3,
+            'firstFact': {'v': 375e6, 'accn': '0000000001-22-000010', 'filed': '2022-02-15', 'form': '10-K', 'tag': tag},
+            'lastRatio': 0.3,
+            'lastFact': {'v': 600e6, 'accn': '0000000001-26-000010', 'filed': '2026-02-15', 'form': '10-K', 'tag': tag}
+        }})
 
 
     def test_check_output(self):
@@ -514,10 +564,16 @@ class TestOutput(unittest.TestCase):
         report = sensitivity(records, sics, DATA_DATE, results)
         meta = build_meta(results, funnel, 20609, SOURCES, report)
         self.assertEqual(sorted(meta), [
-            'cost', 'costMethods', 'dataDate', 'excluded', 'funnel', 'insider', 'latest', 'methodVersion', 'sensitivity',
-            'sicExclusions', 'sources', 'thresholds', 'totals', 'types'
+            'buybackShares', 'cost', 'costMethods', 'dataDate', 'excluded', 'funnel', 'insider', 'latest', 'methodVersion',
+            'persistence', 'sensitivity', 'sicExclusions', 'sources', 'thresholds', 'totals', 'types'
         ])
         self.assertIsNone(meta['insider'])
+        self.assertEqual(meta['persistence'], {'fivePlus': 3, 'latestAbove': 0})
+        self.assertEqual(meta['buybackShares'], {
+            'screened': {'companies': 0, 'rose': 0, 'spent': 0, 'spentRose': 0},
+            'notCapitalLed': {'companies': 0, 'rose': 0, 'spent': 0, 'spentRose': 0},
+            'cashGenerative': {'companies': 0, 'rose': 0, 'spent': 0, 'spentRose': 0}
+        })
         self.assertEqual(meta['methodVersion'], '1.0.0')
         self.assertEqual(meta['dataDate'], DATA_DATE)
         self.assertEqual(meta['sources'], SOURCES)
@@ -538,7 +594,8 @@ class TestOutput(unittest.TestCase):
             'industry': 4,
             'lowMargin': 3,
             'stockPay': 3,
-            'ranked': 2
+            'ranked': 2,
+            'rankedThree': 0
         })
         self.assertEqual(meta['types'], {'stock_pay': 3, 'excluded': 1, 'cash_generative': 1})
         self.assertEqual(meta['excluded'], {'bank': 1})
@@ -567,6 +624,7 @@ class TestOutput(unittest.TestCase):
         meta = build_meta(results, funnel, 1, SOURCES, [])
         self.assertEqual(meta['latest'], {'cleared': 1, 'negative': 0, 'fiscalYearBasis': 1})
         self.assertEqual(meta['cost'], {'full': 0, 'zero': 1, 'missing': 0, 'missingAll': 0})
+        self.assertEqual(meta['persistence'], {'fivePlus': 0, 'latestAbove': 1})
 
         # Insiders: the first company is capital-led
         insider = insider_summary(TRANSACTIONS, 2025, THRESHOLDS)
@@ -577,12 +635,12 @@ class TestOutput(unittest.TestCase):
             'firstYear': 2021,
             'lastYear': 2025,
             'screened': {
-                **NO_INSIDERS, 'companies': 2, 'soldMore': 1, 'sales': 220400, 'purchases': 8000, 'withheld': 11000, 'toIssuer': 1080,
-                'grants': 220000, 'optionGrants': 600000
+                **NO_INSIDERS, 'companies': 2, 'soldMore': 1, 'ownerCash': -322000000, 'tookMore': 2, 'sales': 220400, 'purchases': 8000,
+                'withheld': 11000, 'toIssuer': 1080, 'grants': 220000, 'optionGrants': 600000
             },
             'notCapitalLed': {
-                **NO_INSIDERS, 'companies': 1, 'sales': 110200, 'purchases': 4000, 'withheld': 5500, 'toIssuer': 540, 'grants': 110000,
-                'optionGrants': 300000
+                **NO_INSIDERS, 'companies': 1, 'ownerCash': -161000000, 'tookMore': 1, 'sales': 110200, 'purchases': 4000, 'withheld': 5500,
+                'toIssuer': 540, 'grants': 110000, 'optionGrants': 300000
             },
             'cashGenerative': NO_INSIDERS
         })
@@ -628,12 +686,12 @@ class TestOutput(unittest.TestCase):
             self.assertEqual(len(lines), 6)
             self.assertEqual(
                 lines[2],
-                '2,Test Co,TEST,1,stock_pay,,7372,Services-Prepackaged Software,37.27,18.63,10.0,3.73,4.9,13,,7,2019,2025,2025-12-31,'
+                '2,,Test Co,TEST,1,stock_pay,,7372,Services-Prepackaged Software,37.27,,18.63,10.0,3.73,4.9,13,,7,2019,2025,2025-12-31,'
                 '2000000000.0,2.0,7,-0.02,,-0.02,-0.02,ttm,2026-09-30,10150000000.0,1015000000.0,1218000000.0,203000000.0,'
-                '-203000000.0,0.1,0.12,0,0,0,0.167,False,,0.0,1,0.55,0.55,,,,,,,,,,'
+                '-203000000.0,0.1,0.12,0,0,0,0.167,False,,0.0,1,0.55,0.55,,,,,,,,,,,7,-161000000,0,0,,'
             )
             self.assertTrue(lines[3].endswith(',no_cost_line latest_is_fiscal_year'))
-            self.assertTrue(lines[5].startswith(',Bank Co,TEST,5,excluded,bank,6021,Services-Prepackaged Software,,,,,,,,7,2019,'))
+            self.assertTrue(lines[5].startswith(',,Bank Co,TEST,5,excluded,bank,6021,Services-Prepackaged Software,,,,,,,,,7,2019,'))
 
             # An earlier build stays in the archive; a build with the same data date is replaced
             write_archive(temp_dir, {'dataDate': '2026-08-14', 'methodVersion': '0.9.0', 'funnel': {'ranked': 1}})

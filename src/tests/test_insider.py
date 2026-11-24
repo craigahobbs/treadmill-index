@@ -371,6 +371,7 @@ class TestInsiderSummary(unittest.TestCase):
             ],
             'bothYears': 1,
             'salesToGrants': 110200 / 410000,
+            'salesToStockGrants': 110200 / 110000,
             'ratioReason': None,
             'unvaluedShares': 0,
             'oddPrices': 1,
@@ -409,7 +410,7 @@ class TestInsiderSummary(unittest.TestCase):
         summary = insider_summary(TRANSACTIONS, 2021, THRESHOLDS)
         self.assertEqual([year['year'] for year in summary['years']], [2017, 2018, 2019, 2020, 2021])
         self.assertEqual((summary['sales'], summary['insiders'], summary['bothYears']), (30000, 1, 0))
-        self.assertEqual((summary['salesToGrants'], summary['ratioReason']), (None, 'no grants'))
+        self.assertEqual((summary['salesToGrants'], summary['salesToStockGrants'], summary['ratioReason']), (None, None, 'no grants'))
 
         # No insider reported a transaction in the years
         self.assertIsNone(insider_summary(TRANSACTIONS, 2019, THRESHOLDS))
@@ -487,6 +488,7 @@ class TestInsiderSummary(unittest.TestCase):
         self.assertEqual((summary['grants'], summary['optionGrants']), (15000, 5000))
         self.assertEqual((summary['grantShares'], summary['unvaluedShares']), (420, 20))
         self.assertEqual(summary['salesToGrants'], 2.5)
+        self.assertAlmostEqual(summary['salesToStockGrants'], 50000 / 15000)
         self.assertEqual([year['grantShares'] for year in summary['years']], [0, 10, 0, 410, 0])
         self.assertEqual(summary['people'][0]['filings'], [{
             'accn': 'A1', 'filed': '2024-03-18', 'sales': 50000, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 15000,

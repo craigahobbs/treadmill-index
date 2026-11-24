@@ -56,7 +56,7 @@ class TestMain(unittest.TestCase):
             self.assertEqual(stdout.getvalue().splitlines(), [
                 f'Extracting {zip_path} ...',
                 '{"inFile": 4, "prefilter": 3, "current": 3, "revenue": 3, "years": 3, "growth": 3, "industry": 2, "lowMargin": 1, '
-                '"stockPay": 1, "ranked": 1}',
+                '"stockPay": 1, "ranked": 1, "rankedThree": 0}',
                 f'Wrote 3 companies to "{out_dir}" - data as of 2026-11-05'
             ])
             self.assertEqual(stderr.getvalue(), '')
@@ -125,15 +125,20 @@ class TestMain(unittest.TestCase):
                     ('Bank Co', None, None, None, None, ['no_insider_filings'])
                 ]
             )
+            self.assertEqual(
+                [(row['rank'], row['threeRank'], row['screenScore'], row['threeScore'], row['buybacksFive']) for row in index['companies']],
+                [(1, 1, 37.27, 43.9, 0), (None, None, 0.0, None, 0), (None, None, None, None, 0)]
+            )
             with open(os.path.join(out_dir, 'meta.json'), 'r', encoding='utf-8') as meta_file:
                 meta = json.load(meta_file)
             self.assertEqual(meta['sources']['insider']['files'], ['2025q1_form345.zip'])
             self.assertEqual((meta['insider']['firstYear'], meta['insider']['lastYear']), (2021, 2025))
             self.assertEqual(meta['insider']['screened'], {
-                'companies': 1, 'soldMore': 0, 'quarters': 2, 'buybackQuarters': 1, 'sales': 50000, 'purchases': 0, 'withheld': 0,
-                'toIssuer': 0, 'grants': 50000, 'optionGrants': 0, 'buybacks': 20000000, 'salesInQuarters': 50000,
-                'salesInBuybackQuarters': 50000
+                'companies': 1, 'soldMore': 0, 'ownerCash': -161000000, 'tookMore': 1, 'quarters': 2, 'buybackQuarters': 1,
+                'sales': 50000, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 50000, 'optionGrants': 0, 'buybacks': 20000000,
+                'salesInQuarters': 50000, 'salesInBuybackQuarters': 50000
             })
+            self.assertEqual(meta['funnel']['rankedThree'], 1)
             with open(os.path.join(out_dir, 'company', '1.json'), 'r', encoding='utf-8') as company_file:
                 company = json.load(company_file)
             self.assertEqual(company['insider']['people'][0]['name'], 'Doe Jane')

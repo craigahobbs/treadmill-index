@@ -4,6 +4,12 @@ A public index ranking mature US companies on one pattern: years of revenue grow
 
 This project was planned in an earlier chat session that you cannot see. Everything known is in this folder.
 
+## The goal, in the owner's words (2026-11-24)
+
+Identify companies that persistently keep free cash flow at zero as potentially a means of avoiding rational valuation, which, for those companies, a rational valuation would be far worse due to being propped up by high costs like sales labor, and then cashing out on the irrational valuation by treadmill-granting and selling shares.
+
+The three parts must hold together: owner cash persistently near zero (P1), revenue held up by costs (P2), insiders granted shares and selling them (P3). Test new work against this: does it show whether cash reached owners, and where it went instead. The intent part is the index's stated view about the pattern; see the rules below before attaching it to anything.
+
 ## Read first
 
 - docs/index-definition.md: the index, verbatim. Do not change scoring without the owner's agreement.
@@ -43,6 +49,13 @@ Local Makefile:
 - Excluded industries have inputs but no scores in the data files.
 - Capital-led flag, one-off-year P1, sensitivity test, group totals and pre-publish checks are implemented.
 - "Still filing" is the latest fiscal year ending within 548 days of the latest filing date in the data, not a fixed date.
+
+## The three-signs score (added 2026-11-24, on the owner's "proceed as you see fit")
+
+- Three-signs score (75) = P1 + (P1 / 25) x (P2b scaled to 25 + P3): the screen score with P3 added in the definition's own form. It is the index page's default order; the screen score and its rank stay beside it. It is provisional because P3 is.
+- Each company page has a "Which way the numbers point" table: what each sign looks like for a growth bet paying off and for a treadmill, with the company's own figures. It states facts and leaves the reading to the reader.
+- Group figures on the index page (2021-2025, screened companies without the capital-led): owner cash of -$5.8B against insider sales of $32.8B; insiders sold more than the business produced for owners at 47 of 59 (cash-generative: 18 of 566); of 44 that bought back shares, the share count still rose at 36 (cash-generative: 115 of 475).
+- Known gap against the goal: P2b measures whether costs fell against revenue, not how high they are. Snowflake and Cloudflare score 0 on P2b while spending heavily on sales. Sales and marketing, R&D and G&A shares of revenue are reported on company pages (not scored) where tagged: 44, 51 and 49 of the 70 screened companies. A level measure would need the owner's agreement.
 
 ## Pillar 3 as built (provisional; not agreed with the owner)
 
