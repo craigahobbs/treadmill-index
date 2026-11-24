@@ -51,6 +51,7 @@ Local Makefile:
 - Grant value departs from the definition. The definition says grant-date value; the SEC financial data gives a usable stock-award fair value for only 7 of the 70 screened companies and an option fair value for 21 of the 39 that grant options to insiders. So every grant is valued at the market price of the shares it covers: a stock award at the nearest price insiders reported within 90 days, an option at its exercise price. This overstates options and performance awards and so understates sales / grants. Tesla's 2025 CEO award alone is about $180B on this basis.
 - P3 is shown on company pages as provisional and is not part of any published score. The owner has not reviewed the valuation choice or the fund rules.
 - Check on real data: Zillow's co-founder sales of about $30M in August 2025 (docs/findings.md) appear as $29.8M filed 2025-08-18.
+- Sales beside buybacks: insider.py `buyback_quarters` splits each company's year-to-date buybacks into quarters, and each insider sale is put in the quarter it fell in. The company page and the group totals page show both. First result, 2021-2025, screened companies without the capital-led: 65% of quarters had a buyback and 64% of insider sales fell in them, so insiders did not sell more heavily while their company was buying. The pages say this shows timing only.
 
 ## Rules that matter
 

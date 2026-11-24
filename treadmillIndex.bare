@@ -709,6 +709,36 @@ function tiCompanyInsiders(args, meta, cik, company):
     arrayPush(yearRows, tiInsiderAmounts(['**' + yearsText + '**'], insider))
     markdownPrint('', tiTable(arrayExtend(['Year'], tiInsiderHeaders), ['l', 'r', 'r', 'r', 'r', 'r', 'r'], yearRows))
 
+    # Render the insiders' sales beside the company's buybacks, by quarter
+    quarters = objectGet(insider, 'quarters')
+    if arrayLength(quarters):
+        quarterRows = []
+        for quarter in quarters:
+            arrayPush(quarterRows, [ \
+                tiNoWrap(objectGet(quarter, 'start')) + ' to ' + tiNoWrap(objectGet(quarter, 'end')), \
+                '[' + tiDollars(objectGet(quarter, 'buybacks')) + '](' + tiFilingURL(cik, objectGet(quarter, 'accn')) + ')', \
+                tiDollars(objectGet(quarter, 'sales')) \
+            ])
+        endfor
+        markdownPrint( \
+            '', \
+            "**Sales beside buybacks.** The filings give the company's buybacks for " + arrayLength(quarters) + \
+                ' quarters of these years. It bought back ' + tiDollars(objectGet(insider, 'buybacks')) + ' of shares, in ' + \
+                objectGet(insider, 'buybackQuarters') + ' of them.', \
+            'Insiders sold ' + tiDollars(objectGet(insider, 'salesInBuybackQuarters')) + ' in those quarters, out of ' + \
+                tiDollars(objectGet(insider, 'salesInQuarters')) + ' in all ' + arrayLength(quarters) + '.', \
+            'This shows timing only: shares a company buys on the open market cannot be traced to a seller.', \
+            '', \
+            tiTable(['Quarter', 'The company bought back', 'Insiders sold on the open market'], ['l', 'r', 'r'], quarterRows) \
+        )
+    else:
+        markdownPrint( \
+            '', \
+            '**Sales beside buybacks.** The filings give no buybacks by quarter for these years. A company that has not bought', \
+            'back shares reports none.' \
+        )
+    endif
+
     # Render the largest sellers, each linked to their filings
     people = objectGet(insider, 'people')
     personCik = objectGet(args, 'person')
@@ -1014,6 +1044,24 @@ function tiTotalsInsiderLines(meta):
             arrayPush(arrayGet(rows, ixAmount + 2), tiDollars(objectGet(group, amount)))
         endfor
     endfor
+
+    # The insiders' sales beside the companies' buybacks, over the quarters for which the filings give buybacks
+    quarterRows = [ \
+        ["Quarters with the company's buybacks given"], ['...with a buyback'], ['Company buybacks in those quarters'], \
+        ['Insider open-market sales in those quarters'], ['...in the quarters with a buyback'] \
+    ]
+    shares = []
+    for group in groups:
+        arrayPush(arrayGet(quarterRows, 0), tiNumber(objectGet(group, 'quarters'), 0))
+        arrayPush(arrayGet(quarterRows, 1), tiNumber(objectGet(group, 'buybackQuarters'), 0))
+        arrayPush(arrayGet(quarterRows, 2), tiDollars(objectGet(group, 'buybacks')))
+        arrayPush(arrayGet(quarterRows, 3), tiDollars(objectGet(group, 'salesInQuarters')))
+        arrayPush(arrayGet(quarterRows, 4), tiDollars(objectGet(group, 'salesInBuybackQuarters')))
+        arrayPush(shares, [ \
+            tiPercent(if(objectGet(group, 'quarters'), objectGet(group, 'buybackQuarters') / objectGet(group, 'quarters'))), \
+            tiPercent(if(objectGet(group, 'salesInQuarters'), objectGet(group, 'salesInBuybackQuarters') / objectGet(group, 'salesInQuarters'))) \
+        ])
+    endfor
     return [ \
         '', \
         '## Insiders, ' + tiYears(objectGet(insiderMeta, 'firstYear'), objectGet(insiderMeta, 'lastYear')), \
@@ -1024,7 +1072,20 @@ function tiTotalsInsiderLines(meta):
         tiTable(['', 'All', 'Without the capital-led', 'Cash-generative companies'], ['l', 'r', 'r', 'r'], rows), \
         '', \
         'Grants are valued at the market price of the shares they cover on the grant date. That overstates options, and', \
-        'performance awards that may never vest: a single award can dominate the "stock granted" total.' \
+        'performance awards that may never vest: a single award can dominate the "stock granted" total.', \
+        '', \
+        '### Sales beside buybacks', \
+        '', \
+        "Each company's buybacks by quarter, where its filings give them, beside its insiders' open-market sales in the same", \
+        'quarter. If insiders sold mostly while their company was buying, the share of their sales that fell in buyback', \
+        'quarters would be well above the share of quarters that had a buyback.', \
+        '', \
+        tiTable(['', 'All', 'Without the capital-led', 'Cash-generative companies'], ['l', 'r', 'r', 'r'], quarterRows), \
+        '', \
+        'Without the capital-led companies, ' + arrayGet(arrayGet(shares, 1), 0) + ' of quarters had a buyback and ' + \
+            arrayGet(arrayGet(shares, 1), 1) + ' of insider sales fell in them. For the cash-generative companies it was ' + \
+            arrayGet(arrayGet(shares, 2), 0) + ' and ' + arrayGet(arrayGet(shares, 2), 1) + '.', \
+        'This shows timing only: shares a company buys on the open market cannot be traced to a seller.' \
     ]
 endfunction
 

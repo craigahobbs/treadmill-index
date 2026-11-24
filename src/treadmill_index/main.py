@@ -9,7 +9,7 @@ import os
 import sys
 
 from .extract import load_records
-from .insider import INSIDER_PAGE_URL, download_insider, insider_summary, load_insider
+from .insider import INSIDER_PAGE_URL, buyback_quarters, download_insider, insider_summary, load_insider
 from .output import build_meta, file_sha256, write_output
 from .score import THRESHOLDS, evaluate, loose_thresholds, run_screen, sensitivity
 from .sec import UserAgentError, load_submissions
@@ -78,8 +78,9 @@ def build(args):
     if insider_files:
         insiders = {}
         insider_years = (last_year - THRESHOLDS['p3_years'] + 1, last_year)
+        buybacks = {record['cik']: record['buybacks'] for record in records}
         for cik, cik_transactions in transactions.items():
-            summary = insider_summary(cik_transactions, last_year, THRESHOLDS)
+            summary = insider_summary(cik_transactions, last_year, THRESHOLDS, buyback_quarters(buybacks[int(cik)]))
             if summary is not None:
                 insiders[int(cik)] = summary
 

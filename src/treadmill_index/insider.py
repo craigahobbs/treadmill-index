@@ -14,6 +14,7 @@ import time
 from urllib.parse import urljoin
 import zipfile
 
+from .extract import F_ACCN, F_VAL, parse_date
 from .sec import fetch_url
 
 
@@ -373,7 +374,38 @@ def is_odd_price(series, day, price, window_days=30):
     return price > 3 * median or price < median / 3
 
 
-def insider_summary(transactions, last_year, thresholds):
+def buyback_quarters(periods):
+    """
+    Split a company's buybacks into quarters. Cash flow statements give year-to-date amounts, so a quarter is the
+    year-to-date amount less the one before it. A fiscal year is used only as far as its periods step by a quarter.
+
+    :param dict periods: The company record's buybacks: the dict of "start|end" to fact
+    :returns: The list of quarters, oldest first: dicts of "start", "end", "buybacks" and "accn"
+    """
+
+    by_start = {}
+    for key, fact in periods.items():
+        start, end = key.split('|')
+        by_start.setdefault(start, []).append((end, fact))
+
+    # The longest chains first, so a year-to-date chain is used before a lone quarter's amount
+    quarters = {}
+    for start, facts in sorted(by_start.items(), key=lambda item: (-len(item[1]), item[0])):
+        quarter_start = start
+        previous = 0
+        for end, fact in sorted(facts):
+            if not 75 <= (parse_date(end) - parse_date(quarter_start)).days <= 105:
+                break
+            amount = abs(fact[F_VAL]) - previous
+            if amount < 0:
+                break
+            quarters.setdefault(end, {'start': quarter_start, 'end': end, 'buybacks': amount, 'accn': fact[F_ACCN]})
+            previous = abs(fact[F_VAL])
+            quarter_start = (parse_date(end) + datetime.timedelta(days=1)).isoformat()
+    return [quarters[end] for end in sorted(quarters)]
+
+
+def insider_summary(transactions, last_year, thresholds, quarters=()):
     """
     Summarize a company's insiders' grants and sales over the latest calendar years
 
@@ -384,11 +416,19 @@ def insider_summary(transactions, last_year, thresholds):
     :param list(dict) transactions: The company's transactions
     :param int last_year: The last calendar year
     :param dict thresholds: The thresholds
+    :param list(dict) quarters: The company's buybacks by quarter. The quarters wholly inside the calendar years are
+        returned with the insiders' open-market sales in each.
     :returns: The summary dict, or None if no insider reported a transaction in those years
     """
 
+    first_year = last_year - thresholds['p3_years'] + 1
+    quarters = [
+        {**quarter, 'sales': 0} for quarter in quarters
+        if quarter['start'] >= f'{first_year}-01-01' and quarter['end'] <= f'{last_year}-12-31'
+    ]
+    quarter_starts = [quarter['start'] for quarter in quarters]
     years = {year: {'year': year, 'grantShares': 0, 'giftShares': 0, **dict.fromkeys(_AMOUNTS.values(), 0)}
-             for year in range(last_year - thresholds['p3_years'] + 1, last_year + 1)}
+             for year in range(first_year, last_year + 1)}
     series = price_series(transactions)
     people = {}
     unvalued_shares = 0
@@ -435,6 +475,11 @@ def insider_summary(transactions, last_year, thresholds):
         })
         filing[amount] += value
 
+        # Add a sale to the quarter it fell in
+        quarter = quarters[bisect.bisect_right(quarter_starts, transaction['date']) - 1] if quarters else None
+        if kind == 'sale' and quarter and quarter['start'] <= transaction['date'] <= quarter['end']:
+            quarter['sales'] += value
+
     if not people:
         return None
 
@@ -464,5 +509,10 @@ def insider_summary(transactions, last_year, thresholds):
         'oddPrices': odd_prices,
         'insiders': len(people),
         'sellers': len(sellers),
-        'people': sellers[:5]
+        'people': sellers[:5],
+        'quarters': quarters,
+        'buybacks': sum(quarter['buybacks'] for quarter in quarters),
+        'buybackQuarters': sum(1 for quarter in quarters if quarter['buybacks'] > 0),
+        'salesInQuarters': sum(quarter['sales'] for quarter in quarters),
+        'salesInBuybackQuarters': sum(quarter['sales'] for quarter in quarters if quarter['buybacks'] > 0)
     }

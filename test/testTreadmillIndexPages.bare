@@ -1862,9 +1862,7 @@ async function testMain_company():
         ], \
         [ \
             'markdownPrint', \
-            [ \
-                'Nothing in the numbers the index uses. Stated targets and one-off events are not yet reviewed by hand.' \
-            ] \
+            ['- The company paid $40 million to buy back shares over the period.'] \
         ], \
         [ \
             'markdownPrint', \
@@ -1953,6 +1951,24 @@ async function testMain_company():
             'markdownPrint', \
             [ \
                 '', \
+                '**Sales beside buybacks.** The filings give the company\'s buybacks for 4 quarters of these years. It bought back $40.0M of shares, in 2 of them.', \
+                'Insiders sold $102K in those quarters, out of $102K in all 4.', \
+                'This shows timing only: shares a company buys on the open market cannot be traced to a seller.', \
+                '', \
+                [ \
+                    '| Quarter | The company bought back | Insiders sold on the open market |', \
+                    '| :-- | --: | --: |', \
+                    '| 2024‑01‑01 to 2024‑03‑31 | [$10.0M](https://www.sec.gov/Archives/edgar/data/1/000000000124000020/0000000001-24-000020-index.htm) | $102K |', \
+                    '| 2024‑04‑01 to 2024‑06‑30 | [$0](https://www.sec.gov/Archives/edgar/data/1/000000000124000021/0000000001-24-000021-index.htm) | $0 |', \
+                    '| 2024‑07‑01 to 2024‑09‑30 | [$30.0M](https://www.sec.gov/Archives/edgar/data/1/000000000124000022/0000000001-24-000022-index.htm) | $0 |', \
+                    '| 2024‑10‑01 to 2024‑12‑31 | [$0](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | $0 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
                 '**The largest sellers.** Select a name to list that person\'s filings.', \
                 '', \
                 [ \
@@ -1995,7 +2011,7 @@ async function testMain_company():
                     '| 2021 | 2021‑12‑31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$25M | -2.0% | n/a | n/a |  |', \
                     '| 2022 | 2022‑12‑31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$28M | -2.0% | n/a | n/a |  |', \
                     '| 2023 | 2023‑12‑31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$32M | -2.0% | n/a | n/a |  |', \
-                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | [$40M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | n/a |  |', \
                     '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$40M | -2.0% | n/a | n/a |  |', \
                     '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $258M | $215M | -$43M | -2.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/1/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/1/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
@@ -2176,6 +2192,14 @@ async function testMain_companyOneOff():
                     '| 2025 | $0 | $0 | $0 | $0 | $0 | $0 |', \
                     '| **2021‑2025** | $4K | $0 | $0 | $0 | $0 | $0 |' \
                 ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Sales beside buybacks.** The filings give no buybacks by quarter for these years. A company that has not bought', \
+                'back shares reports none.' \
             ] \
         ], \
         [ \
@@ -2781,6 +2805,14 @@ async function testMain_companyCashGenerative():
             'markdownPrint', \
             [ \
                 '', \
+                '**Sales beside buybacks.** The filings give no buybacks by quarter for these years. A company that has not bought', \
+                'back shares reports none.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
                 '**The largest sellers.** Select a name to list that person\'s filings.', \
                 '', \
                 [ \
@@ -2926,6 +2958,14 @@ async function testMain_companyExcluded():
                     '| 2025 | $0 | $0 | $0 | $0 | $0 | $0 |', \
                     '| **2021‑2025** | $1.2M | $0 | $0 | $0 | $0 | $0 |' \
                 ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Sales beside buybacks.** The filings give no buybacks by quarter for these years. A company that has not bought', \
+                'back shares reports none.' \
             ] \
         ], \
         [ \
@@ -3503,9 +3543,7 @@ async function testMain_companyPerson():
         ], \
         [ \
             'markdownPrint', \
-            [ \
-                'Nothing in the numbers the index uses. Stated targets and one-off events are not yet reviewed by hand.' \
-            ] \
+            ['- The company paid $40 million to buy back shares over the period.'] \
         ], \
         [ \
             'markdownPrint', \
@@ -3594,6 +3632,24 @@ async function testMain_companyPerson():
             'markdownPrint', \
             [ \
                 '', \
+                '**Sales beside buybacks.** The filings give the company\'s buybacks for 4 quarters of these years. It bought back $40.0M of shares, in 2 of them.', \
+                'Insiders sold $102K in those quarters, out of $102K in all 4.', \
+                'This shows timing only: shares a company buys on the open market cannot be traced to a seller.', \
+                '', \
+                [ \
+                    '| Quarter | The company bought back | Insiders sold on the open market |', \
+                    '| :-- | --: | --: |', \
+                    '| 2024‑01‑01 to 2024‑03‑31 | [$10.0M](https://www.sec.gov/Archives/edgar/data/1/000000000124000020/0000000001-24-000020-index.htm) | $102K |', \
+                    '| 2024‑04‑01 to 2024‑06‑30 | [$0](https://www.sec.gov/Archives/edgar/data/1/000000000124000021/0000000001-24-000021-index.htm) | $0 |', \
+                    '| 2024‑07‑01 to 2024‑09‑30 | [$30.0M](https://www.sec.gov/Archives/edgar/data/1/000000000124000022/0000000001-24-000022-index.htm) | $0 |', \
+                    '| 2024‑10‑01 to 2024‑12‑31 | [$0](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | $0 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
                 '**The largest sellers.** Select a name to list that person\'s filings.', \
                 '', \
                 [ \
@@ -3653,7 +3709,7 @@ async function testMain_companyPerson():
                     '| 2021 | 2021‑12‑31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$25M | -2.0% | n/a | n/a |  |', \
                     '| 2022 | 2022‑12‑31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$28M | -2.0% | n/a | n/a |  |', \
                     '| 2023 | 2023‑12‑31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$32M | -2.0% | n/a | n/a |  |', \
-                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | [$40M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | n/a |  |', \
                     '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$40M | -2.0% | n/a | n/a |  |', \
                     '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $258M | $215M | -$43M | -2.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/1/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/1/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
@@ -4400,9 +4456,7 @@ async function testMain_companyNoInsider():
         ], \
         [ \
             'markdownPrint', \
-            [ \
-                'Nothing in the numbers the index uses. Stated targets and one-off events are not yet reviewed by hand.' \
-            ] \
+            ['- The company paid $40 million to buy back shares over the period.'] \
         ], \
         [ \
             'markdownPrint', \
@@ -4464,7 +4518,7 @@ async function testMain_companyNoInsider():
                     '| 2021 | 2021‑12‑31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$25M | -2.0% | n/a | n/a |  |', \
                     '| 2022 | 2022‑12‑31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$28M | -2.0% | n/a | n/a |  |', \
                     '| 2023 | 2023‑12‑31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$32M | -2.0% | n/a | n/a |  |', \
-                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024‑12‑31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | [$40M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | n/a |  |', \
                     '| 2025 | 2025‑12‑31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$40M | -2.0% | n/a | n/a |  |', \
                     '| **12 months** | 2026‑09‑30 | $2,150M | $258M | $43M | $258M | $215M | -$43M | -2.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/1/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/1/000000000125000030/0000000001-25-000030-index.htm) |' \
                 ], \
@@ -4623,7 +4677,7 @@ async function testMain_dataNoInsider():
                 '', \
                 '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
                 '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
-                '  File size 123,456,789 bytes, SHA-256 `b325692a70fe9897eed75440a12c4b90d184c1434c7dfe089fda5b801e36b43b`.', \
+                '  File size 123,456,789 bytes, SHA-256 `26c95af3449bc039128dbb7e98de3fc0610043eb2f498683d0af2f4a8d32d2ea`.', \
                 '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
                 '- Insider transactions: not in this build.', \
                 '- Method version 1.0.0. A figure cited from this page can be reproduced from the same', \
@@ -4782,7 +4836,26 @@ async function testMain_totals():
                     ], \
                     '', \
                     'Grants are valued at the market price of the shares they cover on the grant date. That overstates options, and', \
-                    'performance awards that may never vest: a single award can dominate the "stock granted" total.' \
+                    'performance awards that may never vest: a single award can dominate the "stock granted" total.', \
+                    '', \
+                    '### Sales beside buybacks', \
+                    '', \
+                    'Each company\'s buybacks by quarter, where its filings give them, beside its insiders\' open-market sales in the same', \
+                    'quarter. If insiders sold mostly while their company was buying, the share of their sales that fell in buyback', \
+                    'quarters would be well above the share of quarters that had a buyback.', \
+                    '', \
+                    [ \
+                        '|  | All | Without the capital-led | Cash-generative companies |', \
+                        '| :-- | --: | --: | --: |', \
+                        '| Quarters with the company\'s buybacks given | 4 | 4 | 0 |', \
+                        '| ...with a buyback | 2 | 2 | 0 |', \
+                        '| Company buybacks in those quarters | $40.0M | $40.0M | $0 |', \
+                        '| Insider open-market sales in those quarters | $102K | $102K | $0 |', \
+                        '| ...in the quarters with a buyback | $102K | $102K | $0 |' \
+                    ], \
+                    '', \
+                    'Without the capital-led companies, 50.0% of quarters had a buyback and 100.0% of insider sales fell in them. For the cash-generative companies it was n/a and n/a.', \
+                    'This shows timing only: shares a company buys on the open market cannot be traced to a seller.' \
                 ], \
                 '', \
                 '## Latest 12 months', \
@@ -5263,7 +5336,7 @@ async function testMain_data():
                 '', \
                 '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
                 '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
-                '  File size 123,456,789 bytes, SHA-256 `b325692a70fe9897eed75440a12c4b90d184c1434c7dfe089fda5b801e36b43b`.', \
+                '  File size 123,456,789 bytes, SHA-256 `26c95af3449bc039128dbb7e98de3fc0610043eb2f498683d0af2f4a8d32d2ea`.', \
                 '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
                 '- Insider transactions: the SEC [insider transactions data sets](https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets), 1 quarterly files from `2025q4_form345.zip` to `2025q4_form345.zip`.', \
                 '- Method version 1.0.0. A figure cited from this page can be reproduced from the same', \

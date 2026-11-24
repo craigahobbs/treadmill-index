@@ -79,6 +79,25 @@ class TestExtract(unittest.TestCase):
             }
         })
         self.assertEqual(record['recent']['sw'], {})
+        self.assertEqual(record['buybacks'], {})
+
+
+    def test_extract_company_buybacks(self):
+        # Buybacks of every period length from two months to a year: the most recently filed value of each period
+        record = company_record(tags={'PaymentsForRepurchaseOfCommonStock': [
+            unit('2025-01-01', '2025-03-31', 10e6, accn='Q1', filed='2025-05-01', form='10-Q'),
+            unit('2025-01-01', '2025-06-30', 30e6, accn='Q2', filed='2025-08-01', form='10-Q'),
+            unit('2025-01-01', '2025-06-30', 31e6, accn='Q2A', filed='2026-08-01', form='10-Q'),
+            unit('2025-01-01', '2025-12-31', 70e6, accn='FY', filed='2026-02-15'),
+            unit('2025-01-01', '2025-01-31', 1e6, accn='M1', filed='2025-02-01', form='8-K'),
+            unit('2024-01-01', '2025-12-31', 99e6, accn='2Y', filed='2026-02-15')
+        ]})
+        self.assertEqual(record['buybacks'], {
+            '2025-01-01|2025-03-31': [10e6, 'Q1', '2025-05-01', '10-Q', '2025-01-01'],
+            '2025-01-01|2025-06-30': [31e6, 'Q2A', '2026-08-01', '10-Q', '2025-01-01'],
+            '2025-01-01|2025-12-31': [70e6, 'FY', '2026-02-15', '10-K', '2025-01-01']
+        })
+        self.assertEqual(record['annual']['bb']['2025-12-31'][0], 70e6)
 
 
     def test_extract_company_rejected(self):

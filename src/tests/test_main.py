@@ -12,7 +12,7 @@ import zipfile
 import treadmill_index.__main__
 from treadmill_index.main import main
 
-from .helpers import company_bytes, insider_filing, insider_zip
+from .helpers import company_bytes, insider_filing, insider_zip, unit
 
 
 def fetch_submission(url, unused_user_agent):
@@ -24,9 +24,12 @@ def fetch_submission(url, unused_user_agent):
 
 def write_companyfacts(raw_dir, ciks):
     names = {1: 'Stock Pay Co', 2: 'Cash Co', 3: 'Bank Co', 4: 'Unknown Co'}
+    buybacks = [unit('2025-01-01', '2025-03-31', 20e6, form='10-Q'), unit('2025-01-01', '2025-06-30', 20e6, form='10-Q')]
     with zipfile.ZipFile(os.path.join(raw_dir, 'companyfacts.zip'), 'w') as archive:
         for cik in ciks:
-            archive.writestr(f'CIK{cik:010d}.json', company_bytes(cik=cik, name=names[cik], sbc=(0.02 if cik == 2 else 0.12)))
+            archive.writestr(f'CIK{cik:010d}.json', company_bytes(
+                cik=cik, name=names[cik], sbc=(0.02 if cik == 2 else 0.12), tags={'PaymentsForRepurchaseOfCommonStock': buybacks}
+            ))
         archive.writestr('CIK0000000009.json', '{}')
 
 
@@ -127,12 +130,17 @@ class TestMain(unittest.TestCase):
             self.assertEqual(meta['sources']['insider']['files'], ['2025q1_form345.zip'])
             self.assertEqual((meta['insider']['firstYear'], meta['insider']['lastYear']), (2021, 2025))
             self.assertEqual(meta['insider']['screened'], {
-                'companies': 1, 'soldMore': 0, 'sales': 50000, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 50000,
-                'optionGrants': 0
+                'companies': 1, 'soldMore': 0, 'quarters': 2, 'buybackQuarters': 1, 'sales': 50000, 'purchases': 0, 'withheld': 0,
+                'toIssuer': 0, 'grants': 50000, 'optionGrants': 0, 'buybacks': 20000000, 'salesInQuarters': 50000,
+                'salesInBuybackQuarters': 50000
             })
             with open(os.path.join(out_dir, 'company', '1.json'), 'r', encoding='utf-8') as company_file:
                 company = json.load(company_file)
             self.assertEqual(company['insider']['people'][0]['name'], 'Doe Jane')
+            self.assertEqual(company['insider']['quarters'], [
+                {'start': '2025-01-01', 'end': '2025-03-31', 'buybacks': 20000000, 'accn': '0000000001-26-000001', 'sales': 50000},
+                {'start': '2025-04-01', 'end': '2025-06-30', 'buybacks': 0, 'accn': '0000000001-26-000001', 'sales': 0}
+            ])
 
 
     def test_main_download_insider(self):

@@ -6,8 +6,9 @@ from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 
-from treadmill_index.insider import INSIDER_PAGE_URL, download_insider, filing_insider, insider_links, insider_quarters, \
-    insider_summary, is_odd_price, load_insider, nearest_price, parse_number, parse_sec_date, price_series, read_insider_zip
+from treadmill_index.insider import INSIDER_PAGE_URL, buyback_quarters, download_insider, filing_insider, insider_links, \
+    insider_quarters, insider_summary, is_odd_price, load_insider, nearest_price, parse_number, parse_sec_date, price_series, \
+    read_insider_zip
 
 from .helpers import insider_filing, insider_zip
 
@@ -375,6 +376,11 @@ class TestInsiderSummary(unittest.TestCase):
             'oddPrices': 1,
             'insiders': 3,
             'sellers': 2,
+            'quarters': [],
+            'buybacks': 0,
+            'buybackQuarters': 0,
+            'salesInQuarters': 0,
+            'salesInBuybackQuarters': 0,
             'people': [
                 {
                     'cik': 1001,
@@ -408,6 +414,63 @@ class TestInsiderSummary(unittest.TestCase):
         # No insider reported a transaction in the years
         self.assertIsNone(insider_summary(TRANSACTIONS, 2019, THRESHOLDS))
         self.assertIsNone(insider_summary([], 2025, THRESHOLDS))
+
+
+    def test_buyback_quarters(self):
+        def fact(value, accn):
+            return [value, accn, '2026-02-15', '10-Q', '2025-01-01']
+
+        self.assertEqual(buyback_quarters({}), [])
+        self.assertEqual(buyback_quarters({
+            # A fiscal year's year-to-date amounts: no buyback in the third quarter
+            '2025-01-01|2025-03-31': fact(10e6, 'Q1'),
+            '2025-01-01|2025-06-30': fact(-30e6, 'Q2'),
+            '2025-01-01|2025-09-30': fact(30e6, 'Q3'),
+            '2025-01-01|2025-12-31': fact(70e6, 'FY'),
+            # A lone quarter's amount that the year-to-date amounts already give, and one they do not
+            '2025-04-01|2025-06-30': fact(99e6, 'Q2X'),
+            '2024-10-01|2024-12-31': fact(5e6, 'Q4X'),
+            # A 52-week fiscal year that starts with a half year: nothing can be split
+            '2023-12-31|2024-06-29': fact(8e6, 'H1'),
+            '2023-12-31|2024-09-28': fact(9e6, 'Q3'),
+            # A year-to-date amount that falls: the year is used only up to there
+            '2022-01-01|2022-03-31': fact(4e6, 'Q1'),
+            '2022-01-01|2022-06-30': fact(3e6, 'Q2'),
+            '2022-01-01|2022-09-30': fact(9e6, 'Q3')
+        }), [
+            {'start': '2022-01-01', 'end': '2022-03-31', 'buybacks': 4e6, 'accn': 'Q1'},
+            {'start': '2024-10-01', 'end': '2024-12-31', 'buybacks': 5e6, 'accn': 'Q4X'},
+            {'start': '2025-01-01', 'end': '2025-03-31', 'buybacks': 10e6, 'accn': 'Q1'},
+            {'start': '2025-04-01', 'end': '2025-06-30', 'buybacks': 20e6, 'accn': 'Q2'},
+            {'start': '2025-07-01', 'end': '2025-09-30', 'buybacks': 0, 'accn': 'Q3'},
+            {'start': '2025-10-01', 'end': '2025-12-31', 'buybacks': 40e6, 'accn': 'FY'}
+        ])
+
+
+    def test_insider_summary_quarters(self):
+        quarters = [
+            {'start': '2020-10-01', 'end': '2020-12-31', 'buybacks': 1e6, 'accn': 'Q0'},
+            {'start': '2024-01-01', 'end': '2024-03-31', 'buybacks': 10e6, 'accn': 'Q1'},
+            {'start': '2024-04-01', 'end': '2024-06-30', 'buybacks': 0, 'accn': 'Q2'},
+            {'start': '2025-01-01', 'end': '2025-03-31', 'buybacks': 0, 'accn': 'Q5'},
+            {'start': '2025-10-01', 'end': '2026-01-03', 'buybacks': 7e6, 'accn': 'Q8'}
+        ]
+        transactions = TRANSACTIONS + [
+            transaction('sale', '2024-07-01', 100, 50, accn='A8', filed='2024-07-02'),
+            transaction('sale', '2021-02-01', 100, 50, accn='A9', filed='2021-02-02')
+        ]
+        summary = insider_summary(transactions, 2025, THRESHOLDS, quarters)
+
+        # The quarters wholly inside the five years, with the open-market sales in each; other sales are in no quarter
+        self.assertEqual(summary['quarters'], [
+            {'start': '2024-01-01', 'end': '2024-03-31', 'buybacks': 10e6, 'accn': 'Q1', 'sales': 102000},
+            {'start': '2024-04-01', 'end': '2024-06-30', 'buybacks': 0, 'accn': 'Q2', 'sales': 0},
+            {'start': '2025-01-01', 'end': '2025-03-31', 'buybacks': 0, 'accn': 'Q5', 'sales': 8200}
+        ])
+        self.assertEqual(summary['sales'], 120200)
+        self.assertEqual((summary['buybacks'], summary['buybackQuarters']), (10e6, 1))
+        self.assertEqual((summary['salesInQuarters'], summary['salesInBuybackQuarters']), (110200, 102000))
+        self.assertEqual(quarters[1], {'start': '2024-01-01', 'end': '2024-03-31', 'buybacks': 10e6, 'accn': 'Q1'})
 
 
     def test_insider_summary_unvalued(self):

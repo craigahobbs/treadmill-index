@@ -30,8 +30,9 @@ ARCHIVE_FILES = ('index.json', 'index.csv', 'meta.json')
 # The index.json row's scores
 SCORE_FIELDS = ('screenScore', 'p1', 'p1Years', 'p1Cum', 'p1Latest', 'p1Ex', 'p2b', 'p3', 'p3Years', 'p3Ratio')
 
-# The insider summary's dollar amounts
+# The insider summary's dollar amounts, and its amounts over the quarters that have the company's buybacks
 INSIDER_AMOUNTS = ('sales', 'purchases', 'withheld', 'toIssuer', 'grants', 'optionGrants')
+INSIDER_QUARTER_AMOUNTS = ('buybacks', 'salesInQuarters', 'salesInBuybackQuarters')
 
 
 def fact_json(fact):
@@ -282,6 +283,11 @@ def insider_json(insider):
     return {
         **amounts(insider, ('grantShares', 'giftShares', 'bothYears', 'ratioReason', 'unvaluedShares', 'oddPrices', 'insiders', 'sellers')),
         'salesToGrants': ratio(insider['salesToGrants'], 3),
+        'buybackQuarters': insider['buybackQuarters'],
+        **{amount: dollars(insider[amount]) for amount in INSIDER_QUARTER_AMOUNTS},
+        'quarters': [
+            {**quarter, 'buybacks': dollars(quarter['buybacks']), 'sales': dollars(quarter['sales'])} for quarter in insider['quarters']
+        ],
         'years': [amounts(year, ('year', 'grantShares', 'giftShares')) for year in insider['years']],
         'people': [
             {
@@ -385,14 +391,17 @@ def insider_totals(results):
 
     :param list(dict) results: The scored results
     :returns: The dict of the count of companies with insider filings, the count whose insiders sold more than they
-        were granted, and the total of each amount
+        were granted, the counts of quarters with the company's buybacks given and with a buyback, and the total of
+        each amount
     """
 
     insiders = [result['insider'] for result in results if result['insider'] is not None]
     return {
         'companies': len(insiders),
         'soldMore': sum(1 for insider in insiders if insider['salesToGrants'] is not None and insider['salesToGrants'] > 1),
-        **{amount: dollars(sum(insider[amount] for insider in insiders)) for amount in INSIDER_AMOUNTS}
+        'quarters': sum(len(insider['quarters']) for insider in insiders),
+        'buybackQuarters': sum(insider['buybackQuarters'] for insider in insiders),
+        **{amount: dollars(sum(insider[amount] for insider in insiders)) for amount in (*INSIDER_AMOUNTS, *INSIDER_QUARTER_AMOUNTS)}
     }
 
 

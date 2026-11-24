@@ -12,14 +12,19 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 import zipfile
 
-from tests.helpers import REVENUE, annual, company_bytes, insider_filing, insider_zip
+from tests.helpers import REVENUE, annual, company_bytes, insider_filing, insider_zip, unit
 from treadmill_index.main import main
 
 
 # The made-up companies - the company_bytes arguments, and the SEC company information
 COMPANIES = [
     (
-        {'cik': 1, 'name': 'Stock Pay Co'},
+        {'cik': 1, 'name': 'Stock Pay Co', 'tags': {'PaymentsForRepurchaseOfCommonStock': [
+            annual(2024, 40),
+            unit('2024-01-01', '2024-03-31', 10e6, accn='0000000001-24-000020', filed='2024-05-05', form='10-Q'),
+            unit('2024-01-01', '2024-06-30', 10e6, accn='0000000001-24-000021', filed='2024-08-05', form='10-Q'),
+            unit('2024-01-01', '2024-09-30', 40e6, accn='0000000001-24-000022', filed='2024-11-05', form='10-Q')
+        ]}},
         {'sic': '7372', 'sicDescription': 'Services-Prepackaged Software', 'tickers': ['SPAY'], 'exchanges': ['Nasdaq']}
     ),
     (

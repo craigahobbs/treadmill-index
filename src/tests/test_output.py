@@ -95,6 +95,11 @@ INSIDER_ROW = {
     'insiderBothYears': 1
 }
 
+NO_INSIDERS = {
+    'companies': 0, 'soldMore': 0, 'quarters': 0, 'buybackQuarters': 0, 'sales': 0, 'purchases': 0, 'withheld': 0, 'toIssuer': 0,
+    'grants': 0, 'optionGrants': 0, 'buybacks': 0, 'salesInQuarters': 0, 'salesInBuybackQuarters': 0
+}
+
 SUMMARY = [
     'From fiscal 2019 to 2025, Test Co reported $10.2 billion of revenue and $1.0 billion of free cash flow. Stock pay was '
     '$1.2 billion, which leaves -$203 million of owner cash: -2.0% of revenue.',
@@ -296,12 +301,26 @@ class TestOutput(unittest.TestCase):
         def amounts(**kwargs):
             return {'sales': 0, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 0, 'optionGrants': 0, **kwargs}
 
-        insider = insider_json(insider_summary(TRANSACTIONS, 2025, THRESHOLDS))
+        self.assertEqual(insider_json(insider_summary(TRANSACTIONS, 2025, THRESHOLDS))['quarters'], [])
+        quarters = [
+            {'start': '2024-01-01', 'end': '2024-03-31', 'buybacks': 10e6, 'accn': 'Q1'},
+            {'start': '2024-04-01', 'end': '2024-06-30', 'buybacks': 0.4, 'accn': 'Q2'}
+        ]
+        insider = insider_json(insider_summary(TRANSACTIONS, 2025, THRESHOLDS, quarters))
         self.assertEqual(sorted(insider), [
-            'bothYears', 'giftShares', 'grantShares', 'grants', 'insiders', 'oddPrices', 'optionGrants', 'people', 'purchases',
-            'ratioReason', 'sales', 'salesToGrants', 'sellers', 'toIssuer', 'unvaluedShares', 'withheld', 'years'
+            'bothYears', 'buybackQuarters', 'buybacks', 'giftShares', 'grantShares', 'grants', 'insiders', 'oddPrices', 'optionGrants',
+            'people', 'purchases', 'quarters', 'ratioReason', 'sales', 'salesInBuybackQuarters', 'salesInQuarters', 'salesToGrants',
+            'sellers', 'toIssuer', 'unvaluedShares', 'withheld', 'years'
         ])
-        self.assertEqual({key: value for key, value in insider.items() if key not in ('people', 'years')}, {
+        self.assertEqual(insider['quarters'], [
+            {'start': '2024-01-01', 'end': '2024-03-31', 'buybacks': 10000000, 'accn': 'Q1', 'sales': 102000},
+            {'start': '2024-04-01', 'end': '2024-06-30', 'buybacks': 0, 'accn': 'Q2', 'sales': 0}
+        ])
+        self.assertEqual({key: value for key, value in insider.items() if key not in ('people', 'years', 'quarters')}, {
+            'buybackQuarters': 2,
+            'buybacks': 10000000,
+            'salesInQuarters': 102000,
+            'salesInBuybackQuarters': 102000,
             'grantShares': 7000,
             'giftShares': 305,
             'bothYears': 1,
@@ -329,23 +348,30 @@ class TestOutput(unittest.TestCase):
 
 
     def test_insider_totals(self):
-        insider = insider_summary(TRANSACTIONS, 2025, THRESHOLDS)
+        quarters = [
+            {'start': '2024-01-01', 'end': '2024-03-31', 'buybacks': 10e6, 'accn': 'Q1'},
+            {'start': '2025-01-01', 'end': '2025-03-31', 'buybacks': 0, 'accn': 'Q5'}
+        ]
+        insider = insider_summary(TRANSACTIONS, 2025, THRESHOLDS, quarters)
         net_seller = {**insider, 'salesToGrants': 1.01}
         no_ratio = {**insider, 'salesToGrants': None}
         results = [{'insider': insider}, {'insider': None}, {'insider': net_seller}, {'insider': no_ratio}]
         self.assertEqual(insider_totals(results), {
             'companies': 3,
             'soldMore': 1,
+            'quarters': 6,
+            'buybackQuarters': 3,
             'sales': 330600,
             'purchases': 12000,
             'withheld': 16500,
             'toIssuer': 1620,
             'grants': 330000,
-            'optionGrants': 900000
+            'optionGrants': 900000,
+            'buybacks': 30000000,
+            'salesInQuarters': 330600,
+            'salesInBuybackQuarters': 306000
         })
-        self.assertEqual(insider_totals([]), {
-            'companies': 0, 'soldMore': 0, 'sales': 0, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 0, 'optionGrants': 0
-        })
+        self.assertEqual(insider_totals([]), NO_INSIDERS)
 
 
     def test_company_json(self):
@@ -551,16 +577,14 @@ class TestOutput(unittest.TestCase):
             'firstYear': 2021,
             'lastYear': 2025,
             'screened': {
-                'companies': 2, 'soldMore': 1, 'sales': 220400, 'purchases': 8000, 'withheld': 11000, 'toIssuer': 1080,
+                **NO_INSIDERS, 'companies': 2, 'soldMore': 1, 'sales': 220400, 'purchases': 8000, 'withheld': 11000, 'toIssuer': 1080,
                 'grants': 220000, 'optionGrants': 600000
             },
             'notCapitalLed': {
-                'companies': 1, 'soldMore': 0, 'sales': 110200, 'purchases': 4000, 'withheld': 5500, 'toIssuer': 540,
-                'grants': 110000, 'optionGrants': 300000
+                **NO_INSIDERS, 'companies': 1, 'sales': 110200, 'purchases': 4000, 'withheld': 5500, 'toIssuer': 540, 'grants': 110000,
+                'optionGrants': 300000
             },
-            'cashGenerative': {
-                'companies': 0, 'soldMore': 0, 'sales': 0, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 0, 'optionGrants': 0
-            }
+            'cashGenerative': NO_INSIDERS
         })
 
 

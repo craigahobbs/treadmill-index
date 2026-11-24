@@ -10,7 +10,7 @@ import zipfile
 
 
 # The extract cache version - bump when the extracted record changes
-EXTRACT_VERSION = 1
+EXTRACT_VERSION = 2
 
 # Companies that never reported this much annual revenue are dropped at extraction. This is a speed filter that
 # sits below the definition's $1B revenue test (and below that test moved down by a fifth).
@@ -160,7 +160,16 @@ def extract_company(raw):
                 filed_max = max(filed_max, max(fact[F_FILED] for fact in tag_recent.values()))
         recent[concept] = concept_recent
 
-    return {'cik': int(doc['cik']), 'name': doc.get('entityName'), 'annual': annual, 'recent': recent, 'filed_max': filed_max}
+    # The buybacks of every period length, to split into quarters
+    buybacks = {}
+    for tag in CONCEPTS['bb']:
+        for key, fact in period_facts(gaap.get(tag, {}).get('units', {}).get('USD', []), 60, 380).items():
+            buybacks.setdefault(key, fact)
+
+    return {
+        'cik': int(doc['cik']), 'name': doc.get('entityName'), 'annual': annual, 'recent': recent, 'buybacks': buybacks,
+        'filed_max': filed_max
+    }
 
 
 def extract_members(zip_path, names):
