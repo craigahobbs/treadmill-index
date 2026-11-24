@@ -87,7 +87,7 @@ class TestMain(unittest.TestCase):
                 'files': []
             })
             self.assertIsNone(meta['insider'])
-            self.assertEqual(len(meta['sensitivity']), 24)
+            self.assertEqual(len(meta['sensitivity']), 32)
             self.assertEqual([row['flags'] for row in index['companies']], [[], [], []])
 
 
@@ -127,7 +127,7 @@ class TestMain(unittest.TestCase):
             )
             self.assertEqual(
                 [(row['rank'], row['threeRank'], row['screenScore'], row['threeScore'], row['buybacksFive']) for row in index['companies']],
-                [(1, 1, 37.27, 43.9, 0), (None, None, 0.0, None, 0), (None, None, None, None, 0)]
+                [(1, 1, 37.27, 41.31, 0), (None, None, 0.0, None, 0), (None, None, None, None, 0)]
             )
             with open(os.path.join(out_dir, 'meta.json'), 'r', encoding='utf-8') as meta_file:
                 meta = json.load(meta_file)

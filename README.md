@@ -17,9 +17,9 @@ published figure links to the SEC filing it came from.
 
 | Part | Where | State |
 | --- | --- | --- |
-| Build step: extract, screen, score, write data files | `src/treadmill_index/` | Stage 1, the screen score (P1 and P2b), and a provisional P3 from insider filings |
+| Build step: extract, screen, score, write data files | `src/treadmill_index/` | Stage 1, the screen score (P1 and P2b), insider grants and sales (P3), and a provisional three-signs score |
 | Data files | `data/` | `index.json`, `index.csv`, `meta.json`, `company/<CIK>.json`, `archive/` |
-| Web application | `index.html`, `treadmillIndex.md`, `treadmillIndex.bare` | Index, company pages, group totals, threshold explorer, methodology, data and limits, downloads |
+| Web application | `index.html`, `treadmillIndex.md`, `treadmillIndex.bare` | Index ranked on the three signs, company pages with insider filings, group totals, threshold explorer, methodology and glossary, data and limits, downloads |
 | Full score (P2a, P3, P4) for the top 25 | | Not built. P2a and P4 need hand-checked data. |
 
 

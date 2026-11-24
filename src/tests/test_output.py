@@ -47,6 +47,10 @@ ROW = {
     'costMethod': 1,
     'costFirst': 0.55,
     'costLast': 0.55,
+    'costLevel': 0.91667,
+    'costs': 21.53,
+    'costsChange': 12.5,
+    'costsLevel': 9.03,
     'years': 7,
     'firstYear': '2019',
     'lastYear': '2025',
@@ -92,7 +96,7 @@ ROW = {
 }
 
 INSIDER_ROW = {
-    'threeScore': 39.06,
+    'threeScore': 36.47,
     'salesToStockGrants': 1.002,
     'p3': 2.4,
     'p3Years': 2.4,
@@ -279,6 +283,10 @@ class TestOutput(unittest.TestCase):
             'costMethod': None,
             'costFirst': None,
             'costLast': None,
+            'costLevel': None,
+            'costs': None,
+            'costsChange': None,
+            'costsLevel': None,
             'shareGrowth': 0.05,
             'shareGrowthFive': 0.05,
             'flags': ['no_cost_line', 'one_off_years']
@@ -298,6 +306,9 @@ class TestOutput(unittest.TestCase):
             'p1Cum': None,
             'p1Latest': None,
             'p2b': None,
+            'costs': None,
+            'costsChange': None,
+            'costsLevel': None,
             'p3': None,
             'p3Years': None,
             'p3Ratio': None,
@@ -454,6 +465,7 @@ class TestOutput(unittest.TestCase):
             ],
             'lastYear': '2025',
             'lastCost': 1100e6,
+            'lastGross': 1200e6,
             'lastRatio': 0.55,
             'lastFacts': [
                 {'v': 1200e6, 'accn': '0000000001-26-000010', 'filed': '2026-02-15', 'form': '10-K', 'tag': 'GrossProfit'},
@@ -613,7 +625,7 @@ class TestOutput(unittest.TestCase):
         self.assertEqual(meta['totals']['notCapitalLed']['companies'], 2)
         self.assertEqual(meta['totals']['notCapitalLed']['cumCapex'], 406e6)
         self.assertEqual(meta['latest'], {'cleared': 0, 'negative': 3, 'fiscalYearBasis': 1})
-        self.assertEqual(meta['cost'], {'full': 2, 'zero': 0, 'missing': 1, 'missingAll': 1})
+        self.assertEqual(meta['cost'], {'full': 2, 'zero': 0, 'missing': 1, 'allGross': 0, 'missingAll': 1})
         self.assertIs(meta['sensitivity'], report)
 
         # A cash-generative latest year, and costs that fell more than ten points
@@ -623,7 +635,7 @@ class TestOutput(unittest.TestCase):
         results, funnel = run_screen(records, {}, DATA_DATE)
         meta = build_meta(results, funnel, 1, SOURCES, [])
         self.assertEqual(meta['latest'], {'cleared': 1, 'negative': 0, 'fiscalYearBasis': 1})
-        self.assertEqual(meta['cost'], {'full': 0, 'zero': 1, 'missing': 0, 'missingAll': 0})
+        self.assertEqual(meta['cost'], {'full': 0, 'zero': 1, 'missing': 0, 'allGross': 0, 'missingAll': 0})
         self.assertEqual(meta['persistence'], {'fivePlus': 0, 'latestAbove': 1})
 
         # Insiders: the first company is capital-led
@@ -688,7 +700,7 @@ class TestOutput(unittest.TestCase):
                 lines[2],
                 '2,,Test Co,TEST,1,stock_pay,,7372,Services-Prepackaged Software,37.27,,18.63,10.0,3.73,4.9,13,,7,2019,2025,2025-12-31,'
                 '2000000000.0,2.0,7,-0.02,,-0.02,-0.02,ttm,2026-09-30,10150000000.0,1015000000.0,1218000000.0,203000000.0,'
-                '-203000000.0,0.1,0.12,0,0,0,0.167,False,,0.0,1,0.55,0.55,,,,,,,,,,,7,-161000000,0,0,,'
+                '-203000000.0,0.1,0.12,0,0,0,0.167,False,,0.0,1,0.55,0.55,0.91667,21.53,12.5,9.03,,,,,,,,,,,7,-161000000,0,0,,'
             )
             self.assertTrue(lines[3].endswith(',no_cost_line latest_is_fiscal_year'))
             self.assertTrue(lines[5].startswith(',,Bank Co,TEST,5,excluded,bank,6021,Services-Prepackaged Software,,,,,,,,,7,2019,'))

@@ -38,6 +38,10 @@ THRESHOLDS = {
     'p2b_window_years': 5,
     'p2b_zero_drop': 10.0,
 
+    # The costs sign of the three-signs score (25 points): half P2b, half how much of gross profit operating costs take
+    'cost_level_zero': 0.7,
+    'cost_level_full': 1.0,
+
     # P3 (25 points) - not part of the screen score
     'p3_years': 5,                  # the latest calendar years
     'p3_years_points': 12,
@@ -51,7 +55,8 @@ THRESHOLDS = {
 # The thresholds the sensitivity test moves by a fifth
 SENSITIVITY_KEYS = (
     'revenue_min', 'years_min', 'growth_min', 'meaningful_margin', 'sbc_revenue_min', 'sbc_fcf_min',
-    'p1_cum_zero', 'p1_cum_full', 'p1_latest_zero', 'p1_latest_full', 'p2b_window_years', 'p2b_zero_drop'
+    'p1_cum_zero', 'p1_cum_full', 'p1_latest_zero', 'p1_latest_full', 'p2b_window_years', 'p2b_zero_drop',
+    'cost_level_zero', 'cost_level_full', 'p3_ratio_zero', 'p3_ratio_full'
 )
 INTEGER_THRESHOLDS = ('years_min', 'p2b_window_years')
 
@@ -302,6 +307,15 @@ def cost_change(record, series, thresholds, options):
         if first_value is not None and last_value is not None and first_value > 0 and last_value > 0:
             first_ratio = first_value / first['rev'][F_VAL]
             last_ratio = last_value / last['rev'][F_VAL]
+
+            # Gross profit in the last year, to see how much of it operating costs take
+            annual = record['annual']
+            cost_of_revenue = annual['cor'].get(last['end']) or annual['cogs'].get(last['end'])
+            gross = None
+            if method == 1:
+                gross = annual['gp'][last['end']][F_VAL]
+            elif cost_of_revenue is not None:
+                gross = last['rev'][F_VAL] - cost_of_revenue[F_VAL]
             return {
                 'method': method,
                 'firstYear': first['fy'],
@@ -312,9 +326,32 @@ def cost_change(record, series, thresholds, options):
                 'lastCost': last_value,
                 'lastRatio': last_ratio,
                 'lastFacts': last_facts,
+                'lastGross': gross,
                 'change': (last_ratio - first_ratio) * 100
             }
     return None
+
+
+def costs_sign(cost, p2b, thresholds):
+    """
+    Score the costs sign of the three-signs score, "revenue held up by costs" (25 points): half is P2b, whether
+    operating costs fell against revenue; half is their level, how much of gross profit they take
+
+    :param dict cost: The cost change dict, or None
+    :param float p2b: The P2b points, or None
+    :param dict thresholds: The thresholds
+    :returns: The dict of "level" (operating costs / gross profit), "changePoints", "levelPoints" and "points", or
+        None if the cost line or the gross profit cannot be built
+    """
+
+    if cost is None or cost['lastGross'] is None:
+        return None
+    gross = cost['lastGross']
+    level = cost['lastCost'] / gross if gross > 0 else None
+    change_points = 12.5 * p2b / thresholds['p2b_points']
+    # With no gross profit at all, operating costs take more than all of it
+    level_points = 12.5 if level is None else lin(level, thresholds['cost_level_zero'], thresholds['cost_level_full'], 12.5)
+    return {'level': level, 'changePoints': change_points, 'levelPoints': level_points, 'points': change_points + level_points}
 
 
 def one_off_years(record, series, thresholds):
@@ -559,12 +596,13 @@ def evaluate(record, sic, data_date, thresholds=None, options=None, insider=None
         p2b = lin(-cost['change'], thresholds['p2b_zero_drop'], 0, thresholds['p2b_points'])
         screen_score = p1['p1'] + (p1['p1'] / 25) * (p2b * 25 / thresholds['p2b_points'])
 
-    # The three-pillar score: the screen score with P3, in the form of the definition's full score. It is the
-    # goal of the index in one number - no cash for owners, costs that keep pace, and insiders granting and selling.
+    # The three-signs score, in the form of the definition's full score. It is the goal of the index in one number:
+    # no cash for owners (P1), revenue held up by costs (the costs sign), and insiders granting and selling (P3).
     p3 = pillar_three(insider, thresholds)
+    costs = costs_sign(cost, p2b, thresholds)
     three_score = None
-    if screen_score is not None and p3 is not None and p3['p3'] is not None:
-        three_score = screen_score + (p1['p1'] / 25) * p3['p3']
+    if costs is not None and p3 is not None and p3['p3'] is not None:
+        three_score = p1['p1'] + (p1['p1'] / 25) * (costs['points'] + p3['p3'])
 
     # The company type
     excluded = sic_exclusion(sic)
@@ -632,6 +670,7 @@ def evaluate(record, sic, data_date, thresholds=None, options=None, insider=None
         'screenScore': screen_score,
         'insider': insider,
         'p3': p3,
+        'costs': costs,
         'threeScore': three_score,
         'threeRank': None,
         'lowRun': low_run(series, thresholds),
@@ -730,7 +769,7 @@ def loose_thresholds():
     return thresholds
 
 
-def sensitivity(records, sics, data_date, base_results):
+def sensitivity(records, sics, data_date, base_results, insiders=None):
     """
     Move each threshold by a fifth, up and down, and report how the top ten ranks change
 
@@ -738,11 +777,13 @@ def sensitivity(records, sics, data_date, base_results):
     :param dict sics: The dict of CIK to SIC code
     :param str data_date: The date of the latest filing in the data
     :param list(dict) base_results: The scored results at the definition's thresholds
-    :returns: The list of {threshold, factor, value, changes}. "changes" is empty when the top ten is unchanged.
+    :param dict insiders: The dict of CIK to insider summary, or None if there is no insider data
+    :returns: The list of {threshold, factor, value, changes, changesThree}: the changes in the top ten by screen
+        rank and by three-signs rank. Each is empty when its top ten is unchanged.
     """
 
-    def top_ten(results):
-        return {result['cik']: result['rank'] for result in results if result['rank'] is not None and result['rank'] <= 10}
+    def top_ten(results, rank='rank'):
+        return {result['cik']: result[rank] for result in results if result[rank] is not None and result[rank] <= 10}
 
     def rank_changes(base, moved, names):
         return [
@@ -753,13 +794,19 @@ def sensitivity(records, sics, data_date, base_results):
 
     names = {result['cik']: result['name'] for result in base_results}
     base = top_ten(base_results)
+    base_three = top_ten(base_results, 'threeRank')
     report = []
     for key in SENSITIVITY_KEYS:
         for factor in (0.8, 1.2):
             thresholds = dict(THRESHOLDS)
             thresholds[key] = round(THRESHOLDS[key] * factor, None if key in INTEGER_THRESHOLDS else 6)
-            results, _ = run_screen(records, sics, data_date, thresholds)
+            results, _ = run_screen(records, sics, data_date, thresholds, insiders=insiders)
             names.update((result['cik'], result['name']) for result in results)
-            changes = rank_changes(base, top_ten(results), names)
-            report.append({'threshold': key, 'factor': factor, 'value': thresholds[key], 'changes': changes})
+            report.append({
+                'threshold': key,
+                'factor': factor,
+                'value': thresholds[key],
+                'changes': rank_changes(base, top_ten(results), names),
+                'changesThree': rank_changes(base_three, top_ten(results, 'threeRank'), names)
+            })
     return report

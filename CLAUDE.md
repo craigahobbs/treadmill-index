@@ -52,10 +52,12 @@ Local Makefile:
 
 ## The three-signs score (added 2026-11-24, on the owner's "proceed as you see fit")
 
-- Three-signs score (75) = P1 + (P1 / 25) x (P2b scaled to 25 + P3): the screen score with P3 added in the definition's own form. It is the index page's default order; the screen score and its rank stay beside it. It is provisional because P3 is.
+- Three-signs score (75) = P1 + (P1 / 25) x (costs + P3), in the definition's own form. It is the index page's default order; the definition's screen score and its rank stay beside it, unchanged. It is provisional.
+- The costs sign (25) is half P2b (scaled to 12.5) and half a level: operating costs excluding cost of revenue as a share of gross profit in the latest year, 0 points at 70% and 12.5 at 100% (score.py `costs_sign`). The level was added because the owner's goal says "propped up by high costs" and P2b only measures change. Basis for the scale: the median is 93% at screened companies and 67% at cash-generative ones. The owner said "finish what's left" after being told this was a scoring change; he has not reviewed the scale.
+- The sensitivity test covers both ranks. With insider data the index and data pages report the three-signs top ten.
 - Each company page has a "Which way the numbers point" table: what each sign looks like for a growth bet paying off and for a treadmill, with the company's own figures. It states facts and leaves the reading to the reader.
 - Group figures on the index page (2021-2025, screened companies without the capital-led): owner cash of -$5.8B against insider sales of $32.8B; insiders sold more than the business produced for owners at 47 of 59 (cash-generative: 18 of 566); of 44 that bought back shares, the share count still rose at 36 (cash-generative: 115 of 475).
-- Known gap against the goal: P2b measures whether costs fell against revenue, not how high they are. Snowflake and Cloudflare score 0 on P2b while spending heavily on sales. Sales and marketing, R&D and G&A shares of revenue are reported on company pages (not scored) where tagged: 44, 51 and 49 of the 70 screened companies. A level measure would need the owner's agreement.
+- Sales and marketing, R&D and G&A shares of revenue are reported on company pages (not scored) where tagged: 44, 51 and 49 of the 70 screened companies.
 
 ## Pillar 3 as built (provisional; not agreed with the owner)
 

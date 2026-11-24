@@ -96,7 +96,7 @@ def build(args):
         'submissions': {'url': 'https://data.sec.gov/submissions/', 'companies': len(infos)},
         'insider': {'url': INSIDER_PAGE_URL, 'files': insider_files}
     }
-    meta = build_meta(results, funnel, in_file, sources, sensitivity(records, sics, data_date, results), insider_years)
+    meta = build_meta(results, funnel, in_file, sources, sensitivity(records, sics, data_date, results, insiders), insider_years)
     problems = write_output(args.out, results, infos, meta)
     if problems:
         for problem in problems:

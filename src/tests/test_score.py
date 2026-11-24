@@ -2,9 +2,10 @@
 
 import unittest
 
-from treadmill_index.score import DEFAULT_OPTIONS, PROTOTYPE_OPTIONS, SENSITIVITY_KEYS, THRESHOLDS, company_series, cost_change, \
-    cost_line, evaluate, find_period, five_years, group_totals, latest_twelve_months, lin, loose_thresholds, low_run, one_off_years, \
-    pillar_one, pillar_three, run_screen, sensitivity, share_change, sic_exclusion, spending_change, year_label
+from treadmill_index.score import DEFAULT_OPTIONS, PROTOTYPE_OPTIONS, SENSITIVITY_KEYS, THRESHOLDS, company_series, \
+    cost_change, cost_line, costs_sign, evaluate, find_period, five_years, group_totals, latest_twelve_months, lin, \
+    loose_thresholds, low_run, one_off_years, pillar_one, pillar_three, run_screen, sensitivity, share_change, sic_exclusion, \
+    spending_change, year_label
 
 from .helpers import DATA_DATE, REVENUE, annual, company_record, nine_months, unit
 
@@ -222,6 +223,7 @@ class TestScore(unittest.TestCase):
         self.assertEqual(cost['method'], 1)
         self.assertEqual((cost['firstYear'], cost['firstCost'], cost['firstRatio']), ('2021', 687.5e6, 0.55))
         self.assertEqual((cost['lastYear'], cost['lastCost'], cost['lastRatio']), ('2025', 1000e6, 0.5))
+        self.assertEqual(cost['lastGross'], 1200e6)
         self.assertAlmostEqual(cost['change'], -5)
         self.assertEqual([fact[5] for fact in cost['firstFacts']], ['GrossProfit', 'OperatingIncomeLoss'])
         self.assertEqual([fact[1] for fact in cost['lastFacts']], ['0000000001-26-000010', '0000000001-26-000010'])
@@ -236,6 +238,7 @@ class TestScore(unittest.TestCase):
         cost = cost_change(record, series, THRESHOLDS, DEFAULT_OPTIONS)
         self.assertEqual(cost['method'], 2)
         self.assertAlmostEqual(cost['change'], 0)
+        self.assertAlmostEqual(cost['lastGross'], 1300e6)
 
         # The third method
         record = company_record(tags={'GrossProfit': None, 'CostOfRevenue': annuals([value * 0.35 for value in REVENUE])})
@@ -246,7 +249,8 @@ class TestScore(unittest.TestCase):
         # The OperatingExpenses tag is used only with the prototype's options
         record = company_record(tags={'GrossProfit': None, 'OperatingExpenses': annuals([value * 0.5 for value in REVENUE])})
         self.assertIsNone(cost_change(record, series, THRESHOLDS, DEFAULT_OPTIONS))
-        self.assertEqual(cost_change(record, series, THRESHOLDS, PROTOTYPE_OPTIONS)['method'], 0)
+        cost = cost_change(record, series, THRESHOLDS, PROTOTYPE_OPTIONS)
+        self.assertEqual((cost['method'], cost['lastGross']), (0, None))
 
         # A cost line that is not positive is not used
         record = company_record(gross=0.04)
@@ -256,6 +260,30 @@ class TestScore(unittest.TestCase):
         record = company_record()
         self.assertIsNone(cost_change(record, series[-4:], THRESHOLDS, DEFAULT_OPTIONS))
         self.assertEqual(cost_change(record, series[-5:], THRESHOLDS, DEFAULT_OPTIONS)['firstYear'], '2021')
+
+
+    def test_costs_sign(self):
+        def cost(last_cost, last_gross):
+            return {'lastCost': last_cost, 'lastGross': last_gross}
+
+        # No cost line, or no gross profit figure
+        self.assertIsNone(costs_sign(None, None, THRESHOLDS))
+        self.assertIsNone(costs_sign(cost(500, None), 13, THRESHOLDS))
+
+        # Half is P2b; half is the share of gross profit operating costs take: 0 at 70%, 12.5 at 100%
+        def sign(level, change_points, level_points):
+            return {'level': level, 'changePoints': change_points, 'levelPoints': level_points, 'points': change_points + level_points}
+
+        self.assertEqual(costs_sign(cost(700, 1000), 13, THRESHOLDS), sign(0.7, 12.5, 0))
+        self.assertEqual(costs_sign(cost(400, 1000), 0, THRESHOLDS), sign(0.4, 0, 0))
+        costs = costs_sign(cost(850, 1000), 6.5, THRESHOLDS)
+        self.assertAlmostEqual(costs['levelPoints'], 6.25)
+        self.assertAlmostEqual(costs['points'], 12.5)
+        self.assertEqual(costs_sign(cost(1460, 1000), 0, THRESHOLDS), sign(1.46, 0, 12.5))
+
+        # With no gross profit at all, operating costs take more than all of it
+        self.assertEqual(costs_sign(cost(500, -20), 13, THRESHOLDS), sign(None, 12.5, 12.5))
+        self.assertEqual(costs_sign(cost(500, 0), 0, THRESHOLDS)['levelPoints'], 12.5)
 
 
     def test_one_off_years(self):
@@ -427,6 +455,9 @@ class TestScore(unittest.TestCase):
         self.assertAlmostEqual(result.pop('capexToSbc'), 1 / 6)
         self.assertAlmostEqual(result.pop('fyMargin'), -0.02)
         self.assertAlmostEqual(result.pop('latestMargin'), -0.02)
+        costs = result.pop('costs')
+        self.assertAlmostEqual(costs['level'], 1100 / 1200)
+        self.assertAlmostEqual(costs['points'], 12.5 + 12.5 * (1100 / 1200 - 0.7) / 0.3)
         five = result.pop('five')
         self.assertAlmostEqual(five.pop('ownerCash'), -161e6)
         self.assertEqual(five, {'years': 5, 'buybacks': 0, 'withholding': 0, 'shareGrowth': None})
@@ -664,8 +695,11 @@ class TestScore(unittest.TestCase):
         self.assertIs(results[1]['insider'], insider)
         self.assertEqual(results[1]['p3'], {'yearsPoints': 12, 'ratioPoints': 6.5, 'p3': 18.5})
 
-        # The three-pillar score is the screen score plus P3 to the extent of P1, and has its own rank
-        self.assertAlmostEqual(results[1]['threeScore'], results[1]['screenScore'] + (results[1]['p1']['p1'] / 25) * 18.5)
+        # The three-signs score is P1, plus the costs sign and P3 to the extent of P1, and has its own rank
+        self.assertAlmostEqual(
+            results[1]['threeScore'],
+            results[1]['p1']['p1'] + (results[1]['p1']['p1'] / 25) * (results[1]['costs']['points'] + 18.5)
+        )
         self.assertEqual([(result['rank'], result['threeRank'], result['threeScore'] is None) for result in results],
                          [(1, None, True), (2, 1, False)])
         results, funnel = run_screen(records[:3], {}, DATA_DATE, insiders={
@@ -734,3 +768,16 @@ class TestScore(unittest.TestCase):
         self.assertEqual(by_key[('meaningful_margin', 0.8)]['changes'], [
             {'cik': 4, 'name': 'Marginal Co', 'from': 3, 'to': None}
         ])
+        self.assertEqual([entry['changesThree'] for entry in report], [[]] * len(report))
+
+        # With insider data, the three-signs ranks are tested too: the costs level reorders the first two
+        insider = {'bothYears': 5, 'salesToGrants': 1.0, 'grantShares': 1000, 'sales': 500}
+        insiders = {1: insider, 2: insider, 4: insider}
+        results, _ = run_screen(records, {}, DATA_DATE, insiders=insiders)
+        self.assertEqual([(result['threeRank'], result['cik']) for result in results], [(1, 1), (2, 2), (3, 4)])
+        report = sensitivity(records, {}, DATA_DATE, results, insiders)
+        by_key = {(entry['threshold'], entry['factor']): entry for entry in report}
+        self.assertEqual(by_key[('meaningful_margin', 0.8)]['changesThree'], [
+            {'cik': 4, 'name': 'Marginal Co', 'from': 3, 'to': None}
+        ])
+        self.assertEqual(by_key[('p3_ratio_zero', 1.2)]['changesThree'], [])

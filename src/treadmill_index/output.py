@@ -18,7 +18,8 @@ CSV_FIELDS = (
     'p1Years', 'p1Cum', 'p1Latest', 'p2b', 'p1Ex', 'years', 'firstYear', 'lastYear', 'lastEnd', 'revenue', 'growth', 'lowYears',
     'cumMargin', 'cumMarginEx', 'fyMargin', 'latestMargin', 'latestBasis', 'latestEnd', 'cumRevenue', 'cumFcf', 'cumSbc', 'cumCapex',
     'cumOwnerCash', 'cumFcfMargin', 'sbcRevenue', 'buybacks', 'dividends', 'withholding', 'capexToSbc', 'capitalLed',
-    'shareGrowth', 'costChange', 'costMethod', 'costFirst', 'costLast', 'p3', 'p3Years', 'p3Ratio', 'insiderSales',
+    'shareGrowth', 'costChange', 'costMethod', 'costFirst', 'costLast', 'costLevel', 'costs', 'costsChange', 'costsLevel', 'p3',
+    'p3Years', 'p3Ratio', 'insiderSales',
     'insiderGrants', 'insiderOptionGrants', 'insiderPurchases', 'salesToGrants', 'salesToStockGrants', 'insiderBothYears',
     'lowRun', 'ownerCashFive', 'buybacksFive', 'withholdingFive', 'shareGrowthFive', 'flags'
 )
@@ -29,7 +30,10 @@ ARCHIVE_FILES = ('index.json', 'index.csv', 'meta.json')
 
 
 # The index.json row's scores
-SCORE_FIELDS = ('screenScore', 'threeScore', 'p1', 'p1Years', 'p1Cum', 'p1Latest', 'p1Ex', 'p2b', 'p3', 'p3Years', 'p3Ratio')
+SCORE_FIELDS = (
+    'screenScore', 'threeScore', 'p1', 'p1Years', 'p1Cum', 'p1Latest', 'p1Ex', 'p2b', 'costs', 'costsChange', 'costsLevel', 'p3',
+    'p3Years', 'p3Ratio'
+)
 
 # The insider summary's dollar amounts, and its amounts over the quarters that have the company's buybacks
 INSIDER_AMOUNTS = ('sales', 'purchases', 'withheld', 'toIssuer', 'grants', 'optionGrants')
@@ -199,6 +203,7 @@ def index_row(result, info):
     p1 = result['p1']
     p1_ex = result['p1Ex'] or {}
     p3 = result['p3'] or {}
+    costs = result['costs'] or {}
     insider = result['insider'] or {}
     cost = result['cost'] or {}
     tickers = info.get('tickers') or [None]
@@ -227,6 +232,10 @@ def index_row(result, info):
         'costMethod': cost.get('method'),
         'costFirst': ratio(cost.get('firstRatio')),
         'costLast': ratio(cost.get('lastRatio')),
+        'costLevel': ratio(costs.get('level')),
+        'costs': ratio(costs.get('points'), 2),
+        'costsChange': ratio(costs.get('changePoints'), 2),
+        'costsLevel': ratio(costs.get('levelPoints'), 2),
         'years': result['years'],
         'firstYear': result['firstYear'],
         'lastYear': result['lastYear'],
@@ -534,6 +543,7 @@ def build_meta(results, funnel, companies_in_file, sources, sensitivity_report, 
             'full': sum(1 for result in screened if result['p2b'] is not None and result['p2b'] >= THRESHOLDS['p2b_points']),
             'zero': sum(1 for result in screened if result['p2b'] == 0),
             'missing': sum(1 for result in screened if result['p2b'] is None),
+            'allGross': sum(1 for result in screened if result['costs'] is not None and result['costs']['levelPoints'] >= 12.5),
             'missingAll': sum(1 for result in results if result['p2b'] is None)
         },
         'sensitivity': sensitivity_report

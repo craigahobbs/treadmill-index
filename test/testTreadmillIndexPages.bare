@@ -57,8 +57,8 @@ async function testMain_index():
                 '', \
                 '1. **Owner cash that stays near zero (P1).** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow;', \
                 '   leaving out the capital-led companies, $5.3B against $4.1B. At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
-                '2. **Revenue held up by costs (P2b).** Hiring in sales, marketing and development can absorb whatever growth brings in. 3 of the 4 ranked companies kept', \
-                '   operating costs flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
+                '2. **Revenue held up by costs.** Hiring in sales, marketing and development can absorb whatever growth brings in. At 0 of the 4 ranked companies,', \
+                '   operating costs took all of gross profit or more in the latest year; 3 kept them flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
                 '   shares just granted: of the 1 that bought back shares over five years and whose share count can', \
                 '   be followed, the count still rose at 1, after $40.0M spent on buybacks and employees\' vesting taxes.', \
                 [ \
@@ -124,13 +124,13 @@ async function testMain_index():
             [ \
                 '', \
                 [ \
-                    '| Rank | Company | Ticker | Three signs (75) | Screen score (50) and rank | P1 (25) | P2b (13) | P3 (25) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes |', \
+                    '| Rank | Company | Ticker | Three signs (75) | Owner cash, P1 (25) | Costs (25) | Insiders, P3 (25) | Screen score (50) and rank | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes |', \
                     '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
-                    '| 1 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | 39.1 | 37.3 (2) | 18.6 | 13.0 | 2.4 | -2.0% | -2.0% | 12.0% | $110K | 0.3x | 2019‑2025 |  |', \
-                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 42.2 (1) | 21.1 | 13.0 | n/a | -4.0% | -4.0% | 13.0% | $4K | n/a | 2019‑2025 | O F S |', \
-                    '|  | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\'&_top) |  | n/a | 32.6 (3) | 18.6 | 9.8 | n/a | -2.0% | -2.0% | 12.0% | n/a | n/a | 2019‑2025 | C I |', \
-                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 25.9 (4) | 13.0 | 13.0 | n/a | 2.6% | 2.6% | 7.4% | n/a | n/a | 2019‑2025 | I |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | n/a | 24.0 | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X I |' \
+                    '| 1 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | 36.5 | 18.6 | 21.5 | 2.4 | 37.3 (2) | -2.0% | -2.0% | 12.0% | $110K | 0.3x | 2019‑2025 |  |', \
+                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 21.1 | 21.5 | n/a | 42.2 (1) | -4.0% | -4.0% | 13.0% | $4K | n/a | 2019‑2025 | O F S |', \
+                    '|  | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\'&_top) |  | n/a | 18.6 | 16.7 | n/a | 32.6 (3) | -2.0% | -2.0% | 12.0% | n/a | n/a | 2019‑2025 | C I |', \
+                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 13.0 | 21.5 | n/a | 25.9 (4) | 2.6% | 2.6% | 7.4% | n/a | n/a | 2019‑2025 | I |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | 24.0 | n/a | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X I |' \
                 ] \
             ] \
         ], \
@@ -141,17 +141,18 @@ async function testMain_index():
                 '**Rank** is by the three-signs score, among the companies that pass the screen and have all three pillars. Unranked', \
                 'companies are listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
                 '', \
-                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (P2b scaled to 25 + P3): costs and insider selling count', \
-                'only to the extent owners are getting no cash. It is provisional, because P3 is: insider grants are valued at the full', \
-                'price of the shares they cover, which understates how much of their grants insiders sold.', \
+                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (costs + P3): costs and insider selling count only to', \
+                'the extent owners are getting no cash. The costs sign is half whether operating costs fell against revenue (P2b) and', \
+                'half how much of gross profit they take. The score is provisional: the costs level is new, and insider grants are valued', \
+                'at the full price of the shares they cover, which understates how much of their grants insiders sold.', \
                 '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
                 'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
-                '**The screen score is out of 50**, and is the three-signs score without insiders: P1 + (P1 / 25) x (P2b scaled to 25).', \
+                '**The screen score is out of 50**, and is the agreed definition\'s whole-market score: P1 + (P1 / 25) x (P2b scaled to 25).', \
                 'Its rank is in brackets. The full score of the definition, out of 100, also needs headcount and earnings-release framing', \
                 'for the top 25; those need hand-checked data and are not measured. The three scores must not be compared with each other.', \
                 '', \
-                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 0 of 32 tests.', \
                 'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\'&_top) lists every change.', \
                 '', \
                 '**Notes**', \
@@ -278,8 +279,8 @@ async function testMain_indexScreenRank():
                 '', \
                 '1. **Owner cash that stays near zero (P1).** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow;', \
                 '   leaving out the capital-led companies, $5.3B against $4.1B. At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
-                '2. **Revenue held up by costs (P2b).** Hiring in sales, marketing and development can absorb whatever growth brings in. 3 of the 4 ranked companies kept', \
-                '   operating costs flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
+                '2. **Revenue held up by costs.** Hiring in sales, marketing and development can absorb whatever growth brings in. At 0 of the 4 ranked companies,', \
+                '   operating costs took all of gross profit or more in the latest year; 3 kept them flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
                 '   shares just granted: of the 1 that bought back shares over five years and whose share count can', \
                 '   be followed, the count still rose at 1, after $40.0M spent on buybacks and employees\' vesting taxes.', \
                 [ \
@@ -345,13 +346,13 @@ async function testMain_indexScreenRank():
             [ \
                 '', \
                 [ \
-                    '| Rank | Company | Ticker | Three signs (75) | Screen score (50) and rank | P1 (25) | P2b (13) | P3 (25) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes |', \
+                    '| Rank | Company | Ticker | Three signs (75) | Owner cash, P1 (25) | Costs (25) | Insiders, P3 (25) | Screen score (50) and rank | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes |', \
                     '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
-                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 42.2 (1) | 21.1 | 13.0 | n/a | -4.0% | -4.0% | 13.0% | $4K | n/a | 2019‑2025 | O F S |', \
-                    '| 1 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | 39.1 | 37.3 (2) | 18.6 | 13.0 | 2.4 | -2.0% | -2.0% | 12.0% | $110K | 0.3x | 2019‑2025 |  |', \
-                    '|  | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\'&_top) |  | n/a | 32.6 (3) | 18.6 | 9.8 | n/a | -2.0% | -2.0% | 12.0% | n/a | n/a | 2019‑2025 | C I |', \
-                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 25.9 (4) | 13.0 | 13.0 | n/a | 2.6% | 2.6% | 7.4% | n/a | n/a | 2019‑2025 | I |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | n/a | 24.0 | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X I |' \
+                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 21.1 | 21.5 | n/a | 42.2 (1) | -4.0% | -4.0% | 13.0% | $4K | n/a | 2019‑2025 | O F S |', \
+                    '| 1 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | 36.5 | 18.6 | 21.5 | 2.4 | 37.3 (2) | -2.0% | -2.0% | 12.0% | $110K | 0.3x | 2019‑2025 |  |', \
+                    '|  | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\'&_top) |  | n/a | 18.6 | 16.7 | n/a | 32.6 (3) | -2.0% | -2.0% | 12.0% | n/a | n/a | 2019‑2025 | C I |', \
+                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 13.0 | 21.5 | n/a | 25.9 (4) | 2.6% | 2.6% | 7.4% | n/a | n/a | 2019‑2025 | I |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | 24.0 | n/a | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X I |' \
                 ] \
             ] \
         ], \
@@ -362,17 +363,18 @@ async function testMain_indexScreenRank():
                 '**Rank** is by the three-signs score, among the companies that pass the screen and have all three pillars. Unranked', \
                 'companies are listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
                 '', \
-                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (P2b scaled to 25 + P3): costs and insider selling count', \
-                'only to the extent owners are getting no cash. It is provisional, because P3 is: insider grants are valued at the full', \
-                'price of the shares they cover, which understates how much of their grants insiders sold.', \
+                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (costs + P3): costs and insider selling count only to', \
+                'the extent owners are getting no cash. The costs sign is half whether operating costs fell against revenue (P2b) and', \
+                'half how much of gross profit they take. The score is provisional: the costs level is new, and insider grants are valued', \
+                'at the full price of the shares they cover, which understates how much of their grants insiders sold.', \
                 '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
                 'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
-                '**The screen score is out of 50**, and is the three-signs score without insiders: P1 + (P1 / 25) x (P2b scaled to 25).', \
+                '**The screen score is out of 50**, and is the agreed definition\'s whole-market score: P1 + (P1 / 25) x (P2b scaled to 25).', \
                 'Its rank is in brackets. The full score of the definition, out of 100, also needs headcount and earnings-release framing', \
                 'for the top 25; those need hand-checked data and are not measured. The three scores must not be compared with each other.', \
                 '', \
-                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 0 of 32 tests.', \
                 'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\'&_top) lists every change.', \
                 '', \
                 '**Notes**', \
@@ -503,8 +505,8 @@ async function testMain_indexAll():
                 '', \
                 '1. **Owner cash that stays near zero (P1).** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow;', \
                 '   leaving out the capital-led companies, $5.3B against $4.1B. At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
-                '2. **Revenue held up by costs (P2b).** Hiring in sales, marketing and development can absorb whatever growth brings in. 3 of the 4 ranked companies kept', \
-                '   operating costs flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
+                '2. **Revenue held up by costs.** Hiring in sales, marketing and development can absorb whatever growth brings in. At 0 of the 4 ranked companies,', \
+                '   operating costs took all of gross profit or more in the latest year; 3 kept them flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
                 '   shares just granted: of the 1 that bought back shares over five years and whose share count can', \
                 '   be followed, the count still rose at 1, after $40.0M spent on buybacks and employees\' vesting taxes.', \
                 [ \
@@ -570,11 +572,11 @@ async function testMain_indexAll():
             [ \
                 '', \
                 [ \
-                    '| Rank | Company | Ticker | Three signs (75) | Screen score (50) and rank | P1 (25) | P2b (13) | P3 (25) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes | Type |', \
+                    '| Rank | Company | Ticker | Three signs (75) | Owner cash, P1 (25) | Costs (25) | Insiders, P3 (25) | Screen score (50) and rank | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes | Type |', \
                     '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
-                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\'&_top) | BURN | n/a | 50.0 | 25.0 | 13.0 | n/a | -13.0% | -13.0% | 12.0% | n/a | n/a | 2019‑2025 | I | Cash burner |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | n/a | 24.0 | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X I | Stock pay |', \
-                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 42.2 (1) | 21.1 | 13.0 | n/a | -4.0% | -4.0% | 13.0% | $4K | n/a | 2019‑2025 | O F S | Stock pay |' \
+                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\'&_top) | BURN | n/a | 25.0 | 21.5 | n/a | 50.0 | -13.0% | -13.0% | 12.0% | n/a | n/a | 2019‑2025 | I | Cash burner |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | 24.0 | n/a | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X I | Stock pay |', \
+                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 21.1 | 21.5 | n/a | 42.2 (1) | -4.0% | -4.0% | 13.0% | $4K | n/a | 2019‑2025 | O F S | Stock pay |' \
                 ] \
             ] \
         ], \
@@ -589,17 +591,18 @@ async function testMain_indexAll():
                 '**Rank** is by the three-signs score, among the companies that pass the screen and have all three pillars. Unranked', \
                 'companies are listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
                 '', \
-                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (P2b scaled to 25 + P3): costs and insider selling count', \
-                'only to the extent owners are getting no cash. It is provisional, because P3 is: insider grants are valued at the full', \
-                'price of the shares they cover, which understates how much of their grants insiders sold.', \
+                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (costs + P3): costs and insider selling count only to', \
+                'the extent owners are getting no cash. The costs sign is half whether operating costs fell against revenue (P2b) and', \
+                'half how much of gross profit they take. The score is provisional: the costs level is new, and insider grants are valued', \
+                'at the full price of the shares they cover, which understates how much of their grants insiders sold.', \
                 '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
                 'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
-                '**The screen score is out of 50**, and is the three-signs score without insiders: P1 + (P1 / 25) x (P2b scaled to 25).', \
+                '**The screen score is out of 50**, and is the agreed definition\'s whole-market score: P1 + (P1 / 25) x (P2b scaled to 25).', \
                 'Its rank is in brackets. The full score of the definition, out of 100, also needs headcount and earnings-release framing', \
                 'for the top 25; those need hand-checked data and are not measured. The three scores must not be compared with each other.', \
                 '', \
-                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 0 of 32 tests.', \
                 'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\'&_top) lists every change.', \
                 '', \
                 '**Notes**', \
@@ -732,8 +735,8 @@ async function testMain_indexShowAll():
                 '', \
                 '1. **Owner cash that stays near zero (P1).** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow;', \
                 '   leaving out the capital-led companies, $5.3B against $4.1B. At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
-                '2. **Revenue held up by costs (P2b).** Hiring in sales, marketing and development can absorb whatever growth brings in. 3 of the 4 ranked companies kept', \
-                '   operating costs flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
+                '2. **Revenue held up by costs.** Hiring in sales, marketing and development can absorb whatever growth brings in. At 0 of the 4 ranked companies,', \
+                '   operating costs took all of gross profit or more in the latest year; 3 kept them flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
                 '   shares just granted: of the 1 that bought back shares over five years and whose share count can', \
                 '   be followed, the count still rose at 1, after $40.0M spent on buybacks and employees\' vesting taxes.', \
                 [ \
@@ -799,17 +802,17 @@ async function testMain_indexShowAll():
             [ \
                 '', \
                 [ \
-                    '| Rank | Company | Ticker | Three signs (75) | Screen score (50) and rank | P1 (25) | P2b (13) | P3 (25) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes | Type |', \
+                    '| Rank | Company | Ticker | Three signs (75) | Owner cash, P1 (25) | Costs (25) | Insiders, P3 (25) | Screen score (50) and rank | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes | Type |', \
                     '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
                     '|  | [Bank Co](#var.vCik=5&var.vPage=\'company\'&_top) | BANK | n/a | n/a | n/a | n/a | n/a | -10.0% | -10.0% | 20.0% | $1.2M | n/a | 2019‑2025 |  | Excluded industry |', \
-                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\'&_top) | BURN | n/a | 50.0 | 25.0 | 13.0 | n/a | -13.0% | -13.0% | 12.0% | n/a | n/a | 2019‑2025 | I | Cash burner |', \
-                    '|  | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\'&_top) |  | n/a | 32.6 (3) | 18.6 | 9.8 | n/a | -2.0% | -2.0% | 12.0% | n/a | n/a | 2019‑2025 | C I | Stock pay |', \
-                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\'&_top) | CASH | 0.0 | 0.0 | 0.0 | 0.0 | 13.0 | 8.0% | 8.0% | 2.0% | $1.5B | n/a | 2019‑2025 |  | Cash generative |', \
-                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 25.9 (4) | 13.0 | 13.0 | n/a | 2.6% | 2.6% | 7.4% | n/a | n/a | 2019‑2025 | I | Stock pay |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | n/a | 24.0 | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X I | Stock pay |', \
-                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 42.2 (1) | 21.1 | 13.0 | n/a | -4.0% | -4.0% | 13.0% | $4K | n/a | 2019‑2025 | O F S | Stock pay |', \
-                    '| 1 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | 39.1 | 37.3 (2) | 18.6 | 13.0 | 2.4 | -2.0% | -2.0% | 12.0% | $110K | 0.3x | 2019‑2025 |  | Stock pay |', \
-                    '|  | [Thin Co](#var.vCik=7&var.vPage=\'company\'&_top) | THIN | n/a | 30.9 | 15.4 | 13.0 | n/a | 0.6% | 0.6% | 1.9% | n/a | n/a | 2019‑2025 | I | Thin margin |' \
+                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\'&_top) | BURN | n/a | 25.0 | 21.5 | n/a | 50.0 | -13.0% | -13.0% | 12.0% | n/a | n/a | 2019‑2025 | I | Cash burner |', \
+                    '|  | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\'&_top) |  | n/a | 18.6 | 16.7 | n/a | 32.6 (3) | -2.0% | -2.0% | 12.0% | n/a | n/a | 2019‑2025 | C I | Stock pay |', \
+                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\'&_top) | CASH | 0.0 | 0.0 | 0.0 | 13.0 | 0.0 | 8.0% | 8.0% | 2.0% | $1.5B | n/a | 2019‑2025 |  | Cash generative |', \
+                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 13.0 | 21.5 | n/a | 25.9 (4) | 2.6% | 2.6% | 7.4% | n/a | n/a | 2019‑2025 | I | Stock pay |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | 24.0 | n/a | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X I | Stock pay |', \
+                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 21.1 | 21.5 | n/a | 42.2 (1) | -4.0% | -4.0% | 13.0% | $4K | n/a | 2019‑2025 | O F S | Stock pay |', \
+                    '| 1 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | 36.5 | 18.6 | 21.5 | 2.4 | 37.3 (2) | -2.0% | -2.0% | 12.0% | $110K | 0.3x | 2019‑2025 |  | Stock pay |', \
+                    '|  | [Thin Co](#var.vCik=7&var.vPage=\'company\'&_top) | THIN | n/a | 15.4 | 21.5 | n/a | 30.9 | 0.6% | 0.6% | 1.9% | n/a | n/a | 2019‑2025 | I | Thin margin |' \
                 ] \
             ] \
         ], \
@@ -820,17 +823,18 @@ async function testMain_indexShowAll():
                 '**Rank** is by the three-signs score, among the companies that pass the screen and have all three pillars. Unranked', \
                 'companies are listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
                 '', \
-                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (P2b scaled to 25 + P3): costs and insider selling count', \
-                'only to the extent owners are getting no cash. It is provisional, because P3 is: insider grants are valued at the full', \
-                'price of the shares they cover, which understates how much of their grants insiders sold.', \
+                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (costs + P3): costs and insider selling count only to', \
+                'the extent owners are getting no cash. The costs sign is half whether operating costs fell against revenue (P2b) and', \
+                'half how much of gross profit they take. The score is provisional: the costs level is new, and insider grants are valued', \
+                'at the full price of the shares they cover, which understates how much of their grants insiders sold.', \
                 '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
                 'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
-                '**The screen score is out of 50**, and is the three-signs score without insiders: P1 + (P1 / 25) x (P2b scaled to 25).', \
+                '**The screen score is out of 50**, and is the agreed definition\'s whole-market score: P1 + (P1 / 25) x (P2b scaled to 25).', \
                 'Its rank is in brackets. The full score of the definition, out of 100, also needs headcount and earnings-release framing', \
                 'for the top 25; those need hand-checked data and are not measured. The three scores must not be compared with each other.', \
                 '', \
-                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 0 of 32 tests.', \
                 'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\'&_top) lists every change.', \
                 '', \
                 '**Notes**', \
@@ -963,8 +967,8 @@ async function testMain_indexFind():
                 '', \
                 '1. **Owner cash that stays near zero (P1).** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow;', \
                 '   leaving out the capital-led companies, $5.3B against $4.1B. At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
-                '2. **Revenue held up by costs (P2b).** Hiring in sales, marketing and development can absorb whatever growth brings in. 3 of the 4 ranked companies kept', \
-                '   operating costs flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
+                '2. **Revenue held up by costs.** Hiring in sales, marketing and development can absorb whatever growth brings in. At 0 of the 4 ranked companies,', \
+                '   operating costs took all of gross profit or more in the latest year; 3 kept them flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
                 '   shares just granted: of the 1 that bought back shares over five years and whose share count can', \
                 '   be followed, the count still rose at 1, after $40.0M spent on buybacks and employees\' vesting taxes.', \
                 [ \
@@ -1037,12 +1041,12 @@ async function testMain_indexFind():
             [ \
                 '', \
                 [ \
-                    '| Rank | Company | Ticker | Three signs (75) | Screen score (50) and rank | P1 (25) | P2b (13) | P3 (25) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes | Type |', \
+                    '| Rank | Company | Ticker | Three signs (75) | Owner cash, P1 (25) | Costs (25) | Insiders, P3 (25) | Screen score (50) and rank | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes | Type |', \
                     '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | n/a | 24.0 | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X I | Stock pay |', \
-                    '| 1 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | 39.1 | 37.3 (2) | 18.6 | 13.0 | 2.4 | -2.0% | -2.0% | 12.0% | $110K | 0.3x | 2019‑2025 |  | Stock pay |', \
-                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 25.9 (4) | 13.0 | 13.0 | n/a | 2.6% | 2.6% | 7.4% | n/a | n/a | 2019‑2025 | I | Stock pay |', \
-                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\'&_top) | CASH | 0.0 | 0.0 | 0.0 | 0.0 | 13.0 | 8.0% | 8.0% | 2.0% | $1.5B | n/a | 2019‑2025 |  | Cash generative |' \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | 24.0 | n/a | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X I | Stock pay |', \
+                    '| 1 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | 36.5 | 18.6 | 21.5 | 2.4 | 37.3 (2) | -2.0% | -2.0% | 12.0% | $110K | 0.3x | 2019‑2025 |  | Stock pay |', \
+                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 13.0 | 21.5 | n/a | 25.9 (4) | 2.6% | 2.6% | 7.4% | n/a | n/a | 2019‑2025 | I | Stock pay |', \
+                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\'&_top) | CASH | 0.0 | 0.0 | 0.0 | 13.0 | 0.0 | 8.0% | 8.0% | 2.0% | $1.5B | n/a | 2019‑2025 |  | Cash generative |' \
                 ] \
             ] \
         ], \
@@ -1053,17 +1057,18 @@ async function testMain_indexFind():
                 '**Rank** is by the three-signs score, among the companies that pass the screen and have all three pillars. Unranked', \
                 'companies are listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
                 '', \
-                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (P2b scaled to 25 + P3): costs and insider selling count', \
-                'only to the extent owners are getting no cash. It is provisional, because P3 is: insider grants are valued at the full', \
-                'price of the shares they cover, which understates how much of their grants insiders sold.', \
+                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (costs + P3): costs and insider selling count only to', \
+                'the extent owners are getting no cash. The costs sign is half whether operating costs fell against revenue (P2b) and', \
+                'half how much of gross profit they take. The score is provisional: the costs level is new, and insider grants are valued', \
+                'at the full price of the shares they cover, which understates how much of their grants insiders sold.', \
                 '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
                 'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
-                '**The screen score is out of 50**, and is the three-signs score without insiders: P1 + (P1 / 25) x (P2b scaled to 25).', \
+                '**The screen score is out of 50**, and is the agreed definition\'s whole-market score: P1 + (P1 / 25) x (P2b scaled to 25).', \
                 'Its rank is in brackets. The full score of the definition, out of 100, also needs headcount and earnings-release framing', \
                 'for the top 25; those need hand-checked data and are not measured. The three scores must not be compared with each other.', \
                 '', \
-                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 0 of 32 tests.', \
                 'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\'&_top) lists every change.', \
                 '', \
                 '**Notes**', \
@@ -1190,8 +1195,8 @@ async function testMain_indexFindTicker():
                 '', \
                 '1. **Owner cash that stays near zero (P1).** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow;', \
                 '   leaving out the capital-led companies, $5.3B against $4.1B. At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
-                '2. **Revenue held up by costs (P2b).** Hiring in sales, marketing and development can absorb whatever growth brings in. 3 of the 4 ranked companies kept', \
-                '   operating costs flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
+                '2. **Revenue held up by costs.** Hiring in sales, marketing and development can absorb whatever growth brings in. At 0 of the 4 ranked companies,', \
+                '   operating costs took all of gross profit or more in the latest year; 3 kept them flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
                 '   shares just granted: of the 1 that bought back shares over five years and whose share count can', \
                 '   be followed, the count still rose at 1, after $40.0M spent on buybacks and employees\' vesting taxes.', \
                 [ \
@@ -1260,9 +1265,9 @@ async function testMain_indexFindTicker():
             [ \
                 '', \
                 [ \
-                    '| Rank | Company | Ticker | Three signs (75) | Screen score (50) and rank | P1 (25) | P2b (13) | P3 (25) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes |', \
+                    '| Rank | Company | Ticker | Three signs (75) | Owner cash, P1 (25) | Costs (25) | Insiders, P3 (25) | Screen score (50) and rank | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes |', \
                     '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
-                    '| 1 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | 39.1 | 37.3 (2) | 18.6 | 13.0 | 2.4 | -2.0% | -2.0% | 12.0% | $110K | 0.3x | 2019‑2025 |  |' \
+                    '| 1 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | 36.5 | 18.6 | 21.5 | 2.4 | 37.3 (2) | -2.0% | -2.0% | 12.0% | $110K | 0.3x | 2019‑2025 |  |' \
                 ] \
             ] \
         ], \
@@ -1273,17 +1278,18 @@ async function testMain_indexFindTicker():
                 '**Rank** is by the three-signs score, among the companies that pass the screen and have all three pillars. Unranked', \
                 'companies are listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
                 '', \
-                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (P2b scaled to 25 + P3): costs and insider selling count', \
-                'only to the extent owners are getting no cash. It is provisional, because P3 is: insider grants are valued at the full', \
-                'price of the shares they cover, which understates how much of their grants insiders sold.', \
+                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (costs + P3): costs and insider selling count only to', \
+                'the extent owners are getting no cash. The costs sign is half whether operating costs fell against revenue (P2b) and', \
+                'half how much of gross profit they take. The score is provisional: the costs level is new, and insider grants are valued', \
+                'at the full price of the shares they cover, which understates how much of their grants insiders sold.', \
                 '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
                 'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
-                '**The screen score is out of 50**, and is the three-signs score without insiders: P1 + (P1 / 25) x (P2b scaled to 25).', \
+                '**The screen score is out of 50**, and is the agreed definition\'s whole-market score: P1 + (P1 / 25) x (P2b scaled to 25).', \
                 'Its rank is in brackets. The full score of the definition, out of 100, also needs headcount and earnings-release framing', \
                 'for the top 25; those need hand-checked data and are not measured. The three scores must not be compared with each other.', \
                 '', \
-                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 0 of 32 tests.', \
                 'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\'&_top) lists every change.', \
                 '', \
                 '**Notes**', \
@@ -1412,8 +1418,8 @@ async function testMain_indexNoMatch():
                 '', \
                 '1. **Owner cash that stays near zero (P1).** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow;', \
                 '   leaving out the capital-led companies, $5.3B against $4.1B. At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
-                '2. **Revenue held up by costs (P2b).** Hiring in sales, marketing and development can absorb whatever growth brings in. 3 of the 4 ranked companies kept', \
-                '   operating costs flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
+                '2. **Revenue held up by costs.** Hiring in sales, marketing and development can absorb whatever growth brings in. At 0 of the 4 ranked companies,', \
+                '   operating costs took all of gross profit or more in the latest year; 3 kept them flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
                 '   shares just granted: of the 1 that bought back shares over five years and whose share count can', \
                 '   be followed, the count still rose at 1, after $40.0M spent on buybacks and employees\' vesting taxes.', \
                 [ \
@@ -1492,17 +1498,18 @@ async function testMain_indexNoMatch():
                 '**Rank** is by the three-signs score, among the companies that pass the screen and have all three pillars. Unranked', \
                 'companies are listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
                 '', \
-                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (P2b scaled to 25 + P3): costs and insider selling count', \
-                'only to the extent owners are getting no cash. It is provisional, because P3 is: insider grants are valued at the full', \
-                'price of the shares they cover, which understates how much of their grants insiders sold.', \
+                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (costs + P3): costs and insider selling count only to', \
+                'the extent owners are getting no cash. The costs sign is half whether operating costs fell against revenue (P2b) and', \
+                'half how much of gross profit they take. The score is provisional: the costs level is new, and insider grants are valued', \
+                'at the full price of the shares they cover, which understates how much of their grants insiders sold.', \
                 '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
                 'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
-                '**The screen score is out of 50**, and is the three-signs score without insiders: P1 + (P1 / 25) x (P2b scaled to 25).', \
+                '**The screen score is out of 50**, and is the agreed definition\'s whole-market score: P1 + (P1 / 25) x (P2b scaled to 25).', \
                 'Its rank is in brackets. The full score of the definition, out of 100, also needs headcount and earnings-release framing', \
                 'for the top 25; those need hand-checked data and are not measured. The three scores must not be compared with each other.', \
                 '', \
-                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 0 of 32 tests.', \
                 'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\'&_top) lists every change.', \
                 '', \
                 '**Notes**', \
@@ -1631,8 +1638,8 @@ async function testMain_indexUnknownArgs():
                 '', \
                 '1. **Owner cash that stays near zero (P1).** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow;', \
                 '   leaving out the capital-led companies, $5.3B against $4.1B. At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
-                '2. **Revenue held up by costs (P2b).** Hiring in sales, marketing and development can absorb whatever growth brings in. 3 of the 4 ranked companies kept', \
-                '   operating costs flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
+                '2. **Revenue held up by costs.** Hiring in sales, marketing and development can absorb whatever growth brings in. At 0 of the 4 ranked companies,', \
+                '   operating costs took all of gross profit or more in the latest year; 3 kept them flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
                 '   shares just granted: of the 1 that bought back shares over five years and whose share count can', \
                 '   be followed, the count still rose at 1, after $40.0M spent on buybacks and employees\' vesting taxes.', \
                 [ \
@@ -1704,17 +1711,18 @@ async function testMain_indexUnknownArgs():
                 '**Rank** is by the three-signs score, among the companies that pass the screen and have all three pillars. Unranked', \
                 'companies are listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
                 '', \
-                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (P2b scaled to 25 + P3): costs and insider selling count', \
-                'only to the extent owners are getting no cash. It is provisional, because P3 is: insider grants are valued at the full', \
-                'price of the shares they cover, which understates how much of their grants insiders sold.', \
+                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (costs + P3): costs and insider selling count only to', \
+                'the extent owners are getting no cash. The costs sign is half whether operating costs fell against revenue (P2b) and', \
+                'half how much of gross profit they take. The score is provisional: the costs level is new, and insider grants are valued', \
+                'at the full price of the shares they cover, which understates how much of their grants insiders sold.', \
                 '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
                 'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
-                '**The screen score is out of 50**, and is the three-signs score without insiders: P1 + (P1 / 25) x (P2b scaled to 25).', \
+                '**The screen score is out of 50**, and is the agreed definition\'s whole-market score: P1 + (P1 / 25) x (P2b scaled to 25).', \
                 'Its rank is in brackets. The full score of the definition, out of 100, also needs headcount and earnings-release framing', \
                 'for the top 25; those need hand-checked data and are not measured. The three scores must not be compared with each other.', \
                 '', \
-                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 0 of 32 tests.', \
                 'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\'&_top) lists every change.', \
                 '', \
                 '**Notes**', \
@@ -1839,8 +1847,8 @@ async function testMain_indexFailed():
                 '', \
                 '1. **Owner cash that stays near zero (P1).** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow;', \
                 '   leaving out the capital-led companies, $5.3B against $4.1B. At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
-                '2. **Revenue held up by costs (P2b).** Hiring in sales, marketing and development can absorb whatever growth brings in. 3 of the 4 ranked companies kept', \
-                '   operating costs flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
+                '2. **Revenue held up by costs.** Hiring in sales, marketing and development can absorb whatever growth brings in. At 0 of the 4 ranked companies,', \
+                '   operating costs took all of gross profit or more in the latest year; 3 kept them flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
                 '   shares just granted: of the 1 that bought back shares over five years and whose share count can', \
                 '   be followed, the count still rose at 1, after $40.0M spent on buybacks and employees\' vesting taxes.', \
                 [ \
@@ -1912,17 +1920,18 @@ async function testMain_indexFailed():
                 '**Rank** is by the three-signs score, among the companies that pass the screen and have all three pillars. Unranked', \
                 'companies are listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
                 '', \
-                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (P2b scaled to 25 + P3): costs and insider selling count', \
-                'only to the extent owners are getting no cash. It is provisional, because P3 is: insider grants are valued at the full', \
-                'price of the shares they cover, which understates how much of their grants insiders sold.', \
+                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (costs + P3): costs and insider selling count only to', \
+                'the extent owners are getting no cash. The costs sign is half whether operating costs fell against revenue (P2b) and', \
+                'half how much of gross profit they take. The score is provisional: the costs level is new, and insider grants are valued', \
+                'at the full price of the shares they cover, which understates how much of their grants insiders sold.', \
                 '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
                 'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
-                '**The screen score is out of 50**, and is the three-signs score without insiders: P1 + (P1 / 25) x (P2b scaled to 25).', \
+                '**The screen score is out of 50**, and is the agreed definition\'s whole-market score: P1 + (P1 / 25) x (P2b scaled to 25).', \
                 'Its rank is in brackets. The full score of the definition, out of 100, also needs headcount and earnings-release framing', \
                 'for the top 25; those need hand-checked data and are not measured. The three scores must not be compared with each other.', \
                 '', \
-                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 0 of 32 tests.', \
                 'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\'&_top) lists every change.', \
                 '', \
                 '**Notes**', \
@@ -2079,7 +2088,7 @@ async function testMain_company():
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
                     '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -2.0% in the latest 12 months. |', \
-                    '| Operating costs against revenue, over five years | Fall | Keep pace or rise | 55.0% of revenue in 2021, 55.0% in 2025; sales and marketing 32.0% to 28.0% |', \
+                    '| Operating costs against revenue, over five years | Fall, and leave part of gross profit | Keep pace or rise, and take all of gross profit | 55.0% of revenue in 2021, 55.0% in 2025, when they took 91.7% of gross profit; sales and marketing 32.0% to 28.0% |', \
                     '| Insiders, 2021‑2025 | Keep what they are granted | Sell it | Sold $110K; granted stock worth $110K and options over shares worth $300K: between 0.3x and 1.0x what they were granted |', \
                     '| Owner cash against insider sales, 2021‑2025 | Owners get more than insiders take out | Insiders take out more | Owner cash -$161.0M; insider sales $110K |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | Rose 2.0% a year, after $40.0M of buybacks and employees\' vesting taxes |' \
@@ -2098,9 +2107,25 @@ async function testMain_company():
             'markdownPrint', \
             [ \
                 '', \
-                '## Screen score: 37.3 of 50 (rank 2 of 4)', \
+                '## Three-signs score: 36.5 of 75 (rank 1 of 1)', \
                 '', \
-                '**P1. No meaningful cash for owners: 18.6 of 25**', \
+                [ \
+                    '| Sign | Points |', \
+                    '| :-- | --: |', \
+                    '| Owner cash that stays near zero (P1) | 18.6 of 25 |', \
+                    '| Revenue held up by costs | 21.5 of 25 |', \
+                    '| Insiders who are granted shares and sell them (P3) | 2.4 of 25 |' \
+                ], \
+                '', \
+                'P1 + (P1 / 25) x (costs + P3) = 18.6 + (18.6 / 25) x (21.5 + 2.4) = 36.5. Costs and insider selling count only to the extent owners are getting no cash.', \
+                'The score is provisional: the costs level and P3 are new measures. Insider grants and sales are set out further down.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '### Owner cash that stays near zero (P1): 18.6 of 25', \
                 '', \
                 [ \
                     '| Part | Input | Points |', \
@@ -2113,24 +2138,27 @@ async function testMain_company():
         ], \
         [ \
             'markdownPrint', \
-            ['', '**P2b. Operating costs as a share of revenue: 13.0 of 13**', ''] \
+            ['', '### Revenue held up by costs: 21.5 of 25', ''] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 55.0% in 2025: a change of 0.0 points.', \
-                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
                 'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $100M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
                 '', \
-                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 18.6 + (18.6 / 25) x 25.0 = 37.3' \
+                '- **Change (P2b): 13.0 of 13**, which counts as 12.5 of 12.5 here. Flat or rising costs score in full; a fall of 10 points of revenue scores 0.', \
+                '- **Level: 9.0 of 12.5.** In 2025 these costs took 91.7% of gross profit. 70.0% scores 0; 100.0% or more scores in full.' \
             ] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 '', \
-                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
-                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+                '### Screen score: 37.3 of 50 (rank 2 of 4)', \
+                '', \
+                'The agreed definition\'s whole-market score, which leaves insiders out: P1 + (P1 / 25) x (P2b x 25 / 13) = 18.6 + (18.6 / 25) x 25.0 = 37.3.', \
+                'The definition\'s full score, out of 100, also needs gross profit per employee (P2a) and the framing of earnings', \
+                'releases (P4). Those need hand-checked data and are not measured for any company.' \
             ] \
         ], \
         [ \
@@ -2158,13 +2186,6 @@ async function testMain_company():
                 ], \
                 '', \
                 'P3 is a first, provisional measure. Sales of 0.5 times grants score 0; 1.5 times scores 13. Counting options as worth nothing, the multiple would be 1.0x; the truth lies between.' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '**Three-signs score** = screen score + (P1 / 25) x P3 = 37.3 + (18.6 / 25) x 2.4 = 39.1 of 75 (rank 1 of 1)' \
             ] \
         ], \
         [ \
@@ -2328,7 +2349,7 @@ async function testMain_companyOneOff():
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
                     '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -4.0% in the latest fiscal year. |', \
-                    '| Operating costs against revenue, over five years | Fall | Keep pace or rise | 55.0% of revenue in 2021, 55.0% in 2025 |', \
+                    '| Operating costs against revenue, over five years | Fall, and leave part of gross profit | Keep pace or rise, and take all of gross profit | 55.0% of revenue in 2021, 55.0% in 2025, when they took 91.7% of gross profit |', \
                     '| Insiders, 2021‑2025 | Keep what they are granted | Sell it | Sold $4K; granted stock worth $0: too many granted shares have no reported share price near the grant date |', \
                     '| Owner cash against insider sales, 2021‑2025 | Owners get more than insiders take out | Insiders take out more | Owner cash -$322.0M; insider sales $4K |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | n/a: the share count cannot be followed; no buybacks |' \
@@ -2349,9 +2370,25 @@ async function testMain_companyOneOff():
             'markdownPrint', \
             [ \
                 '', \
-                '## Screen score: 42.2 of 50 (rank 1 of 4)', \
+                '## Three-signs score: not scored', \
                 '', \
-                '**P1. No meaningful cash for owners: 21.1 of 25**', \
+                [ \
+                    '| Sign | Points |', \
+                    '| :-- | --: |', \
+                    '| Owner cash that stays near zero (P1) | 21.1 of 25 |', \
+                    '| Revenue held up by costs | 21.5 of 25 |', \
+                    '| Insiders who are granted shares and sell them (P3) | cannot be built |' \
+                ], \
+                '', \
+                'The score needs all three signs.', \
+                'The score is provisional: the costs level and P3 are new measures. Insider grants and sales are set out further down.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '### Owner cash that stays near zero (P1): 21.1 of 25', \
                 '', \
                 [ \
                     '| Part | Input | Points |', \
@@ -2378,24 +2415,27 @@ async function testMain_companyOneOff():
         ], \
         [ \
             'markdownPrint', \
-            ['', '**P2b. Operating costs as a share of revenue: 13.0 of 13**', ''] \
+            ['', '### Revenue held up by costs: 21.5 of 25', ''] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 55.0% in 2025: a change of 0.0 points.', \
-                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
                 'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $100M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
                 '', \
-                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 21.1 + (21.1 / 25) x 25.0 = 42.2' \
+                '- **Change (P2b): 13.0 of 13**, which counts as 12.5 of 12.5 here. Flat or rising costs score in full; a fall of 10 points of revenue scores 0.', \
+                '- **Level: 9.0 of 12.5.** In 2025 these costs took 91.7% of gross profit. 70.0% scores 0; 100.0% or more scores in full.' \
             ] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 '', \
-                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
-                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+                '### Screen score: 42.2 of 50 (rank 1 of 4)', \
+                '', \
+                'The agreed definition\'s whole-market score, which leaves insiders out: P1 + (P1 / 25) x (P2b x 25 / 13) = 21.1 + (21.1 / 25) x 25.0 = 42.2.', \
+                'The definition\'s full score, out of 100, also needs gross profit per employee (P2a) and the framing of earnings', \
+                'releases (P4). Those need hand-checked data and are not measured for any company.' \
             ] \
         ], \
         [ \
@@ -2597,7 +2637,7 @@ async function testMain_companyCapitalLed():
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
                     '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -2.0% in the latest 12 months. |', \
-                    '| Operating costs against revenue, over five years | Fall | Keep pace or rise | 55.0% of revenue in 2021, 52.5% in 2025 |', \
+                    '| Operating costs against revenue, over five years | Fall, and leave part of gross profit | Keep pace or rise, and take all of gross profit | 55.0% of revenue in 2021, 52.5% in 2025, when they took 87.5% of gross profit |', \
                     '| Insiders, 2021‑2025 | Keep what they are granted | Sell it | n/a: no insider transactions in the SEC data sets |', \
                     '| Owner cash against insider sales, 2021‑2025 | Owners get more than insiders take out | Insiders take out more | n/a |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | n/a: the share count cannot be followed; no buybacks |' \
@@ -2620,9 +2660,25 @@ async function testMain_companyCapitalLed():
             'markdownPrint', \
             [ \
                 '', \
-                '## Screen score: 32.6 of 50 (rank 3 of 4)', \
+                '## Three-signs score: not scored', \
                 '', \
-                '**P1. No meaningful cash for owners: 18.6 of 25**', \
+                [ \
+                    '| Sign | Points |', \
+                    '| :-- | --: |', \
+                    '| Owner cash that stays near zero (P1) | 18.6 of 25 |', \
+                    '| Revenue held up by costs | 16.7 of 25 |', \
+                    '| Insiders who are granted shares and sell them (P3) | cannot be built |' \
+                ], \
+                '', \
+                'The score needs all three signs.', \
+                'The score is provisional: the costs level and P3 are new measures. Insider grants and sales are set out further down.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '### Owner cash that stays near zero (P1): 18.6 of 25', \
                 '', \
                 [ \
                     '| Part | Input | Points |', \
@@ -2635,24 +2691,27 @@ async function testMain_companyCapitalLed():
         ], \
         [ \
             'markdownPrint', \
-            ['', '**P2b. Operating costs as a share of revenue: 9.8 of 13**', ''] \
+            ['', '### Revenue held up by costs: 16.7 of 25', ''] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 52.5% in 2025: a change of -2.5 points.', \
-                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
                 'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $150M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
                 '', \
-                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 18.6 + (18.6 / 25) x 18.8 = 32.6' \
+                '- **Change (P2b): 9.8 of 13**, which counts as 9.4 of 12.5 here. Flat or rising costs score in full; a fall of 10 points of revenue scores 0.', \
+                '- **Level: 7.3 of 12.5.** In 2025 these costs took 87.5% of gross profit. 70.0% scores 0; 100.0% or more scores in full.' \
             ] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 '', \
-                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
-                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+                '### Screen score: 32.6 of 50 (rank 3 of 4)', \
+                '', \
+                'The agreed definition\'s whole-market score, which leaves insiders out: P1 + (P1 / 25) x (P2b x 25 / 13) = 18.6 + (18.6 / 25) x 18.8 = 32.6.', \
+                'The definition\'s full score, out of 100, also needs gross profit per employee (P2a) and the framing of earnings', \
+                'releases (P4). Those need hand-checked data and are not measured for any company.' \
             ] \
         ], \
         [ \
@@ -2785,7 +2844,7 @@ async function testMain_companyNoCostLine():
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
                     '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -8.0% in the latest fiscal year. |', \
-                    '| Operating costs against revenue, over five years | Fall | Keep pace or rise | n/a: the cost line cannot be built |', \
+                    '| Operating costs against revenue, over five years | Fall, and leave part of gross profit | Keep pace or rise, and take all of gross profit | n/a: the cost line cannot be built |', \
                     '| Insiders, 2021‑2025 | Keep what they are granted | Sell it | n/a: no insider transactions in the SEC data sets |', \
                     '| Owner cash against insider sales, 2021‑2025 | Owners get more than insiders take out | Insiders take out more | n/a |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | n/a: the share count cannot be followed; no buybacks |' \
@@ -2806,9 +2865,25 @@ async function testMain_companyNoCostLine():
             'markdownPrint', \
             [ \
                 '', \
-                '## Screen score: not scored (unranked)', \
+                '## Three-signs score: not scored', \
                 '', \
-                '**P1. No meaningful cash for owners: 24.0 of 25**', \
+                [ \
+                    '| Sign | Points |', \
+                    '| :-- | --: |', \
+                    '| Owner cash that stays near zero (P1) | 24.0 of 25 |', \
+                    '| Revenue held up by costs | cannot be built |', \
+                    '| Insiders who are granted shares and sell them (P3) | cannot be built |' \
+                ], \
+                '', \
+                'The score needs all three signs.', \
+                'The score is provisional: the costs level and P3 are new measures. Insider grants and sales are set out further down.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '### Owner cash that stays near zero (P1): 24.0 of 25', \
                 '', \
                 [ \
                     '| Part | Input | Points |', \
@@ -2828,21 +2903,24 @@ async function testMain_companyNoCostLine():
         ], \
         [ \
             'markdownPrint', \
-            ['', '**P2b. Operating costs as a share of revenue: cannot be built**', ''] \
+            ['', '### Revenue held up by costs: cannot be built', ''] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 'The filings do not tag gross profit, operating income, total costs and cost of revenue consistently enough to build', \
-                'the cost line the same way in both years. The company has P1 alone and is left unranked; missing is not treated as zero.' \
+                'the cost line the same way in both years. Missing is not treated as zero, so the company has P1 alone.' \
             ] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 '', \
-                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
-                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+                '### Screen score: not scored (unranked)', \
+                '', \
+                'The agreed definition\'s whole-market score, which leaves insiders out: P1 + (P1 / 25) x (P2b x 25 / 13).', \
+                'The definition\'s full score, out of 100, also needs gross profit per employee (P2a) and the framing of earnings', \
+                'releases (P4). Those need hand-checked data and are not measured for any company.' \
             ] \
         ], \
         [ \
@@ -2984,7 +3062,7 @@ async function testMain_companyCashGenerative():
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
                     '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 0 of 7 years; above it in the latest fiscal year. 8.0% in the latest 12 months. |', \
-                    '| Operating costs against revenue, over five years | Fall | Keep pace or rise | 55.0% of revenue in 2021, 40.0% in 2025 |', \
+                    '| Operating costs against revenue, over five years | Fall, and leave part of gross profit | Keep pace or rise, and take all of gross profit | 55.0% of revenue in 2021, 40.0% in 2025, when they took 66.7% of gross profit |', \
                     '| Insiders, 2021‑2025 | Keep what they are granted | Sell it | Sold $1.5B; granted stock worth $0: no grants |', \
                     '| Owner cash against insider sales, 2021‑2025 | Owners get more than insiders take out | Insiders take out more | Owner cash $644.0M; insider sales $1.5B |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | Rose 5.0% a year, after $250.0M of buybacks and employees\' vesting taxes |' \
@@ -3013,31 +3091,18 @@ async function testMain_companyCashGenerative():
             'markdownPrint', \
             [ \
                 '', \
-                '## Screen score: 0.0 of 50 (unranked)', \
-                '', \
-                '**P1. No meaningful cash for owners: 0.0 of 25**', \
+                '## Three-signs score: 0.0 of 75 (unranked)', \
                 '', \
                 [ \
-                    '| Part | Input | Points |', \
-                    '| :-- | --: | --: |', \
-                    '| Years with owner cash under 3.0% of revenue | 0 of 7 | 0.0 of 10 |', \
-                    '| Cumulative owner-cash margin, 2019‑2025 | 8.0% | 0.0 of 8 |', \
-                    '| Owner-cash margin, 12 months to 2026‑09‑30 | 8.0% | 0.0 of 7 |' \
-                ] \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            ['', '**P2b. Operating costs as a share of revenue: 0.0 of 13**', ''] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 40.0% in 2025: a change of -15.0 points.', \
-                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
-                'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $400M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
+                    '| Sign | Points |', \
+                    '| :-- | --: |', \
+                    '| Owner cash that stays near zero (P1) | 0.0 of 25 |', \
+                    '| Revenue held up by costs | 0.0 of 25 |', \
+                    '| Insiders who are granted shares and sell them (P3) | 13.0 of 25 |' \
+                ], \
                 '', \
-                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 0.0 + (0.0 / 25) x 0.0 = 0.0' \
+                'P1 + (P1 / 25) x (costs + P3) = 0.0 + (0.0 / 25) x (0.0 + 13.0) = 0.0. Costs and insider selling count only to the extent owners are getting no cash.', \
+                'The score is provisional: the costs level and P3 are new measures. Insider grants and sales are set out further down.' \
             ] \
         ], \
         [ \
@@ -3051,8 +3116,40 @@ async function testMain_companyCashGenerative():
             'markdownPrint', \
             [ \
                 '', \
-                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
-                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+                '### Owner cash that stays near zero (P1): 0.0 of 25', \
+                '', \
+                [ \
+                    '| Part | Input | Points |', \
+                    '| :-- | --: | --: |', \
+                    '| Years with owner cash under 3.0% of revenue | 0 of 7 | 0.0 of 10 |', \
+                    '| Cumulative owner-cash margin, 2019‑2025 | 8.0% | 0.0 of 8 |', \
+                    '| Owner-cash margin, 12 months to 2026‑09‑30 | 8.0% | 0.0 of 7 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '### Revenue held up by costs: 0.0 of 25', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 40.0% in 2025: a change of -15.0 points.', \
+                'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $400M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
+                '', \
+                '- **Change (P2b): 0.0 of 13**, which counts as 0.0 of 12.5 here. Flat or rising costs score in full; a fall of 10 points of revenue scores 0.', \
+                '- **Level: 0.0 of 12.5.** In 2025 these costs took 66.7% of gross profit. 70.0% scores 0; 100.0% or more scores in full.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '### Screen score: 0.0 of 50 (unranked)', \
+                '', \
+                'The agreed definition\'s whole-market score, which leaves insiders out: P1 + (P1 / 25) x (P2b x 25 / 13) = 0.0 + (0.0 / 25) x 0.0 = 0.0.', \
+                'The definition\'s full score, out of 100, also needs gross profit per employee (P2a) and the framing of earnings', \
+                'releases (P4). Those need hand-checked data and are not measured for any company.' \
             ] \
         ], \
         [ \
@@ -3080,13 +3177,6 @@ async function testMain_companyCashGenerative():
                 ], \
                 '', \
                 'P3 is a first, provisional measure. Sales of 0.5 times grants score 0; 1.5 times scores 13.' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '**Three-signs score** = screen score + (P1 / 25) x P3 = 0.0 + (0.0 / 25) x 13.0 = 0.0 of 75 (unranked)' \
             ] \
         ], \
         [ \
@@ -3403,7 +3493,7 @@ async function testMain_companyNoIndustryName():
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
                     '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. 0.6% in the latest 12 months. |', \
-                    '| Operating costs against revenue, over five years | Fall | Keep pace or rise | 55.0% of revenue in 2021, 55.0% in 2025 |', \
+                    '| Operating costs against revenue, over five years | Fall, and leave part of gross profit | Keep pace or rise, and take all of gross profit | 55.0% of revenue in 2021, 55.0% in 2025, when they took 91.7% of gross profit |', \
                     '| Insiders, 2021‑2025 | Keep what they are granted | Sell it | n/a: no insider transactions in the SEC data sets |', \
                     '| Owner cash against insider sales, 2021‑2025 | Owners get more than insiders take out | Insiders take out more | n/a |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | n/a: the share count cannot be followed; no buybacks |' \
@@ -3424,9 +3514,25 @@ async function testMain_companyNoIndustryName():
             'markdownPrint', \
             [ \
                 '', \
-                '## Screen score: 30.9 of 50 (unranked)', \
+                '## Three-signs score: not scored', \
                 '', \
-                '**P1. No meaningful cash for owners: 15.4 of 25**', \
+                [ \
+                    '| Sign | Points |', \
+                    '| :-- | --: |', \
+                    '| Owner cash that stays near zero (P1) | 15.4 of 25 |', \
+                    '| Revenue held up by costs | 21.5 of 25 |', \
+                    '| Insiders who are granted shares and sell them (P3) | cannot be built |' \
+                ], \
+                '', \
+                'The score needs all three signs.', \
+                'The score is provisional: the costs level and P3 are new measures. Insider grants and sales are set out further down.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '### Owner cash that stays near zero (P1): 15.4 of 25', \
                 '', \
                 [ \
                     '| Part | Input | Points |', \
@@ -3439,31 +3545,27 @@ async function testMain_companyNoIndustryName():
         ], \
         [ \
             'markdownPrint', \
-            ['', '**P2b. Operating costs as a share of revenue: 13.0 of 13**', ''] \
+            ['', '### Revenue held up by costs: 21.5 of 25', ''] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 55.0% in 2025: a change of 0.0 points.', \
-                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
                 'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $100M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
                 '', \
-                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 15.4 + (15.4 / 25) x 25.0 = 30.9' \
+                '- **Change (P2b): 13.0 of 13**, which counts as 12.5 of 12.5 here. Flat or rising costs score in full; a fall of 10 points of revenue scores 0.', \
+                '- **Level: 9.0 of 12.5.** In 2025 these costs took 91.7% of gross profit. 70.0% scores 0; 100.0% or more scores in full.' \
             ] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 '', \
-                'The company is unranked because it did not pass the screen (see its type above). Its score is shown for comparison.' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
+                '### Screen score: 30.9 of 50 (unranked)', \
                 '', \
-                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
-                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+                'The agreed definition\'s whole-market score, which leaves insiders out: P1 + (P1 / 25) x (P2b x 25 / 13) = 15.4 + (15.4 / 25) x 25.0 = 30.9.', \
+                'The definition\'s full score, out of 100, also needs gross profit per employee (P2a) and the framing of earnings', \
+                'releases (P4). Those need hand-checked data and are not measured for any company.' \
             ] \
         ], \
         [ \
@@ -3590,7 +3692,7 @@ async function testMain_companyNoIndustry():
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
                     '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -13.0% in the latest 12 months. |', \
-                    '| Operating costs against revenue, over five years | Fall | Keep pace or rise | 55.0% of revenue in 2021, 55.0% in 2025 |', \
+                    '| Operating costs against revenue, over five years | Fall, and leave part of gross profit | Keep pace or rise, and take all of gross profit | 55.0% of revenue in 2021, 55.0% in 2025, when they took 91.7% of gross profit |', \
                     '| Insiders, 2021‑2025 | Keep what they are granted | Sell it | n/a: no insider transactions in the SEC data sets |', \
                     '| Owner cash against insider sales, 2021‑2025 | Owners get more than insiders take out | Insiders take out more | n/a |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | n/a: the share count cannot be followed; no buybacks |' \
@@ -3611,9 +3713,25 @@ async function testMain_companyNoIndustry():
             'markdownPrint', \
             [ \
                 '', \
-                '## Screen score: 50.0 of 50 (unranked)', \
+                '## Three-signs score: not scored', \
                 '', \
-                '**P1. No meaningful cash for owners: 25.0 of 25**', \
+                [ \
+                    '| Sign | Points |', \
+                    '| :-- | --: |', \
+                    '| Owner cash that stays near zero (P1) | 25.0 of 25 |', \
+                    '| Revenue held up by costs | 21.5 of 25 |', \
+                    '| Insiders who are granted shares and sell them (P3) | cannot be built |' \
+                ], \
+                '', \
+                'The score needs all three signs.', \
+                'The score is provisional: the costs level and P3 are new measures. Insider grants and sales are set out further down.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '### Owner cash that stays near zero (P1): 25.0 of 25', \
                 '', \
                 [ \
                     '| Part | Input | Points |', \
@@ -3626,31 +3744,27 @@ async function testMain_companyNoIndustry():
         ], \
         [ \
             'markdownPrint', \
-            ['', '**P2b. Operating costs as a share of revenue: 13.0 of 13**', ''] \
+            ['', '### Revenue held up by costs: 21.5 of 25', ''] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 55.0% in 2025: a change of 0.0 points.', \
-                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
                 'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $100M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
                 '', \
-                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 25.0 + (25.0 / 25) x 25.0 = 50.0' \
+                '- **Change (P2b): 13.0 of 13**, which counts as 12.5 of 12.5 here. Flat or rising costs score in full; a fall of 10 points of revenue scores 0.', \
+                '- **Level: 9.0 of 12.5.** In 2025 these costs took 91.7% of gross profit. 70.0% scores 0; 100.0% or more scores in full.' \
             ] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 '', \
-                'The company is unranked because it did not pass the screen (see its type above). Its score is shown for comparison.' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
+                '### Screen score: 50.0 of 50 (unranked)', \
                 '', \
-                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
-                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+                'The agreed definition\'s whole-market score, which leaves insiders out: P1 + (P1 / 25) x (P2b x 25 / 13) = 25.0 + (25.0 / 25) x 25.0 = 50.0.', \
+                'The definition\'s full score, out of 100, also needs gross profit per employee (P2a) and the framing of earnings', \
+                'releases (P4). Those need hand-checked data and are not measured for any company.' \
             ] \
         ], \
         [ \
@@ -3885,7 +3999,7 @@ async function testMain_companyPerson():
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
                     '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -2.0% in the latest 12 months. |', \
-                    '| Operating costs against revenue, over five years | Fall | Keep pace or rise | 55.0% of revenue in 2021, 55.0% in 2025; sales and marketing 32.0% to 28.0% |', \
+                    '| Operating costs against revenue, over five years | Fall, and leave part of gross profit | Keep pace or rise, and take all of gross profit | 55.0% of revenue in 2021, 55.0% in 2025, when they took 91.7% of gross profit; sales and marketing 32.0% to 28.0% |', \
                     '| Insiders, 2021‑2025 | Keep what they are granted | Sell it | Sold $110K; granted stock worth $110K and options over shares worth $300K: between 0.3x and 1.0x what they were granted |', \
                     '| Owner cash against insider sales, 2021‑2025 | Owners get more than insiders take out | Insiders take out more | Owner cash -$161.0M; insider sales $110K |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | Rose 2.0% a year, after $40.0M of buybacks and employees\' vesting taxes |' \
@@ -3904,9 +4018,25 @@ async function testMain_companyPerson():
             'markdownPrint', \
             [ \
                 '', \
-                '## Screen score: 37.3 of 50 (rank 2 of 4)', \
+                '## Three-signs score: 36.5 of 75 (rank 1 of 1)', \
                 '', \
-                '**P1. No meaningful cash for owners: 18.6 of 25**', \
+                [ \
+                    '| Sign | Points |', \
+                    '| :-- | --: |', \
+                    '| Owner cash that stays near zero (P1) | 18.6 of 25 |', \
+                    '| Revenue held up by costs | 21.5 of 25 |', \
+                    '| Insiders who are granted shares and sell them (P3) | 2.4 of 25 |' \
+                ], \
+                '', \
+                'P1 + (P1 / 25) x (costs + P3) = 18.6 + (18.6 / 25) x (21.5 + 2.4) = 36.5. Costs and insider selling count only to the extent owners are getting no cash.', \
+                'The score is provisional: the costs level and P3 are new measures. Insider grants and sales are set out further down.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '### Owner cash that stays near zero (P1): 18.6 of 25', \
                 '', \
                 [ \
                     '| Part | Input | Points |', \
@@ -3919,24 +4049,27 @@ async function testMain_companyPerson():
         ], \
         [ \
             'markdownPrint', \
-            ['', '**P2b. Operating costs as a share of revenue: 13.0 of 13**', ''] \
+            ['', '### Revenue held up by costs: 21.5 of 25', ''] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 55.0% in 2025: a change of 0.0 points.', \
-                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
                 'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $100M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
                 '', \
-                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 18.6 + (18.6 / 25) x 25.0 = 37.3' \
+                '- **Change (P2b): 13.0 of 13**, which counts as 12.5 of 12.5 here. Flat or rising costs score in full; a fall of 10 points of revenue scores 0.', \
+                '- **Level: 9.0 of 12.5.** In 2025 these costs took 91.7% of gross profit. 70.0% scores 0; 100.0% or more scores in full.' \
             ] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 '', \
-                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
-                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+                '### Screen score: 37.3 of 50 (rank 2 of 4)', \
+                '', \
+                'The agreed definition\'s whole-market score, which leaves insiders out: P1 + (P1 / 25) x (P2b x 25 / 13) = 18.6 + (18.6 / 25) x 25.0 = 37.3.', \
+                'The definition\'s full score, out of 100, also needs gross profit per employee (P2a) and the framing of earnings', \
+                'releases (P4). Those need hand-checked data and are not measured for any company.' \
             ] \
         ], \
         [ \
@@ -3964,13 +4097,6 @@ async function testMain_companyPerson():
                 ], \
                 '', \
                 'P3 is a first, provisional measure. Sales of 0.5 times grants score 0; 1.5 times scores 13. Counting options as worth nothing, the multiple would be 1.0x; the truth lies between.' \
-            ] \
-        ], \
-        [ \
-            'markdownPrint', \
-            [ \
-                '', \
-                '**Three-signs score** = screen score + (P1 / 25) x P3 = 37.3 + (18.6 / 25) x 2.4 = 39.1 of 75 (rank 1 of 1)' \
             ] \
         ], \
         [ \
@@ -4155,8 +4281,8 @@ async function testMain_indexInsiderSort():
                 '', \
                 '1. **Owner cash that stays near zero (P1).** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow;', \
                 '   leaving out the capital-led companies, $5.3B against $4.1B. At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
-                '2. **Revenue held up by costs (P2b).** Hiring in sales, marketing and development can absorb whatever growth brings in. 3 of the 4 ranked companies kept', \
-                '   operating costs flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
+                '2. **Revenue held up by costs.** Hiring in sales, marketing and development can absorb whatever growth brings in. At 0 of the 4 ranked companies,', \
+                '   operating costs took all of gross profit or more in the latest year; 3 kept them flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
                 '   shares just granted: of the 1 that bought back shares over five years and whose share count can', \
                 '   be followed, the count still rose at 1, after $40.0M spent on buybacks and employees\' vesting taxes.', \
                 [ \
@@ -4222,17 +4348,17 @@ async function testMain_indexInsiderSort():
             [ \
                 '', \
                 [ \
-                    '| Rank | Company | Ticker | Three signs (75) | Screen score (50) and rank | P1 (25) | P2b (13) | P3 (25) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes | Type |', \
+                    '| Rank | Company | Ticker | Three signs (75) | Owner cash, P1 (25) | Costs (25) | Insiders, P3 (25) | Screen score (50) and rank | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes | Type |', \
                     '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
-                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\'&_top) | CASH | 0.0 | 0.0 | 0.0 | 0.0 | 13.0 | 8.0% | 8.0% | 2.0% | $1.5B | n/a | 2019‑2025 |  | Cash generative |', \
+                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\'&_top) | CASH | 0.0 | 0.0 | 0.0 | 13.0 | 0.0 | 8.0% | 8.0% | 2.0% | $1.5B | n/a | 2019‑2025 |  | Cash generative |', \
                     '|  | [Bank Co](#var.vCik=5&var.vPage=\'company\'&_top) | BANK | n/a | n/a | n/a | n/a | n/a | -10.0% | -10.0% | 20.0% | $1.2M | n/a | 2019‑2025 |  | Excluded industry |', \
-                    '| 1 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | 39.1 | 37.3 (2) | 18.6 | 13.0 | 2.4 | -2.0% | -2.0% | 12.0% | $110K | 0.3x | 2019‑2025 |  | Stock pay |', \
-                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 42.2 (1) | 21.1 | 13.0 | n/a | -4.0% | -4.0% | 13.0% | $4K | n/a | 2019‑2025 | O F S | Stock pay |', \
-                    '|  | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\'&_top) |  | n/a | 32.6 (3) | 18.6 | 9.8 | n/a | -2.0% | -2.0% | 12.0% | n/a | n/a | 2019‑2025 | C I | Stock pay |', \
-                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 25.9 (4) | 13.0 | 13.0 | n/a | 2.6% | 2.6% | 7.4% | n/a | n/a | 2019‑2025 | I | Stock pay |', \
-                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\'&_top) | BURN | n/a | 50.0 | 25.0 | 13.0 | n/a | -13.0% | -13.0% | 12.0% | n/a | n/a | 2019‑2025 | I | Cash burner |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | n/a | 24.0 | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X I | Stock pay |', \
-                    '|  | [Thin Co](#var.vCik=7&var.vPage=\'company\'&_top) | THIN | n/a | 30.9 | 15.4 | 13.0 | n/a | 0.6% | 0.6% | 1.9% | n/a | n/a | 2019‑2025 | I | Thin margin |' \
+                    '| 1 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | 36.5 | 18.6 | 21.5 | 2.4 | 37.3 (2) | -2.0% | -2.0% | 12.0% | $110K | 0.3x | 2019‑2025 |  | Stock pay |', \
+                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 21.1 | 21.5 | n/a | 42.2 (1) | -4.0% | -4.0% | 13.0% | $4K | n/a | 2019‑2025 | O F S | Stock pay |', \
+                    '|  | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\'&_top) |  | n/a | 18.6 | 16.7 | n/a | 32.6 (3) | -2.0% | -2.0% | 12.0% | n/a | n/a | 2019‑2025 | C I | Stock pay |', \
+                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 13.0 | 21.5 | n/a | 25.9 (4) | 2.6% | 2.6% | 7.4% | n/a | n/a | 2019‑2025 | I | Stock pay |', \
+                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\'&_top) | BURN | n/a | 25.0 | 21.5 | n/a | 50.0 | -13.0% | -13.0% | 12.0% | n/a | n/a | 2019‑2025 | I | Cash burner |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | 24.0 | n/a | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X I | Stock pay |', \
+                    '|  | [Thin Co](#var.vCik=7&var.vPage=\'company\'&_top) | THIN | n/a | 15.4 | 21.5 | n/a | 30.9 | 0.6% | 0.6% | 1.9% | n/a | n/a | 2019‑2025 | I | Thin margin |' \
                 ] \
             ] \
         ], \
@@ -4243,17 +4369,18 @@ async function testMain_indexInsiderSort():
                 '**Rank** is by the three-signs score, among the companies that pass the screen and have all three pillars. Unranked', \
                 'companies are listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
                 '', \
-                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (P2b scaled to 25 + P3): costs and insider selling count', \
-                'only to the extent owners are getting no cash. It is provisional, because P3 is: insider grants are valued at the full', \
-                'price of the shares they cover, which understates how much of their grants insiders sold.', \
+                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (costs + P3): costs and insider selling count only to', \
+                'the extent owners are getting no cash. The costs sign is half whether operating costs fell against revenue (P2b) and', \
+                'half how much of gross profit they take. The score is provisional: the costs level is new, and insider grants are valued', \
+                'at the full price of the shares they cover, which understates how much of their grants insiders sold.', \
                 '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
                 'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
-                '**The screen score is out of 50**, and is the three-signs score without insiders: P1 + (P1 / 25) x (P2b scaled to 25).', \
+                '**The screen score is out of 50**, and is the agreed definition\'s whole-market score: P1 + (P1 / 25) x (P2b scaled to 25).', \
                 'Its rank is in brackets. The full score of the definition, out of 100, also needs headcount and earnings-release framing', \
                 'for the top 25; those need hand-checked data and are not measured. The three scores must not be compared with each other.', \
                 '', \
-                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 0 of 32 tests.', \
                 'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\'&_top) lists every change.', \
                 '', \
                 '**Notes**', \
@@ -4380,8 +4507,8 @@ async function testMain_indexRatioSort():
                 '', \
                 '1. **Owner cash that stays near zero (P1).** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow;', \
                 '   leaving out the capital-led companies, $5.3B against $4.1B. At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
-                '2. **Revenue held up by costs (P2b).** Hiring in sales, marketing and development can absorb whatever growth brings in. 3 of the 4 ranked companies kept', \
-                '   operating costs flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
+                '2. **Revenue held up by costs.** Hiring in sales, marketing and development can absorb whatever growth brings in. At 0 of the 4 ranked companies,', \
+                '   operating costs took all of gross profit or more in the latest year; 3 kept them flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
                 '   shares just granted: of the 1 that bought back shares over five years and whose share count can', \
                 '   be followed, the count still rose at 1, after $40.0M spent on buybacks and employees\' vesting taxes.', \
                 [ \
@@ -4447,13 +4574,13 @@ async function testMain_indexRatioSort():
             [ \
                 '', \
                 [ \
-                    '| Rank | Company | Ticker | Three signs (75) | Screen score (50) and rank | P1 (25) | P2b (13) | P3 (25) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes |', \
+                    '| Rank | Company | Ticker | Three signs (75) | Owner cash, P1 (25) | Costs (25) | Insiders, P3 (25) | Screen score (50) and rank | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes |', \
                     '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
-                    '| 1 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | 39.1 | 37.3 (2) | 18.6 | 13.0 | 2.4 | -2.0% | -2.0% | 12.0% | $110K | 0.3x | 2019‑2025 |  |', \
-                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 42.2 (1) | 21.1 | 13.0 | n/a | -4.0% | -4.0% | 13.0% | $4K | n/a | 2019‑2025 | O F S |', \
-                    '|  | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\'&_top) |  | n/a | 32.6 (3) | 18.6 | 9.8 | n/a | -2.0% | -2.0% | 12.0% | n/a | n/a | 2019‑2025 | C I |', \
-                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 25.9 (4) | 13.0 | 13.0 | n/a | 2.6% | 2.6% | 7.4% | n/a | n/a | 2019‑2025 | I |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | n/a | 24.0 | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X I |' \
+                    '| 1 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | 36.5 | 18.6 | 21.5 | 2.4 | 37.3 (2) | -2.0% | -2.0% | 12.0% | $110K | 0.3x | 2019‑2025 |  |', \
+                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 21.1 | 21.5 | n/a | 42.2 (1) | -4.0% | -4.0% | 13.0% | $4K | n/a | 2019‑2025 | O F S |', \
+                    '|  | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\'&_top) |  | n/a | 18.6 | 16.7 | n/a | 32.6 (3) | -2.0% | -2.0% | 12.0% | n/a | n/a | 2019‑2025 | C I |', \
+                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 13.0 | 21.5 | n/a | 25.9 (4) | 2.6% | 2.6% | 7.4% | n/a | n/a | 2019‑2025 | I |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | 24.0 | n/a | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X I |' \
                 ] \
             ] \
         ], \
@@ -4464,17 +4591,18 @@ async function testMain_indexRatioSort():
                 '**Rank** is by the three-signs score, among the companies that pass the screen and have all three pillars. Unranked', \
                 'companies are listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
                 '', \
-                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (P2b scaled to 25 + P3): costs and insider selling count', \
-                'only to the extent owners are getting no cash. It is provisional, because P3 is: insider grants are valued at the full', \
-                'price of the shares they cover, which understates how much of their grants insiders sold.', \
+                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (costs + P3): costs and insider selling count only to', \
+                'the extent owners are getting no cash. The costs sign is half whether operating costs fell against revenue (P2b) and', \
+                'half how much of gross profit they take. The score is provisional: the costs level is new, and insider grants are valued', \
+                'at the full price of the shares they cover, which understates how much of their grants insiders sold.', \
                 '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
                 'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
-                '**The screen score is out of 50**, and is the three-signs score without insiders: P1 + (P1 / 25) x (P2b scaled to 25).', \
+                '**The screen score is out of 50**, and is the agreed definition\'s whole-market score: P1 + (P1 / 25) x (P2b scaled to 25).', \
                 'Its rank is in brackets. The full score of the definition, out of 100, also needs headcount and earnings-release framing', \
                 'for the top 25; those need hand-checked data and are not measured. The three scores must not be compared with each other.', \
                 '', \
-                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 0 of 32 tests.', \
                 'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\'&_top) lists every change.', \
                 '', \
                 '**Notes**', \
@@ -4599,8 +4727,8 @@ async function testMain_indexNoInsider():
                 '', \
                 '1. **Owner cash that stays near zero (P1).** Together the 5 companies here recorded $6.5B of stock pay against $5.2B of free cash flow;', \
                 '   leaving out the capital-led companies, $5.3B against $4.1B. At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
-                '2. **Revenue held up by costs (P2b).** Hiring in sales, marketing and development can absorb whatever growth brings in. 3 of the 4 ranked companies kept', \
-                '   operating costs flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
+                '2. **Revenue held up by costs.** Hiring in sales, marketing and development can absorb whatever growth brings in. At 0 of the 4 ranked companies,', \
+                '   operating costs took all of gross profit or more in the latest year; 3 kept them flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
                 '   shares just granted: of the 1 that bought back shares over five years and whose share count can', \
                 '   be followed, the count still rose at 1, after $40.0M spent on buybacks and employees\' vesting taxes.', \
                 '3. **Insiders who are granted shares and sell them (P3).** Insider grants and sales are not measured in this build.', \
@@ -4662,13 +4790,13 @@ async function testMain_indexNoInsider():
             [ \
                 '', \
                 [ \
-                    '| Rank | Company | Ticker | Three signs (75) | Screen score (50) and rank | P1 (25) | P2b (13) | P3 (25) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes |', \
+                    '| Rank | Company | Ticker | Three signs (75) | Owner cash, P1 (25) | Costs (25) | Insiders, P3 (25) | Screen score (50) and rank | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Insider sales | Insider sales / grants | Years | Notes |', \
                     '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
-                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 42.2 (1) | 21.1 | 13.0 | n/a | -4.0% | -4.0% | 13.0% | n/a | n/a | 2019‑2025 | O F S |', \
-                    '|  | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | n/a | 37.3 (2) | 18.6 | 13.0 | n/a | -2.0% | -2.0% | 12.0% | n/a | n/a | 2019‑2025 |  |', \
-                    '|  | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\'&_top) |  | n/a | 32.6 (3) | 18.6 | 9.8 | n/a | -2.0% | -2.0% | 12.0% | n/a | n/a | 2019‑2025 | C |', \
-                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 25.9 (4) | 13.0 | 13.0 | n/a | 2.6% | 2.6% | 7.4% | n/a | n/a | 2019‑2025 |  |', \
-                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | n/a | 24.0 | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X |' \
+                    '|  | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\'&_top) | OOC | n/a | 21.1 | 21.5 | n/a | 42.2 (1) | -4.0% | -4.0% | 13.0% | n/a | n/a | 2019‑2025 | O F S |', \
+                    '|  | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\'&_top) | SPAY | n/a | 18.6 | 21.5 | n/a | 37.3 (2) | -2.0% | -2.0% | 12.0% | n/a | n/a | 2019‑2025 |  |', \
+                    '|  | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\'&_top) |  | n/a | 18.6 | 16.7 | n/a | 32.6 (3) | -2.0% | -2.0% | 12.0% | n/a | n/a | 2019‑2025 | C |', \
+                    '|  | [Marginal Co](#var.vCik=10&var.vPage=\'company\'&_top) | MARG | n/a | 13.0 | 21.5 | n/a | 25.9 (4) | 2.6% | 2.6% | 7.4% | n/a | n/a | 2019‑2025 |  |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\'&_top) | NCL | n/a | 24.0 | n/a | n/a | n/a | -8.2% | -8.0% | 20.0% | n/a | n/a | 2019‑2025 | F N X |' \
                 ] \
             ] \
         ], \
@@ -4679,17 +4807,18 @@ async function testMain_indexNoInsider():
                 '**Rank** is by the three-signs score, among the companies that pass the screen and have all three pillars. Unranked', \
                 'companies are listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
                 '', \
-                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (P2b scaled to 25 + P3): costs and insider selling count', \
-                'only to the extent owners are getting no cash. It is provisional, because P3 is: insider grants are valued at the full', \
-                'price of the shares they cover, which understates how much of their grants insiders sold.', \
+                '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (costs + P3): costs and insider selling count only to', \
+                'the extent owners are getting no cash. The costs sign is half whether operating costs fell against revenue (P2b) and', \
+                'half how much of gross profit they take. The score is provisional: the costs level is new, and insider grants are valued', \
+                'at the full price of the shares they cover, which understates how much of their grants insiders sold.', \
                 '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
                 'compares them with the shares and options granted over the same years; each company page has the detail.', \
                 '', \
-                '**The screen score is out of 50**, and is the three-signs score without insiders: P1 + (P1 / 25) x (P2b scaled to 25).', \
+                '**The screen score is out of 50**, and is the agreed definition\'s whole-market score: P1 + (P1 / 25) x (P2b scaled to 25).', \
                 'Its rank is in brackets. The full score of the definition, out of 100, also needs headcount and earnings-release framing', \
                 'for the top 25; those need hand-checked data and are not measured. The three scores must not be compared with each other.', \
                 '', \
-                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 24 tests.', \
+                '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in 3 of 32 tests.', \
                 'Read a rank as a rough position, not a precise one. [Data and limits](#var.vPage=\'data\'&_top) lists every change.', \
                 '', \
                 '**Notes**', \
@@ -4814,7 +4943,7 @@ async function testMain_companyNoInsider():
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
                     '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -2.0% in the latest 12 months. |', \
-                    '| Operating costs against revenue, over five years | Fall | Keep pace or rise | 55.0% of revenue in 2021, 55.0% in 2025; sales and marketing 32.0% to 28.0% |', \
+                    '| Operating costs against revenue, over five years | Fall, and leave part of gross profit | Keep pace or rise, and take all of gross profit | 55.0% of revenue in 2021, 55.0% in 2025, when they took 91.7% of gross profit; sales and marketing 32.0% to 28.0% |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | Rose 2.0% a year, after $40.0M of buybacks and employees\' vesting taxes |' \
                 ] \
             ] \
@@ -4831,9 +4960,25 @@ async function testMain_companyNoInsider():
             'markdownPrint', \
             [ \
                 '', \
-                '## Screen score: 37.3 of 50 (rank 2 of 4)', \
+                '## Three-signs score: not scored', \
                 '', \
-                '**P1. No meaningful cash for owners: 18.6 of 25**', \
+                [ \
+                    '| Sign | Points |', \
+                    '| :-- | --: |', \
+                    '| Owner cash that stays near zero (P1) | 18.6 of 25 |', \
+                    '| Revenue held up by costs | 21.5 of 25 |', \
+                    '| Insiders who are granted shares and sell them (P3) | not measured in this build |' \
+                ], \
+                '', \
+                'The score needs all three signs.', \
+                'The score is provisional: the costs level and P3 are new measures. Insider grants and sales are set out further down.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '### Owner cash that stays near zero (P1): 18.6 of 25', \
                 '', \
                 [ \
                     '| Part | Input | Points |', \
@@ -4846,24 +4991,27 @@ async function testMain_companyNoInsider():
         ], \
         [ \
             'markdownPrint', \
-            ['', '**P2b. Operating costs as a share of revenue: 13.0 of 13**', ''] \
+            ['', '### Revenue held up by costs: 21.5 of 25', ''] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 55.0% in 2025: a change of 0.0 points.', \
-                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
                 'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $100M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
                 '', \
-                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 18.6 + (18.6 / 25) x 25.0 = 37.3' \
+                '- **Change (P2b): 13.0 of 13**, which counts as 12.5 of 12.5 here. Flat or rising costs score in full; a fall of 10 points of revenue scores 0.', \
+                '- **Level: 9.0 of 12.5.** In 2025 these costs took 91.7% of gross profit. 70.0% scores 0; 100.0% or more scores in full.' \
             ] \
         ], \
         [ \
             'markdownPrint', \
             [ \
                 '', \
-                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
-                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+                '### Screen score: 37.3 of 50 (rank 2 of 4)', \
+                '', \
+                'The agreed definition\'s whole-market score, which leaves insiders out: P1 + (P1 / 25) x (P2b x 25 / 13) = 18.6 + (18.6 / 25) x 25.0 = 37.3.', \
+                'The definition\'s full score, out of 100, also needs gross profit per employee (P2a) and the framing of earnings', \
+                'releases (P4). Those need hand-checked data and are not measured for any company.' \
             ] \
         ], \
         [ \
@@ -5058,7 +5206,7 @@ async function testMain_dataNoInsider():
                 '', \
                 '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
                 '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
-                '  File size 123,456,789 bytes, SHA-256 `bc13a1f7ddfe1af0b5870a117bf10dd41e6b23d64c3d8be213265ef2d4ecf96f`.', \
+                '  File size 123,456,789 bytes, SHA-256 `84809832c335d64f039cb04e746014ac3b0fa01abe787f3b4e061f65d58c9263`.', \
                 '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
                 '- Insider transactions: not in this build.', \
                 '- Method version 1.0.0. A figure cited from this page can be reproduced from the same', \
@@ -5108,8 +5256,8 @@ async function testMain_dataNoInsider():
                 '', \
                 '## If a threshold moves by a fifth', \
                 '', \
-                'Each threshold in the definition was moved down and up by a fifth, one at a time, and the index rebuilt. These are the', \
-                'changes in the top ten.', \
+                'Each threshold was moved down and up by a fifth, one at a time, and the index rebuilt. These are the changes in the', \
+                'top ten by screen score.', \
                 '', \
                 [ \
                     '| Threshold moved | Value | Changes in the top ten |', \
@@ -5119,9 +5267,15 @@ async function testMain_dataNoInsider():
                     '| Least stock pay, share of revenue, a fifth lower | `sbc_revenue_min` = 0.016 | Thin Co enters at 4; Marginal Co 4 to 5 |' \
                 ], \
                 '', \
-                'No change in the top ten: Least latest revenue, a fifth lower; Least latest revenue, a fifth higher; Least years of data, a fifth lower; Least years of data, a fifth higher; Least revenue growth, a fifth higher; Meaningful owner cash, a fifth higher; Least stock pay, share of revenue, a fifth higher; Least stock pay, share of free cash flow, a fifth lower; Least stock pay, share of free cash flow, a fifth higher; P1 cumulative margin that scores 0, a fifth lower; P1 cumulative margin that scores 0, a fifth higher; P1 cumulative margin that scores 8, a fifth lower; P1 cumulative margin that scores 8, a fifth higher; P1 latest margin that scores 0, a fifth lower; P1 latest margin that scores 0, a fifth higher; P1 latest margin that scores 7, a fifth lower; P1 latest margin that scores 7, a fifth higher; P2b window, in years, a fifth lower; P2b window, in years, a fifth higher; P2b cost fall that scores 0, a fifth lower; P2b cost fall that scores 0, a fifth higher.', \
+                'No change in the top ten: Least latest revenue, a fifth lower; Least latest revenue, a fifth higher; Least years of data, a fifth lower; Least years of data, a fifth higher; Least revenue growth, a fifth higher; Meaningful owner cash, a fifth higher; Least stock pay, share of revenue, a fifth higher; Least stock pay, share of free cash flow, a fifth lower; Least stock pay, share of free cash flow, a fifth higher; P1 cumulative margin that scores 0, a fifth lower; P1 cumulative margin that scores 0, a fifth higher; P1 cumulative margin that scores 8, a fifth lower; P1 cumulative margin that scores 8, a fifth higher; P1 latest margin that scores 0, a fifth lower; P1 latest margin that scores 0, a fifth higher; P1 latest margin that scores 7, a fifth lower; P1 latest margin that scores 7, a fifth higher; P2b window, in years, a fifth lower; P2b window, in years, a fifth higher; P2b cost fall that scores 0, a fifth lower; P2b cost fall that scores 0, a fifth higher; Costs as a share of gross profit that score 0, a fifth lower; Costs as a share of gross profit that score 0, a fifth higher; Costs as a share of gross profit that score in full, a fifth lower; Costs as a share of gross profit that score in full, a fifth higher; P3 sales as a multiple of grants that score 0, a fifth lower; P3 sales as a multiple of grants that score 0, a fifth higher; P3 sales as a multiple of grants that score 13, a fifth lower; P3 sales as a multiple of grants that score 13, a fifth higher.', \
                 '', \
-                'The thresholds, at the definition\'s values: `capital_led_ratio` = 2, `growth_min` = 0.5, `meaningful_margin` = 0.03, `one_off_ocf_share` = 0.25, `p1_cum_full` = -0.1, `p1_cum_points` = 8, `p1_cum_zero` = 0.05, `p1_latest_full` = -0.05, `p1_latest_points` = 7, `p1_latest_zero` = 0.05, `p1_years_points` = 10, `p2b_points` = 13, `p2b_window_years` = 5, `p2b_zero_drop` = 10, `p3_price_days` = 90, `p3_ratio_full` = 1.5, `p3_ratio_points` = 13, `p3_ratio_zero` = 0.5, `p3_unvalued_max` = 0.05, `p3_years` = 5, `p3_years_points` = 12, `prefilter_revenue` = 500000000, `revenue_min` = 1000000000, `sbc_fcf_min` = 0.5, `sbc_revenue_min` = 0.02, `still_filing_days` = 548, `years_min` = 5.', \
+                'The thresholds, at the definition\'s values: `capital_led_ratio` = 2, `cost_level_full` = 1, `cost_level_zero` = 0.7, `growth_min` = 0.5, `meaningful_margin` = 0.03, `one_off_ocf_share` = 0.25, `p1_cum_full` = -0.1, `p1_cum_points` = 8, `p1_cum_zero` = 0.05, `p1_latest_full` = -0.05, `p1_latest_points` = 7, `p1_latest_zero` = 0.05, `p1_years_points` = 10, `p2b_points` = 13, `p2b_window_years` = 5, `p2b_zero_drop` = 10, `p3_price_days` = 90, `p3_ratio_full` = 1.5, `p3_ratio_points` = 13, `p3_ratio_zero` = 0.5, `p3_unvalued_max` = 0.05, `p3_years` = 5, `p3_years_points` = 12, `prefilter_revenue` = 500000000, `revenue_min` = 1000000000, `sbc_fcf_min` = 0.5, `sbc_revenue_min` = 0.02, `still_filing_days` = 548, `years_min` = 5.', \
+                '', \
+                '## Change log', \
+                '', \
+                [ \
+                    '- **Method version 1.0.0.** First release. Stage 1 screen and screen score (P1 and P2b) from SEC financial data. Insider grants and sales from SEC Forms 4 and 5, with a provisional P3. A provisional three-signs score: P1, a costs sign, and P3.' \
+                ], \
                 '', \
                 '## Corrections', \
                 '', \
@@ -5652,14 +5806,21 @@ async function testMain_method():
                 'P2b counts only to the extent owners are getting no cash. Flat costs are common at cash-rich companies too, so on', \
                 'their own they say nothing.', \
                 '', \
-                '**Three-signs score (75 points) = P1 + (P1 / 25) x (P2b scaled to 25 + P3)**', \
+                '**Three-signs score (75 points) = P1 + (P1 / 25) x (costs + P3)**', \
                 '', \
-                'The screen score with insider selling (P3, described below) added in the same way. It is the index page\'s default', \
-                'order, because the three signs together are what the index is looking for. It is provisional because P3 is. Of the 4 ranked companies, 1 have all three pillars.', \
+                'The index page\'s default order, because the three signs together are what the index is looking for: no cash for', \
+                'owners (P1), revenue held up by costs, and insiders who are granted shares and sell them (P3, described below). Of the 4 ranked companies, 1 have all three.', \
                 '', \
-                'P2b measures whether costs fell against revenue, not how high they are. A company whose sales spending is very high', \
-                'but falling scores little on P2b. Each company page reports sales and marketing, research and development, and general', \
-                'and administrative spending as a share of revenue where the company tags them; these are not scored.', \
+                'The **costs sign (25 points)** has two halves. One is P2b, scaled to 12.5: whether operating costs fell against revenue.', \
+                'The other is their level: operating costs excluding cost of revenue as a share of gross profit in the latest fiscal', \
+                'year, 0 points at 70.0% and 12.5 at 100.0% or more. P2b alone gives nothing to a company whose', \
+                'spending is very high but falling; the level does. Among the companies that produce meaningful owner cash, operating', \
+                'costs typically take about two thirds of gross profit.', \
+                '', \
+                'The three-signs score is provisional. The costs level and P3 are new measures whose scales are untested judgment, and', \
+                'they are not part of the agreed definition\'s screen score. Each company page also reports sales and marketing,', \
+                'research and development, and general and administrative spending as a share of revenue where the company tags them;', \
+                'these are not scored.', \
                 '', \
                 '## Why these choices', \
                 '', \
@@ -5684,6 +5845,22 @@ async function testMain_method():
                 '', \
                 'Also not done: confirming each company was founded ten or more years ago, combining predecessor companies,', \
                 'adjusting share counts for splits, valuation, and governance facts.', \
+                '', \
+                '## Glossary', \
+                '', \
+                [ \
+                    '- **Owner cash.** Free cash flow less stock pay: the cash a year of business leaves for the people who own the shares.', \
+                    '- **Free cash flow.** Cash from operations less capital spending. It does not subtract stock pay, because stock pay uses no cash.', \
+                    '- **Stock pay.** Stock-based compensation: wages paid in shares and options. It costs owners a share of the company, not the company\'s cash.', \
+                    '- **Meaningful owner cash.** Owner cash of at least the stated share of revenue.', \
+                    '- **Capital-led.** A company whose capital spending is more than twice its stock pay. Its shortfall is mostly investment.', \
+                    '- **Insider.** An officer or director who must report trades in the company to the SEC.', \
+                    '- **Grant.** Shares, share units or options awarded to an insider as pay.', \
+                    '- **Open-market sale.** A sale on the exchange. It leaves out shares withheld for taxes, gifts, and shares sold back to the company.', \
+                    '- **Buyback.** A company buying its own shares. It returns cash to owners only if it leaves fewer shares.', \
+                    '- **Treadmill.** The pattern the index looks for: no cash for owners, revenue held up by costs, and insiders who are granted shares and sell them, year after year.', \
+                    '- **Latest 12 months.** The latest fiscal year, plus the part-year reported since, less the same part of the year before.' \
+                ], \
                 '', \
                 '## Rules', \
                 '', \
@@ -5745,7 +5922,7 @@ async function testMain_data():
                 '', \
                 '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
                 '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
-                '  File size 123,456,789 bytes, SHA-256 `bc13a1f7ddfe1af0b5870a117bf10dd41e6b23d64c3d8be213265ef2d4ecf96f`.', \
+                '  File size 123,456,789 bytes, SHA-256 `84809832c335d64f039cb04e746014ac3b0fa01abe787f3b4e061f65d58c9263`.', \
                 '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
                 '- Insider transactions: the SEC [insider transactions data sets](https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets), 1 quarterly files from `2025q4_form345.zip` to `2025q4_form345.zip`.', \
                 '- Method version 1.0.0. A figure cited from this page can be reproduced from the same', \
@@ -5795,20 +5972,20 @@ async function testMain_data():
                 '', \
                 '## If a threshold moves by a fifth', \
                 '', \
-                'Each threshold in the definition was moved down and up by a fifth, one at a time, and the index rebuilt. These are the', \
-                'changes in the top ten.', \
+                'Each threshold was moved down and up by a fifth, one at a time, and the index rebuilt. These are the changes in the', \
+                'top ten by three-signs score.', \
+                '', \
+                ['| Threshold moved | Value | Changes in the top ten |', '| :-- | :-- | :-- |'], \
+                '', \
+                'No change in the top ten: Least latest revenue, a fifth lower; Least latest revenue, a fifth higher; Least years of data, a fifth lower; Least years of data, a fifth higher; Least revenue growth, a fifth lower; Least revenue growth, a fifth higher; Meaningful owner cash, a fifth lower; Meaningful owner cash, a fifth higher; Least stock pay, share of revenue, a fifth lower; Least stock pay, share of revenue, a fifth higher; Least stock pay, share of free cash flow, a fifth lower; Least stock pay, share of free cash flow, a fifth higher; P1 cumulative margin that scores 0, a fifth lower; P1 cumulative margin that scores 0, a fifth higher; P1 cumulative margin that scores 8, a fifth lower; P1 cumulative margin that scores 8, a fifth higher; P1 latest margin that scores 0, a fifth lower; P1 latest margin that scores 0, a fifth higher; P1 latest margin that scores 7, a fifth lower; P1 latest margin that scores 7, a fifth higher; P2b window, in years, a fifth lower; P2b window, in years, a fifth higher; P2b cost fall that scores 0, a fifth lower; P2b cost fall that scores 0, a fifth higher; Costs as a share of gross profit that score 0, a fifth lower; Costs as a share of gross profit that score 0, a fifth higher; Costs as a share of gross profit that score in full, a fifth lower; Costs as a share of gross profit that score in full, a fifth higher; P3 sales as a multiple of grants that score 0, a fifth lower; P3 sales as a multiple of grants that score 0, a fifth higher; P3 sales as a multiple of grants that score 13, a fifth lower; P3 sales as a multiple of grants that score 13, a fifth higher.', \
+                '', \
+                'The thresholds, at the definition\'s values: `capital_led_ratio` = 2, `cost_level_full` = 1, `cost_level_zero` = 0.7, `growth_min` = 0.5, `meaningful_margin` = 0.03, `one_off_ocf_share` = 0.25, `p1_cum_full` = -0.1, `p1_cum_points` = 8, `p1_cum_zero` = 0.05, `p1_latest_full` = -0.05, `p1_latest_points` = 7, `p1_latest_zero` = 0.05, `p1_years_points` = 10, `p2b_points` = 13, `p2b_window_years` = 5, `p2b_zero_drop` = 10, `p3_price_days` = 90, `p3_ratio_full` = 1.5, `p3_ratio_points` = 13, `p3_ratio_zero` = 0.5, `p3_unvalued_max` = 0.05, `p3_years` = 5, `p3_years_points` = 12, `prefilter_revenue` = 500000000, `revenue_min` = 1000000000, `sbc_fcf_min` = 0.5, `sbc_revenue_min` = 0.02, `still_filing_days` = 548, `years_min` = 5.', \
+                '', \
+                '## Change log', \
                 '', \
                 [ \
-                    '| Threshold moved | Value | Changes in the top ten |', \
-                    '| :-- | :-- | :-- |', \
-                    '| Least revenue growth, a fifth lower | `growth_min` = 0.4 | Slower Co enters at 1; One\\-Off Co 1 to 2; Stock Pay Co 2 to 3; Capital & Sons \\[Holdings\\] 3 to 4; Marginal Co 4 to 5 |', \
-                    '| Meaningful owner cash, a fifth lower | `meaningful_margin` = 0.024 | Marginal Co leaves (was 4) |', \
-                    '| Least stock pay, share of revenue, a fifth lower | `sbc_revenue_min` = 0.016 | Thin Co enters at 4; Marginal Co 4 to 5 |' \
+                    '- **Method version 1.0.0.** First release. Stage 1 screen and screen score (P1 and P2b) from SEC financial data. Insider grants and sales from SEC Forms 4 and 5, with a provisional P3. A provisional three-signs score: P1, a costs sign, and P3.' \
                 ], \
-                '', \
-                'No change in the top ten: Least latest revenue, a fifth lower; Least latest revenue, a fifth higher; Least years of data, a fifth lower; Least years of data, a fifth higher; Least revenue growth, a fifth higher; Meaningful owner cash, a fifth higher; Least stock pay, share of revenue, a fifth higher; Least stock pay, share of free cash flow, a fifth lower; Least stock pay, share of free cash flow, a fifth higher; P1 cumulative margin that scores 0, a fifth lower; P1 cumulative margin that scores 0, a fifth higher; P1 cumulative margin that scores 8, a fifth lower; P1 cumulative margin that scores 8, a fifth higher; P1 latest margin that scores 0, a fifth lower; P1 latest margin that scores 0, a fifth higher; P1 latest margin that scores 7, a fifth lower; P1 latest margin that scores 7, a fifth higher; P2b window, in years, a fifth lower; P2b window, in years, a fifth higher; P2b cost fall that scores 0, a fifth lower; P2b cost fall that scores 0, a fifth higher.', \
-                '', \
-                'The thresholds, at the definition\'s values: `capital_led_ratio` = 2, `growth_min` = 0.5, `meaningful_margin` = 0.03, `one_off_ocf_share` = 0.25, `p1_cum_full` = -0.1, `p1_cum_points` = 8, `p1_cum_zero` = 0.05, `p1_latest_full` = -0.05, `p1_latest_points` = 7, `p1_latest_zero` = 0.05, `p1_years_points` = 10, `p2b_points` = 13, `p2b_window_years` = 5, `p2b_zero_drop` = 10, `p3_price_days` = 90, `p3_ratio_full` = 1.5, `p3_ratio_points` = 13, `p3_ratio_zero` = 0.5, `p3_unvalued_max` = 0.05, `p3_years` = 5, `p3_years_points` = 12, `prefilter_revenue` = 500000000, `revenue_min` = 1000000000, `sbc_fcf_min` = 0.5, `sbc_revenue_min` = 0.02, `still_filing_days` = 548, `years_min` = 5.', \
                 '', \
                 '## Corrections', \
                 '', \
