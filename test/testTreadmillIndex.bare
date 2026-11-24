@@ -53,6 +53,14 @@ endfunction
 unittestRunTest('testInsiderAmounts')
 
 
+function testSignMark():
+    unittestEqual(tiSignMark(true, 'Took 101.8% of gross profit'), '✅ Took 101.8% of gross profit')
+    unittestEqual(tiSignMark(false, 'Took 61.6% of gross profit'), '❌ Took 61.6% of gross profit')
+    unittestEqual(tiSignMark(null, 'n/a: the cost line cannot be built'), 'n/a: the cost line cannot be built')
+endfunction
+unittestRunTest('testSignMark')
+
+
 function testCashOut():
     unittestEqual(tiCashOut(346022932), 'took $346.0M out through stock')
     unittestEqual(tiCashOut(0), 'took $0 out through stock')

@@ -7,6 +7,7 @@ name = "treadmill-index"
 version = "0.1.0"
 description = "The Treadmill Index build step: SEC bulk data in, the web application's data files out"
 readme = "README.md"
+license = "MIT"
 authors = [
     {name = "Craig A. Hobbs"}
 ]

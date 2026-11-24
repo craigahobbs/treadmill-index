@@ -298,11 +298,12 @@ function tiIndexPage(args, meta, index):
         'such as a large sales force, a valuation on owner cash would be far lower. At the higher valuation its insiders are', \
         'granted shares, and can sell them, every year. The view of this index is that at some companies this is the point: owner', \
         'cash is kept near zero so that the company is never valued on it, while insiders turn grants into cash at the price that', \
-        'results. Shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which companies', \
-        'this is deliberate: a real bet on growth looks the same until it pays off.', \
+        'results. At those companies, shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which', \
+        'companies this is deliberate: a real bet on growth looks the same until it pays off.', \
         '', \
-        '**The three signs.** The index looks for three things together, each one visible in the filings. A real growth bet', \
-        'loses them in time: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little.', \
+        '**The three signs.** The index looks for three things together, each one visible in the filings. In a growth bet that', \
+        'pays off, they fade: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little', \
+        'next to what owners get.', \
         '', \
         '1. **Owner cash that stays near zero.** Together the ' + count + ' companies here recorded ' + \
             tiDollars(objectGet(screened, 'cumSbc')) + ' of stock pay against ' + tiDollars(objectGet(screened, 'cumFcf')) + \
@@ -317,8 +318,9 @@ function tiIndexPage(args, meta, index):
             " spent on buybacks and employees' vesting taxes.", \
         tiInsiderLines(meta), \
         '', \
-        '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
-        'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+        '**What it costs a shareholder.** Where the pattern holds, each share owns a smaller part of a company that produces little', \
+        'or no cash for its owners, at a price that cannot be checked against what it earns. A falling share price makes it worse:', \
+        'the same pay takes more shares.', \
         '', \
         "**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company's purpose, and not", \
         'a forecast that its shares will fall. ' + objectGet(objectGet(meta, 'latest'), 'cleared') + ' of the ' + count + \
@@ -438,8 +440,8 @@ function tiIndexPage(args, meta, index):
     endfor
     markdownPrint( \
         '', \
-        '**Rank** is by score, among the companies that pass the screen and have all three signs. Unranked companies are listed', \
-        'for comparison only.', \
+        '**Rank** is by score, among the companies that pass the screen and have all three signs. A high rank is not a statement', \
+        'that a company keeps the pattern going on purpose. Unranked companies are listed for comparison only.', \
         '', \
         '**The score is out of 75**, 25 for each sign: owner cash + (owner cash / 25) x (costs + insiders). Costs and insider', \
         'cash-out count only to the extent owners are getting no cash.', \
@@ -577,7 +579,13 @@ function tiCompanyScore(meta, cik, company):
         '', \
         '## Which Way the Numbers Point', \
         '', \
-        tiTable(['Sign', 'A growth bet paying off', 'A treadmill', 'This company'], ['l', 'l', 'l', 'l'], tiCompanySigns(meta, company)) \
+        tiTable(['Sign', 'A growth bet paying off', 'A treadmill', 'This company'], ['l', 'l', 'l', 'l'], tiCompanySigns(meta, company)), \
+        '', \
+        '✅ marks figures that match the treadmill column, and ❌ figures that do not: owner cash under ' + line + \
+            ' of revenue in the latest ' + if(isTTM, '12 months', 'fiscal year') + '; operating costs of ' + \
+            tiPercent(objectGet(thresholds, 'cost_level_full')) + ' of gross profit or more; insiders taking out more than owners got;', \
+        'a share count that did not fall despite buybacks. No mark means the figures are missing, or there were no buybacks.', \
+        'The marks say what the figures are, not why.' \
     )
 
     # Render what cuts the other way
@@ -734,9 +742,12 @@ function tiCompanySigns(meta, company):
             endif
         endfor
     endif
+    thresholds = objectGet(meta, 'thresholds')
     rows = [ \
-        ['Owner cash as the company grows', 'Appears', 'Stays near zero', ownerCash], \
-        ['Operating costs', 'Leave part of gross profit', 'Take all of gross profit', costs] \
+        ['Owner cash as the company grows', 'Appears', 'Stays near zero', \
+            tiSignMark(objectGet(row, 'latestMargin') < objectGet(thresholds, 'meaningful_margin'), ownerCash)], \
+        ['Operating costs', 'Leave part of gross profit', 'Take all of gross profit', \
+            tiSignMark(if(cost != null, objectGet(cost, 'level') == null || objectGet(cost, 'level') >= objectGet(thresholds, 'cost_level_full')), costs)] \
     ]
 
     # Insiders, where the build has them
@@ -744,8 +755,9 @@ function tiCompanySigns(meta, company):
         share = objectGet(row, 'cashOutRevenue')
         arrayPush(rows, ['Insiders, ' + fiveYears, 'Take out little next to what owners get', 'Take out more than owners get', \
             if(share != null, \
-                'Insiders ' + tiCashOut(objectGet(row, 'cashOut')) + ': ' + tiPercent(share) + ' of revenue. Owners got ' + \
-                    tiDollars(objectGet(row, 'ownerCashFive')) + ': ' + tiPercent(objectGet(row, 'ownerMarginFive')) + ' of revenue.', \
+                tiSignMark(objectGet(row, 'cashOut') > mathMax(objectGet(row, 'ownerCashFive'), 0), \
+                    'Insiders ' + tiCashOut(objectGet(row, 'cashOut')) + ': ' + tiPercent(share) + ' of revenue. Owners got ' + \
+                    tiDollars(objectGet(row, 'ownerCashFive')) + ': ' + tiPercent(objectGet(row, 'ownerMarginFive')) + ' of revenue.'), \
                 'n/a: no insider transactions in the SEC data sets')])
     endif
 
@@ -753,10 +765,18 @@ function tiCompanySigns(meta, company):
     shareGrowth = objectGet(row, 'shareGrowthFive')
     buybacks = objectGet(row, 'buybacksFive') + objectGet(row, 'withholdingFive')
     arrayPush(rows, ['Share count, ' + fiveYears, 'Falls when the company buys back shares', 'Holds or rises despite buybacks', \
-        if(shareGrowth == null, 'n/a: the share count cannot be followed', \
-            if(shareGrowth > 0, 'Rose ', 'Fell ') + tiPercent(mathAbs(shareGrowth)) + ' a year') + \
-        if(buybacks > 0, ', after ' + tiDollars(buybacks) + " of buybacks and employees' vesting taxes", '; no buybacks')])
+        tiSignMark(if(shareGrowth != null && buybacks > 0, shareGrowth >= 0), \
+            if(shareGrowth == null, 'n/a: the share count cannot be followed', \
+                if(shareGrowth > 0, 'Rose ', 'Fell ') + tiPercent(mathAbs(shareGrowth)) + ' a year') + \
+            if(buybacks > 0, ', after ' + tiDollars(buybacks) + " of buybacks and employees' vesting taxes", '; no buybacks'))])
     return rows
+endfunction
+
+
+# Mark a company's figures for a sign: a check if they match the treadmill column, an X if they match the other, and
+# no mark if the figures cannot say (null)
+function tiSignMark(matches, text):
+    return if(matches == null, '', if(matches, '✅ ', '❌ ')) + text
 endfunction
 
 
@@ -782,7 +802,7 @@ function tiCompanyInsiders(args, meta, cik, company):
     arrayPush(yearRows, tiInsiderAmounts(['**' + yearsText + '**'], insider))
     markdownPrint( \
         'Officers and directors who reported transactions: ' + objectGet(insider, 'insiders') + ', of whom ' + \
-            objectGet(insider, 'sellers') + ' took cash out.', \
+            objectGet(insider, 'sellers') + ' took out more than they put in.', \
         'Together they ' + tiCashOut(objectGet(insider, 'cashOut')) + '. They were granted stock worth ' + \
             tiDollars(objectGet(insider, 'grants')) + ' and options over shares worth ' + tiDollars(objectGet(insider, 'optionGrants')) + \
             ' at the time.', \
@@ -812,7 +832,7 @@ function tiCompanyInsiders(args, meta, cik, company):
     endif
     markdownPrint( \
         '', \
-        'From the SEC insider filings (Forms 4 and 5) of officers and directors. Cash taken out is open-market sales, plus shares', \
+        'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
         'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
         'price reported. Shares withheld count', \
         'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
@@ -854,7 +874,7 @@ tiFilingsTitle = 'Filings of the Selected Insider'
 
 
 # The insider tables' amount columns
-tiInsiderHeaders = ['Cash taken out', 'Sold on the open market', 'Withheld for taxes or sold to the company', \
+tiInsiderHeaders = ['Net taken out through stock', 'Sold on the open market', 'Withheld for taxes or sold to the company', \
     'Paid to buy shares or exercise options', 'Stock granted', 'Options granted, at the price of the shares']
 
 
@@ -1196,7 +1216,7 @@ function tiMethodPage(meta):
         '', \
         '## What the Index Measures', \
         '', \
-        'Mature companies whose revenue growth has not become meaningful cash for outside owners because the cash goes out as', \
+        'Large, growing companies whose revenue growth has not become meaningful cash for outside owners because the cash goes out as', \
         'stock pay. It ranks how owners have been treated. It does not predict share prices, it is not a trading', \
         'recommendation, and it does not measure intent: the view that some companies keep the pattern going on purpose is', \
         "this index's, stated on the index page, and is not a finding about any one company. Paying staff in stock, and", \
@@ -1496,7 +1516,8 @@ function tiDataPage(meta, builds):
         '', \
         '## Corrections', \
         '', \
-        'If a figure here does not match the linked SEC filing, it is an error in this index. Report it at the', \
+        'If a figure here does not match the linked SEC filing, it is an error in this index. Confirmed errors are corrected in', \
+        'the next build and noted in the change log. Report one at the', \
         '[project repository](https://github.com/craigahobbs/treadmill-index/issues) with the company and the year.' \
     )
 endfunction

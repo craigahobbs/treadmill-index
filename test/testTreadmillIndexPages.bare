@@ -51,11 +51,12 @@ async function testMain_index():
                 'such as a large sales force, a valuation on owner cash would be far lower. At the higher valuation its insiders are', \
                 'granted shares, and can sell them, every year. The view of this index is that at some companies this is the point: owner', \
                 'cash is kept near zero so that the company is never valued on it, while insiders turn grants into cash at the price that', \
-                'results. Shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which companies', \
-                'this is deliberate: a real bet on growth looks the same until it pays off.', \
+                'results. At those companies, shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which', \
+                'companies this is deliberate: a real bet on growth looks the same until it pays off.', \
                 '', \
-                '**The three signs.** The index looks for three things together, each one visible in the filings. A real growth bet', \
-                'loses them in time: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little.', \
+                '**The three signs.** The index looks for three things together, each one visible in the filings. In a growth bet that', \
+                'pays off, they fade: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little', \
+                'next to what owners get.', \
                 '', \
                 '1. **Owner cash that stays near zero.** Together the 5 companies here recorded $6.8B of stock pay against $5.2B of free cash flow.', \
                 '   At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
@@ -69,8 +70,9 @@ async function testMain_index():
                     '   Their owners got -2.1%. At the companies that do produce cash for owners, insiders took out 18.6% of revenue and owners got 8.0%.' \
                 ], \
                 '', \
-                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
-                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+                '**What it costs a shareholder.** Where the pattern holds, each share owns a smaller part of a company that produces little', \
+                'or no cash for its owners, at a price that cannot be checked against what it earns. A falling share price makes it worse:', \
+                'the same pay takes more shares.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months. Each company page shows which way', \
@@ -139,8 +141,8 @@ async function testMain_index():
             'markdownPrint', \
             [ \
                 '', \
-                '**Rank** is by score, among the companies that pass the screen and have all three signs. Unranked companies are listed', \
-                'for comparison only.', \
+                '**Rank** is by score, among the companies that pass the screen and have all three signs. A high rank is not a statement', \
+                'that a company keeps the pattern going on purpose. Unranked companies are listed for comparison only.', \
                 '', \
                 '**The score is out of 75**, 25 for each sign: owner cash + (owner cash / 25) x (costs + insiders). Costs and insider', \
                 'cash-out count only to the extent owners are getting no cash.', \
@@ -238,11 +240,12 @@ async function testMain_indexAll():
                 'such as a large sales force, a valuation on owner cash would be far lower. At the higher valuation its insiders are', \
                 'granted shares, and can sell them, every year. The view of this index is that at some companies this is the point: owner', \
                 'cash is kept near zero so that the company is never valued on it, while insiders turn grants into cash at the price that', \
-                'results. Shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which companies', \
-                'this is deliberate: a real bet on growth looks the same until it pays off.', \
+                'results. At those companies, shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which', \
+                'companies this is deliberate: a real bet on growth looks the same until it pays off.', \
                 '', \
-                '**The three signs.** The index looks for three things together, each one visible in the filings. A real growth bet', \
-                'loses them in time: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little.', \
+                '**The three signs.** The index looks for three things together, each one visible in the filings. In a growth bet that', \
+                'pays off, they fade: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little', \
+                'next to what owners get.', \
                 '', \
                 '1. **Owner cash that stays near zero.** Together the 5 companies here recorded $6.8B of stock pay against $5.2B of free cash flow.', \
                 '   At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
@@ -256,8 +259,9 @@ async function testMain_indexAll():
                     '   Their owners got -2.1%. At the companies that do produce cash for owners, insiders took out 18.6% of revenue and owners got 8.0%.' \
                 ], \
                 '', \
-                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
-                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+                '**What it costs a shareholder.** Where the pattern holds, each share owns a smaller part of a company that produces little', \
+                'or no cash for its owners, at a price that cannot be checked against what it earns. A falling share price makes it worse:', \
+                'the same pay takes more shares.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months. Each company page shows which way', \
@@ -331,8 +335,8 @@ async function testMain_indexAll():
             'markdownPrint', \
             [ \
                 '', \
-                '**Rank** is by score, among the companies that pass the screen and have all three signs. Unranked companies are listed', \
-                'for comparison only.', \
+                '**Rank** is by score, among the companies that pass the screen and have all three signs. A high rank is not a statement', \
+                'that a company keeps the pattern going on purpose. Unranked companies are listed for comparison only.', \
                 '', \
                 '**The score is out of 75**, 25 for each sign: owner cash + (owner cash / 25) x (costs + insiders). Costs and insider', \
                 'cash-out count only to the extent owners are getting no cash.', \
@@ -432,11 +436,12 @@ async function testMain_indexShowAll():
                 'such as a large sales force, a valuation on owner cash would be far lower. At the higher valuation its insiders are', \
                 'granted shares, and can sell them, every year. The view of this index is that at some companies this is the point: owner', \
                 'cash is kept near zero so that the company is never valued on it, while insiders turn grants into cash at the price that', \
-                'results. Shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which companies', \
-                'this is deliberate: a real bet on growth looks the same until it pays off.', \
+                'results. At those companies, shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which', \
+                'companies this is deliberate: a real bet on growth looks the same until it pays off.', \
                 '', \
-                '**The three signs.** The index looks for three things together, each one visible in the filings. A real growth bet', \
-                'loses them in time: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little.', \
+                '**The three signs.** The index looks for three things together, each one visible in the filings. In a growth bet that', \
+                'pays off, they fade: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little', \
+                'next to what owners get.', \
                 '', \
                 '1. **Owner cash that stays near zero.** Together the 5 companies here recorded $6.8B of stock pay against $5.2B of free cash flow.', \
                 '   At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
@@ -450,8 +455,9 @@ async function testMain_indexShowAll():
                     '   Their owners got -2.1%. At the companies that do produce cash for owners, insiders took out 18.6% of revenue and owners got 8.0%.' \
                 ], \
                 '', \
-                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
-                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+                '**What it costs a shareholder.** Where the pattern holds, each share owns a smaller part of a company that produces little', \
+                'or no cash for its owners, at a price that cannot be checked against what it earns. A falling share price makes it worse:', \
+                'the same pay takes more shares.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months. Each company page shows which way', \
@@ -525,8 +531,8 @@ async function testMain_indexShowAll():
             'markdownPrint', \
             [ \
                 '', \
-                '**Rank** is by score, among the companies that pass the screen and have all three signs. Unranked companies are listed', \
-                'for comparison only.', \
+                '**Rank** is by score, among the companies that pass the screen and have all three signs. A high rank is not a statement', \
+                'that a company keeps the pattern going on purpose. Unranked companies are listed for comparison only.', \
                 '', \
                 '**The score is out of 75**, 25 for each sign: owner cash + (owner cash / 25) x (costs + insiders). Costs and insider', \
                 'cash-out count only to the extent owners are getting no cash.', \
@@ -626,11 +632,12 @@ async function testMain_indexFind():
                 'such as a large sales force, a valuation on owner cash would be far lower. At the higher valuation its insiders are', \
                 'granted shares, and can sell them, every year. The view of this index is that at some companies this is the point: owner', \
                 'cash is kept near zero so that the company is never valued on it, while insiders turn grants into cash at the price that', \
-                'results. Shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which companies', \
-                'this is deliberate: a real bet on growth looks the same until it pays off.', \
+                'results. At those companies, shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which', \
+                'companies this is deliberate: a real bet on growth looks the same until it pays off.', \
                 '', \
-                '**The three signs.** The index looks for three things together, each one visible in the filings. A real growth bet', \
-                'loses them in time: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little.', \
+                '**The three signs.** The index looks for three things together, each one visible in the filings. In a growth bet that', \
+                'pays off, they fade: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little', \
+                'next to what owners get.', \
                 '', \
                 '1. **Owner cash that stays near zero.** Together the 5 companies here recorded $6.8B of stock pay against $5.2B of free cash flow.', \
                 '   At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
@@ -644,8 +651,9 @@ async function testMain_indexFind():
                     '   Their owners got -2.1%. At the companies that do produce cash for owners, insiders took out 18.6% of revenue and owners got 8.0%.' \
                 ], \
                 '', \
-                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
-                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+                '**What it costs a shareholder.** Where the pattern holds, each share owns a smaller part of a company that produces little', \
+                'or no cash for its owners, at a price that cannot be checked against what it earns. A falling share price makes it worse:', \
+                'the same pay takes more shares.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months. Each company page shows which way', \
@@ -721,8 +729,8 @@ async function testMain_indexFind():
             'markdownPrint', \
             [ \
                 '', \
-                '**Rank** is by score, among the companies that pass the screen and have all three signs. Unranked companies are listed', \
-                'for comparison only.', \
+                '**Rank** is by score, among the companies that pass the screen and have all three signs. A high rank is not a statement', \
+                'that a company keeps the pattern going on purpose. Unranked companies are listed for comparison only.', \
                 '', \
                 '**The score is out of 75**, 25 for each sign: owner cash + (owner cash / 25) x (costs + insiders). Costs and insider', \
                 'cash-out count only to the extent owners are getting no cash.', \
@@ -816,11 +824,12 @@ async function testMain_indexFindTicker():
                 'such as a large sales force, a valuation on owner cash would be far lower. At the higher valuation its insiders are', \
                 'granted shares, and can sell them, every year. The view of this index is that at some companies this is the point: owner', \
                 'cash is kept near zero so that the company is never valued on it, while insiders turn grants into cash at the price that', \
-                'results. Shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which companies', \
-                'this is deliberate: a real bet on growth looks the same until it pays off.', \
+                'results. At those companies, shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which', \
+                'companies this is deliberate: a real bet on growth looks the same until it pays off.', \
                 '', \
-                '**The three signs.** The index looks for three things together, each one visible in the filings. A real growth bet', \
-                'loses them in time: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little.', \
+                '**The three signs.** The index looks for three things together, each one visible in the filings. In a growth bet that', \
+                'pays off, they fade: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little', \
+                'next to what owners get.', \
                 '', \
                 '1. **Owner cash that stays near zero.** Together the 5 companies here recorded $6.8B of stock pay against $5.2B of free cash flow.', \
                 '   At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
@@ -834,8 +843,9 @@ async function testMain_indexFindTicker():
                     '   Their owners got -2.1%. At the companies that do produce cash for owners, insiders took out 18.6% of revenue and owners got 8.0%.' \
                 ], \
                 '', \
-                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
-                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+                '**What it costs a shareholder.** Where the pattern holds, each share owns a smaller part of a company that produces little', \
+                'or no cash for its owners, at a price that cannot be checked against what it earns. A falling share price makes it worse:', \
+                'the same pay takes more shares.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months. Each company page shows which way', \
@@ -903,8 +913,8 @@ async function testMain_indexFindTicker():
             'markdownPrint', \
             [ \
                 '', \
-                '**Rank** is by score, among the companies that pass the screen and have all three signs. Unranked companies are listed', \
-                'for comparison only.', \
+                '**Rank** is by score, among the companies that pass the screen and have all three signs. A high rank is not a statement', \
+                'that a company keeps the pattern going on purpose. Unranked companies are listed for comparison only.', \
                 '', \
                 '**The score is out of 75**, 25 for each sign: owner cash + (owner cash / 25) x (costs + insiders). Costs and insider', \
                 'cash-out count only to the extent owners are getting no cash.', \
@@ -1000,11 +1010,12 @@ async function testMain_indexNoMatch():
                 'such as a large sales force, a valuation on owner cash would be far lower. At the higher valuation its insiders are', \
                 'granted shares, and can sell them, every year. The view of this index is that at some companies this is the point: owner', \
                 'cash is kept near zero so that the company is never valued on it, while insiders turn grants into cash at the price that', \
-                'results. Shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which companies', \
-                'this is deliberate: a real bet on growth looks the same until it pays off.', \
+                'results. At those companies, shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which', \
+                'companies this is deliberate: a real bet on growth looks the same until it pays off.', \
                 '', \
-                '**The three signs.** The index looks for three things together, each one visible in the filings. A real growth bet', \
-                'loses them in time: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little.', \
+                '**The three signs.** The index looks for three things together, each one visible in the filings. In a growth bet that', \
+                'pays off, they fade: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little', \
+                'next to what owners get.', \
                 '', \
                 '1. **Owner cash that stays near zero.** Together the 5 companies here recorded $6.8B of stock pay against $5.2B of free cash flow.', \
                 '   At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
@@ -1018,8 +1029,9 @@ async function testMain_indexNoMatch():
                     '   Their owners got -2.1%. At the companies that do produce cash for owners, insiders took out 18.6% of revenue and owners got 8.0%.' \
                 ], \
                 '', \
-                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
-                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+                '**What it costs a shareholder.** Where the pattern holds, each share owns a smaller part of a company that produces little', \
+                'or no cash for its owners, at a price that cannot be checked against what it earns. A falling share price makes it worse:', \
+                'the same pay takes more shares.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months. Each company page shows which way', \
@@ -1084,8 +1096,8 @@ async function testMain_indexNoMatch():
             'markdownPrint', \
             [ \
                 '', \
-                '**Rank** is by score, among the companies that pass the screen and have all three signs. Unranked companies are listed', \
-                'for comparison only.', \
+                '**Rank** is by score, among the companies that pass the screen and have all three signs. A high rank is not a statement', \
+                'that a company keeps the pattern going on purpose. Unranked companies are listed for comparison only.', \
                 '', \
                 '**The score is out of 75**, 25 for each sign: owner cash + (owner cash / 25) x (costs + insiders). Costs and insider', \
                 'cash-out count only to the extent owners are getting no cash.', \
@@ -1181,11 +1193,12 @@ async function testMain_indexUnknownArgs():
                 'such as a large sales force, a valuation on owner cash would be far lower. At the higher valuation its insiders are', \
                 'granted shares, and can sell them, every year. The view of this index is that at some companies this is the point: owner', \
                 'cash is kept near zero so that the company is never valued on it, while insiders turn grants into cash at the price that', \
-                'results. Shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which companies', \
-                'this is deliberate: a real bet on growth looks the same until it pays off.', \
+                'results. At those companies, shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which', \
+                'companies this is deliberate: a real bet on growth looks the same until it pays off.', \
                 '', \
-                '**The three signs.** The index looks for three things together, each one visible in the filings. A real growth bet', \
-                'loses them in time: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little.', \
+                '**The three signs.** The index looks for three things together, each one visible in the filings. In a growth bet that', \
+                'pays off, they fade: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little', \
+                'next to what owners get.', \
                 '', \
                 '1. **Owner cash that stays near zero.** Together the 5 companies here recorded $6.8B of stock pay against $5.2B of free cash flow.', \
                 '   At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
@@ -1199,8 +1212,9 @@ async function testMain_indexUnknownArgs():
                     '   Their owners got -2.1%. At the companies that do produce cash for owners, insiders took out 18.6% of revenue and owners got 8.0%.' \
                 ], \
                 '', \
-                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
-                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+                '**What it costs a shareholder.** Where the pattern holds, each share owns a smaller part of a company that produces little', \
+                'or no cash for its owners, at a price that cannot be checked against what it earns. A falling share price makes it worse:', \
+                'the same pay takes more shares.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months. Each company page shows which way', \
@@ -1258,8 +1272,8 @@ async function testMain_indexUnknownArgs():
             'markdownPrint', \
             [ \
                 '', \
-                '**Rank** is by score, among the companies that pass the screen and have all three signs. Unranked companies are listed', \
-                'for comparison only.', \
+                '**Rank** is by score, among the companies that pass the screen and have all three signs. A high rank is not a statement', \
+                'that a company keeps the pattern going on purpose. Unranked companies are listed for comparison only.', \
                 '', \
                 '**The score is out of 75**, 25 for each sign: owner cash + (owner cash / 25) x (costs + insiders). Costs and insider', \
                 'cash-out count only to the extent owners are getting no cash.', \
@@ -1355,11 +1369,12 @@ async function testMain_indexInsiderSort():
                 'such as a large sales force, a valuation on owner cash would be far lower. At the higher valuation its insiders are', \
                 'granted shares, and can sell them, every year. The view of this index is that at some companies this is the point: owner', \
                 'cash is kept near zero so that the company is never valued on it, while insiders turn grants into cash at the price that', \
-                'results. Shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which companies', \
-                'this is deliberate: a real bet on growth looks the same until it pays off.', \
+                'results. At those companies, shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which', \
+                'companies this is deliberate: a real bet on growth looks the same until it pays off.', \
                 '', \
-                '**The three signs.** The index looks for three things together, each one visible in the filings. A real growth bet', \
-                'loses them in time: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little.', \
+                '**The three signs.** The index looks for three things together, each one visible in the filings. In a growth bet that', \
+                'pays off, they fade: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little', \
+                'next to what owners get.', \
                 '', \
                 '1. **Owner cash that stays near zero.** Together the 5 companies here recorded $6.8B of stock pay against $5.2B of free cash flow.', \
                 '   At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
@@ -1373,8 +1388,9 @@ async function testMain_indexInsiderSort():
                     '   Their owners got -2.1%. At the companies that do produce cash for owners, insiders took out 18.6% of revenue and owners got 8.0%.' \
                 ], \
                 '', \
-                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
-                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+                '**What it costs a shareholder.** Where the pattern holds, each share owns a smaller part of a company that produces little', \
+                'or no cash for its owners, at a price that cannot be checked against what it earns. A falling share price makes it worse:', \
+                'the same pay takes more shares.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months. Each company page shows which way', \
@@ -1448,8 +1464,8 @@ async function testMain_indexInsiderSort():
             'markdownPrint', \
             [ \
                 '', \
-                '**Rank** is by score, among the companies that pass the screen and have all three signs. Unranked companies are listed', \
-                'for comparison only.', \
+                '**Rank** is by score, among the companies that pass the screen and have all three signs. A high rank is not a statement', \
+                'that a company keeps the pattern going on purpose. Unranked companies are listed for comparison only.', \
                 '', \
                 '**The score is out of 75**, 25 for each sign: owner cash + (owner cash / 25) x (costs + insiders). Costs and insider', \
                 'cash-out count only to the extent owners are getting no cash.', \
@@ -1543,11 +1559,12 @@ async function testMain_indexCapitalLed():
                 'such as a large sales force, a valuation on owner cash would be far lower. At the higher valuation its insiders are', \
                 'granted shares, and can sell them, every year. The view of this index is that at some companies this is the point: owner', \
                 'cash is kept near zero so that the company is never valued on it, while insiders turn grants into cash at the price that', \
-                'results. Shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which companies', \
-                'this is deliberate: a real bet on growth looks the same until it pays off.', \
+                'results. At those companies, shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which', \
+                'companies this is deliberate: a real bet on growth looks the same until it pays off.', \
                 '', \
-                '**The three signs.** The index looks for three things together, each one visible in the filings. A real growth bet', \
-                'loses them in time: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little.', \
+                '**The three signs.** The index looks for three things together, each one visible in the filings. In a growth bet that', \
+                'pays off, they fade: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little', \
+                'next to what owners get.', \
                 '', \
                 '1. **Owner cash that stays near zero.** Together the 5 companies here recorded $6.8B of stock pay against $5.2B of free cash flow.', \
                 '   At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
@@ -1561,8 +1578,9 @@ async function testMain_indexCapitalLed():
                     '   Their owners got -2.1%. At the companies that do produce cash for owners, insiders took out 18.6% of revenue and owners got 8.0%.' \
                 ], \
                 '', \
-                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
-                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+                '**What it costs a shareholder.** Where the pattern holds, each share owns a smaller part of a company that produces little', \
+                'or no cash for its owners, at a price that cannot be checked against what it earns. A falling share price makes it worse:', \
+                'the same pay takes more shares.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months. Each company page shows which way', \
@@ -1627,8 +1645,8 @@ async function testMain_indexCapitalLed():
             'markdownPrint', \
             [ \
                 '', \
-                '**Rank** is by score, among the companies that pass the screen and have all three signs. Unranked companies are listed', \
-                'for comparison only.', \
+                '**Rank** is by score, among the companies that pass the screen and have all three signs. A high rank is not a statement', \
+                'that a company keeps the pattern going on purpose. Unranked companies are listed for comparison only.', \
                 '', \
                 '**The score is out of 75**, 25 for each sign: owner cash + (owner cash / 25) x (costs + insiders). Costs and insider', \
                 'cash-out count only to the extent owners are getting no cash.', \
@@ -1720,11 +1738,12 @@ async function testMain_indexFailed():
                 'such as a large sales force, a valuation on owner cash would be far lower. At the higher valuation its insiders are', \
                 'granted shares, and can sell them, every year. The view of this index is that at some companies this is the point: owner', \
                 'cash is kept near zero so that the company is never valued on it, while insiders turn grants into cash at the price that', \
-                'results. Shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which companies', \
-                'this is deliberate: a real bet on growth looks the same until it pays off.', \
+                'results. At those companies, shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which', \
+                'companies this is deliberate: a real bet on growth looks the same until it pays off.', \
                 '', \
-                '**The three signs.** The index looks for three things together, each one visible in the filings. A real growth bet', \
-                'loses them in time: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little.', \
+                '**The three signs.** The index looks for three things together, each one visible in the filings. In a growth bet that', \
+                'pays off, they fade: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little', \
+                'next to what owners get.', \
                 '', \
                 '1. **Owner cash that stays near zero.** Together the 5 companies here recorded $6.8B of stock pay against $5.2B of free cash flow.', \
                 '   At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
@@ -1738,8 +1757,9 @@ async function testMain_indexFailed():
                     '   Their owners got -2.1%. At the companies that do produce cash for owners, insiders took out 18.6% of revenue and owners got 8.0%.' \
                 ], \
                 '', \
-                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
-                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+                '**What it costs a shareholder.** Where the pattern holds, each share owns a smaller part of a company that produces little', \
+                'or no cash for its owners, at a price that cannot be checked against what it earns. A falling share price makes it worse:', \
+                'the same pay takes more shares.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months. Each company page shows which way', \
@@ -1797,8 +1817,8 @@ async function testMain_indexFailed():
             'markdownPrint', \
             [ \
                 '', \
-                '**Rank** is by score, among the companies that pass the screen and have all three signs. Unranked companies are listed', \
-                'for comparison only.', \
+                '**Rank** is by score, among the companies that pass the screen and have all three signs. A high rank is not a statement', \
+                'that a company keeps the pattern going on purpose. Unranked companies are listed for comparison only.', \
                 '', \
                 '**The score is out of 75**, 25 for each sign: owner cash + (owner cash / 25) x (costs + insiders). Costs and insider', \
                 'cash-out count only to the extent owners are getting no cash.', \
@@ -1929,11 +1949,15 @@ async function testMain_company():
                 [ \
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
-                    '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -2.0% in the latest 12 months. |', \
-                    '| Operating costs | Leave part of gross profit | Take all of gross profit | Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025; sales and marketing 32.0% to 28.0% |', \
-                    '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | Insiders took $100.0M out through stock: 1.2% of revenue. Owners got -$161.0M: -2.0% of revenue. |', \
-                    '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | Rose 2.0% a year, after $40.0M of buybacks and employees\' vesting taxes |' \
-                ] \
+                    '| Owner cash as the company grows | Appears | Stays near zero | ✅ Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -2.0% in the latest 12 months. |', \
+                    '| Operating costs | Leave part of gross profit | Take all of gross profit | ❌ Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025; sales and marketing 32.0% to 28.0% |', \
+                    '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | ✅ Insiders took $100.0M out through stock: 1.2% of revenue. Owners got -$161.0M: -2.0% of revenue. |', \
+                    '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | ✅ Rose 2.0% a year, after $40.0M of buybacks and employees\' vesting taxes |' \
+                ], \
+                '', \
+                '✅ marks figures that match the treadmill column, and ❌ figures that do not: owner cash under 3.0% of revenue in the latest 12 months; operating costs of 100.0% of gross profit or more; insiders taking out more than owners got;', \
+                'a share count that did not fall despite buybacks. No mark means the figures are missing, or there were no buybacks.', \
+                'The marks say what the figures are, not why.' \
             ] \
         ], \
         [ \
@@ -2013,11 +2037,11 @@ async function testMain_company():
         [ \
             'markdownPrint', \
             [ \
-                'Officers and directors who reported transactions: 2, of whom 2 took cash out.', \
+                'Officers and directors who reported transactions: 2, of whom 2 took out more than they put in.', \
                 'Together they took $100.0M out through stock. They were granted stock worth $110K and options over shares worth $300K at the time.', \
                 '', \
                 [ \
-                    '| Year | Cash taken out | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
+                    '| Year | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
                     '| :-- | --: | --: | --: | --: | --: | --: |', \
                     '| 2021 | $0 | $0 | $0 | $0 | $0 | $0 |', \
                     '| 2022 | $0 | $0 | $0 | $0 | $0 | $0 |', \
@@ -2035,7 +2059,7 @@ async function testMain_company():
                 '**Who took out the most.** Select a name to list that person\'s filings.', \
                 '', \
                 [ \
-                    '| Insider | Latest title | Cash taken out | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
+                    '| Insider | Latest title | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: |', \
                     '| [Doe Jane](#var.vCik=1&var.vPage=\'company\'&var.vPerson=1001&filings-of-the-selected-insider) | Chief Executive Officer | $100.0M | $102.0M | $6K | $2.0M | $110K | $300K |', \
                     '| [Roe Rich](#var.vCik=1&var.vPage=\'company\'&var.vPerson=1002&filings-of-the-selected-insider) | Director | $8K | $8K | $0 | $0 | $0 | $0 |' \
@@ -2046,7 +2070,7 @@ async function testMain_company():
             'markdownPrint', \
             [ \
                 '', \
-                'From the SEC insider filings (Forms 4 and 5) of officers and directors. Cash taken out is open-market sales, plus shares', \
+                'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
                 'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
                 'price reported. Shares withheld count', \
                 'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
@@ -2158,11 +2182,15 @@ async function testMain_companyPerson():
                 [ \
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
-                    '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -2.0% in the latest 12 months. |', \
-                    '| Operating costs | Leave part of gross profit | Take all of gross profit | Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025; sales and marketing 32.0% to 28.0% |', \
-                    '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | Insiders took $100.0M out through stock: 1.2% of revenue. Owners got -$161.0M: -2.0% of revenue. |', \
-                    '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | Rose 2.0% a year, after $40.0M of buybacks and employees\' vesting taxes |' \
-                ] \
+                    '| Owner cash as the company grows | Appears | Stays near zero | ✅ Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -2.0% in the latest 12 months. |', \
+                    '| Operating costs | Leave part of gross profit | Take all of gross profit | ❌ Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025; sales and marketing 32.0% to 28.0% |', \
+                    '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | ✅ Insiders took $100.0M out through stock: 1.2% of revenue. Owners got -$161.0M: -2.0% of revenue. |', \
+                    '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | ✅ Rose 2.0% a year, after $40.0M of buybacks and employees\' vesting taxes |' \
+                ], \
+                '', \
+                '✅ marks figures that match the treadmill column, and ❌ figures that do not: owner cash under 3.0% of revenue in the latest 12 months; operating costs of 100.0% of gross profit or more; insiders taking out more than owners got;', \
+                'a share count that did not fall despite buybacks. No mark means the figures are missing, or there were no buybacks.', \
+                'The marks say what the figures are, not why.' \
             ] \
         ], \
         [ \
@@ -2242,11 +2270,11 @@ async function testMain_companyPerson():
         [ \
             'markdownPrint', \
             [ \
-                'Officers and directors who reported transactions: 2, of whom 2 took cash out.', \
+                'Officers and directors who reported transactions: 2, of whom 2 took out more than they put in.', \
                 'Together they took $100.0M out through stock. They were granted stock worth $110K and options over shares worth $300K at the time.', \
                 '', \
                 [ \
-                    '| Year | Cash taken out | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
+                    '| Year | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
                     '| :-- | --: | --: | --: | --: | --: | --: |', \
                     '| 2021 | $0 | $0 | $0 | $0 | $0 | $0 |', \
                     '| 2022 | $0 | $0 | $0 | $0 | $0 | $0 |', \
@@ -2264,7 +2292,7 @@ async function testMain_companyPerson():
                 '**Who took out the most.** Select a name to list that person\'s filings.', \
                 '', \
                 [ \
-                    '| Insider | Latest title | Cash taken out | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
+                    '| Insider | Latest title | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: |', \
                     '| [Doe Jane](#var.vCik=1&var.vPage=\'company\'&var.vPerson=1001&filings-of-the-selected-insider) | Chief Executive Officer | $100.0M | $102.0M | $6K | $2.0M | $110K | $300K |', \
                     '| [Roe Rich](#var.vCik=1&var.vPage=\'company\'&var.vPerson=1002&filings-of-the-selected-insider) | Director | $8K | $8K | $0 | $0 | $0 | $0 |' \
@@ -2275,7 +2303,7 @@ async function testMain_companyPerson():
             'markdownPrint', \
             [ \
                 '', \
-                'From the SEC insider filings (Forms 4 and 5) of officers and directors. Cash taken out is open-market sales, plus shares', \
+                'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
                 'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
                 'price reported. Shares withheld count', \
                 'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
@@ -2292,7 +2320,7 @@ async function testMain_companyPerson():
                 '**Doe Jane**, Chief Executive Officer. Each filing opens at the SEC.', \
                 '', \
                 [ \
-                    '| Filed | Filing | Cash taken out | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
+                    '| Filed | Filing | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: |', \
                     '| 2024‑03‑18 | [0000000001‑24‑000101](https://www.sec.gov/Archives/edgar/data/1/000000000124000101/0000000001-24-000101-index.htm) | $102.0M | $102.0M | $0 | $0 | $0 | $0 |', \
                     '| 2024‑03‑25 | [0000000001‑24‑000102](https://www.sec.gov/Archives/edgar/data/1/000000000124000102/0000000001-24-000102-index.htm) | -$2.0M | $0 | $6K | $2.0M | $110K | $300K |', \
@@ -2402,11 +2430,15 @@ async function testMain_companyOneOff():
                 [ \
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
-                    '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -4.0% in the latest fiscal year. |', \
-                    '| Operating costs | Leave part of gross profit | Take all of gross profit | Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025 |', \
-                    '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | Insiders took $4K out through stock: 0.0% of revenue. Owners got -$322.0M: -4.0% of revenue. |', \
+                    '| Owner cash as the company grows | Appears | Stays near zero | ✅ Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -4.0% in the latest fiscal year. |', \
+                    '| Operating costs | Leave part of gross profit | Take all of gross profit | ❌ Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025 |', \
+                    '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | ✅ Insiders took $4K out through stock: 0.0% of revenue. Owners got -$322.0M: -4.0% of revenue. |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | n/a: the share count cannot be followed; no buybacks |' \
-                ] \
+                ], \
+                '', \
+                '✅ marks figures that match the treadmill column, and ❌ figures that do not: owner cash under 3.0% of revenue in the latest fiscal year; operating costs of 100.0% of gross profit or more; insiders taking out more than owners got;', \
+                'a share count that did not fall despite buybacks. No mark means the figures are missing, or there were no buybacks.', \
+                'The marks say what the figures are, not why.' \
             ] \
         ], \
         [ \
@@ -2495,11 +2527,11 @@ async function testMain_companyOneOff():
         [ \
             'markdownPrint', \
             [ \
-                'Officers and directors who reported transactions: 1, of whom 1 took cash out.', \
+                'Officers and directors who reported transactions: 1, of whom 1 took out more than they put in.', \
                 'Together they took $4K out through stock. They were granted stock worth $0 and options over shares worth $0 at the time.', \
                 '', \
                 [ \
-                    '| Year | Cash taken out | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
+                    '| Year | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
                     '| :-- | --: | --: | --: | --: | --: | --: |', \
                     '| 2021 | $0 | $0 | $0 | $0 | $0 | $0 |', \
                     '| 2022 | $0 | $0 | $0 | $0 | $0 | $0 |', \
@@ -2517,7 +2549,7 @@ async function testMain_companyOneOff():
                 '**Who took out the most.** Select a name to list that person\'s filings.', \
                 '', \
                 [ \
-                    '| Insider | Latest title | Cash taken out | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
+                    '| Insider | Latest title | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: |', \
                     '| [Doe Jane](#var.vCik=6&var.vPage=\'company\'&var.vPerson=1001&filings-of-the-selected-insider) | Chief Executive Officer | $4K | $4K | $0 | $0 | $0 | $0 |' \
                 ] \
@@ -2527,7 +2559,7 @@ async function testMain_companyOneOff():
             'markdownPrint', \
             [ \
                 '', \
-                'From the SEC insider filings (Forms 4 and 5) of officers and directors. Cash taken out is open-market sales, plus shares', \
+                'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
                 'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
                 'price reported. Shares withheld count', \
                 'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
@@ -2659,11 +2691,15 @@ async function testMain_companyCapitalLed():
                 [ \
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
-                    '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -2.0% in the latest 12 months. |', \
-                    '| Operating costs | Leave part of gross profit | Take all of gross profit | Took 87.5% of gross profit in 2025. Against revenue: 55.0% in 2021, 52.5% in 2025 |', \
+                    '| Owner cash as the company grows | Appears | Stays near zero | ✅ Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -2.0% in the latest 12 months. |', \
+                    '| Operating costs | Leave part of gross profit | Take all of gross profit | ❌ Took 87.5% of gross profit in 2025. Against revenue: 55.0% in 2021, 52.5% in 2025 |', \
                     '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | n/a: no insider transactions in the SEC data sets |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | n/a: the share count cannot be followed; no buybacks |' \
-                ] \
+                ], \
+                '', \
+                '✅ marks figures that match the treadmill column, and ❌ figures that do not: owner cash under 3.0% of revenue in the latest 12 months; operating costs of 100.0% of gross profit or more; insiders taking out more than owners got;', \
+                'a share count that did not fall despite buybacks. No mark means the figures are missing, or there were no buybacks.', \
+                'The marks say what the figures are, not why.' \
             ] \
         ], \
         [ \
@@ -2857,11 +2893,15 @@ async function testMain_companyNoCostLine():
                 [ \
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
-                    '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -8.0% in the latest fiscal year. |', \
+                    '| Owner cash as the company grows | Appears | Stays near zero | ✅ Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -8.0% in the latest fiscal year. |', \
                     '| Operating costs | Leave part of gross profit | Take all of gross profit | n/a: the cost line cannot be built |', \
                     '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | n/a: no insider transactions in the SEC data sets |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | n/a: the share count cannot be followed; no buybacks |' \
-                ] \
+                ], \
+                '', \
+                '✅ marks figures that match the treadmill column, and ❌ figures that do not: owner cash under 3.0% of revenue in the latest fiscal year; operating costs of 100.0% of gross profit or more; insiders taking out more than owners got;', \
+                'a share count that did not fall despite buybacks. No mark means the figures are missing, or there were no buybacks.', \
+                'The marks say what the figures are, not why.' \
             ] \
         ], \
         [ \
@@ -3072,11 +3112,15 @@ async function testMain_companyNoGrossProfit():
                 [ \
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
-                    '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -5.0% in the latest 12 months. |', \
-                    '| Operating costs | Leave part of gross profit | Take all of gross profit | Took more than all of gross profit in 2025. Against revenue: 19.0% in 2021, 19.0% in 2025 |', \
-                    '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | Insiders took $320.0M out through stock: 4.0% of revenue. Owners got -$402.5M: -5.0% of revenue. |', \
+                    '| Owner cash as the company grows | Appears | Stays near zero | ✅ Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -5.0% in the latest 12 months. |', \
+                    '| Operating costs | Leave part of gross profit | Take all of gross profit | ✅ Took more than all of gross profit in 2025. Against revenue: 19.0% in 2021, 19.0% in 2025 |', \
+                    '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | ✅ Insiders took $320.0M out through stock: 4.0% of revenue. Owners got -$402.5M: -5.0% of revenue. |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | n/a: the share count cannot be followed; no buybacks |' \
-                ] \
+                ], \
+                '', \
+                '✅ marks figures that match the treadmill column, and ❌ figures that do not: owner cash under 3.0% of revenue in the latest 12 months; operating costs of 100.0% of gross profit or more; insiders taking out more than owners got;', \
+                'a share count that did not fall despite buybacks. No mark means the figures are missing, or there were no buybacks.', \
+                'The marks say what the figures are, not why.' \
             ] \
         ], \
         [ \
@@ -3151,11 +3195,11 @@ async function testMain_companyNoGrossProfit():
         [ \
             'markdownPrint', \
             [ \
-                'Officers and directors who reported transactions: 1, of whom 1 took cash out.', \
+                'Officers and directors who reported transactions: 1, of whom 1 took out more than they put in.', \
                 'Together they took $320.0M out through stock. They were granted stock worth $0 and options over shares worth $0 at the time.', \
                 '', \
                 [ \
-                    '| Year | Cash taken out | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
+                    '| Year | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
                     '| :-- | --: | --: | --: | --: | --: | --: |', \
                     '| 2021 | $0 | $0 | $0 | $0 | $0 | $0 |', \
                     '| 2022 | $0 | $0 | $0 | $0 | $0 | $0 |', \
@@ -3173,7 +3217,7 @@ async function testMain_companyNoGrossProfit():
                 '**Who took out the most.** Select a name to list that person\'s filings.', \
                 '', \
                 [ \
-                    '| Insider | Latest title | Cash taken out | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
+                    '| Insider | Latest title | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: |', \
                     '| [Doe Jane](#var.vCik=11&var.vPage=\'company\'&var.vPerson=1001&filings-of-the-selected-insider) | Chief Executive Officer | $320.0M | $320.0M | $0 | $0 | $0 | $0 |' \
                 ] \
@@ -3183,7 +3227,7 @@ async function testMain_companyNoGrossProfit():
             'markdownPrint', \
             [ \
                 '', \
-                'From the SEC insider filings (Forms 4 and 5) of officers and directors. Cash taken out is open-market sales, plus shares', \
+                'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
                 'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
                 'price reported. Shares withheld count', \
                 'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
@@ -3298,11 +3342,15 @@ async function testMain_companyNoCashOut():
                 [ \
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
-                    '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. 2.6% in the latest 12 months. |', \
-                    '| Operating costs | Leave part of gross profit | Take all of gross profit | Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025 |', \
-                    '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | Insiders bought $30K more than they took out through stock: 0.0% of revenue. Owners got $209.3M: 2.6% of revenue. |', \
+                    '| Owner cash as the company grows | Appears | Stays near zero | ✅ Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. 2.6% in the latest 12 months. |', \
+                    '| Operating costs | Leave part of gross profit | Take all of gross profit | ❌ Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025 |', \
+                    '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | ❌ Insiders bought $30K more than they took out through stock: 0.0% of revenue. Owners got $209.3M: 2.6% of revenue. |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | Fell 2.0% a year; no buybacks |' \
-                ] \
+                ], \
+                '', \
+                '✅ marks figures that match the treadmill column, and ❌ figures that do not: owner cash under 3.0% of revenue in the latest 12 months; operating costs of 100.0% of gross profit or more; insiders taking out more than owners got;', \
+                'a share count that did not fall despite buybacks. No mark means the figures are missing, or there were no buybacks.', \
+                'The marks say what the figures are, not why.' \
             ] \
         ], \
         [ \
@@ -3377,11 +3425,11 @@ async function testMain_companyNoCashOut():
         [ \
             'markdownPrint', \
             [ \
-                'Officers and directors who reported transactions: 1, of whom 0 took cash out.', \
+                'Officers and directors who reported transactions: 1, of whom 0 took out more than they put in.', \
                 'Together they bought $30K more than they took out through stock. They were granted stock worth $0 and options over shares worth $0 at the time.', \
                 '', \
                 [ \
-                    '| Year | Cash taken out | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
+                    '| Year | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
                     '| :-- | --: | --: | --: | --: | --: | --: |', \
                     '| 2021 | $0 | $0 | $0 | $0 | $0 | $0 |', \
                     '| 2022 | $0 | $0 | $0 | $0 | $0 | $0 |', \
@@ -3396,7 +3444,7 @@ async function testMain_companyNoCashOut():
             'markdownPrint', \
             [ \
                 '', \
-                'From the SEC insider filings (Forms 4 and 5) of officers and directors. Cash taken out is open-market sales, plus shares', \
+                'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
                 'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
                 'price reported. Shares withheld count', \
                 'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
@@ -3506,11 +3554,15 @@ async function testMain_companyCashGenerative():
                 [ \
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
-                    '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 0 of 7 years; above it in the latest fiscal year. 8.0% in the latest 12 months. |', \
-                    '| Operating costs | Leave part of gross profit | Take all of gross profit | Took 66.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 40.0% in 2025 |', \
-                    '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | Insiders took $1.5B out through stock: 18.6% of revenue. Owners got $644.0M: 8.0% of revenue. |', \
-                    '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | Rose 5.0% a year, after $250.0M of buybacks and employees\' vesting taxes |' \
-                ] \
+                    '| Owner cash as the company grows | Appears | Stays near zero | ❌ Under 3.0% of revenue in 0 of 7 years; above it in the latest fiscal year. 8.0% in the latest 12 months. |', \
+                    '| Operating costs | Leave part of gross profit | Take all of gross profit | ❌ Took 66.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 40.0% in 2025 |', \
+                    '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | ✅ Insiders took $1.5B out through stock: 18.6% of revenue. Owners got $644.0M: 8.0% of revenue. |', \
+                    '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | ✅ Rose 5.0% a year, after $250.0M of buybacks and employees\' vesting taxes |' \
+                ], \
+                '', \
+                '✅ marks figures that match the treadmill column, and ❌ figures that do not: owner cash under 3.0% of revenue in the latest 12 months; operating costs of 100.0% of gross profit or more; insiders taking out more than owners got;', \
+                'a share count that did not fall despite buybacks. No mark means the figures are missing, or there were no buybacks.', \
+                'The marks say what the figures are, not why.' \
             ] \
         ], \
         [ \
@@ -3600,11 +3652,11 @@ async function testMain_companyCashGenerative():
         [ \
             'markdownPrint', \
             [ \
-                'Officers and directors who reported transactions: 1, of whom 1 took cash out.', \
+                'Officers and directors who reported transactions: 1, of whom 1 took out more than they put in.', \
                 'Together they took $1.5B out through stock. They were granted stock worth $0 and options over shares worth $0 at the time.', \
                 '', \
                 [ \
-                    '| Year | Cash taken out | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
+                    '| Year | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
                     '| :-- | --: | --: | --: | --: | --: | --: |', \
                     '| 2021 | $0 | $0 | $0 | $0 | $0 | $0 |', \
                     '| 2022 | $1.5B | $1.5B | $0 | $0 | $0 | $0 |', \
@@ -3622,7 +3674,7 @@ async function testMain_companyCashGenerative():
                 '**Who took out the most.** Select a name to list that person\'s filings.', \
                 '', \
                 [ \
-                    '| Insider | Latest title | Cash taken out | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
+                    '| Insider | Latest title | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: |', \
                     '| [Doe Jane](#var.vCik=4&var.vPage=\'company\'&var.vPerson=1001&filings-of-the-selected-insider) | Chief Executive Officer | $1.5B | $1.5B | $0 | $0 | $0 | $0 |' \
                 ] \
@@ -3632,7 +3684,7 @@ async function testMain_companyCashGenerative():
             'markdownPrint', \
             [ \
                 '', \
-                'From the SEC insider filings (Forms 4 and 5) of officers and directors. Cash taken out is open-market sales, plus shares', \
+                'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
                 'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
                 'price reported. Shares withheld count', \
                 'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
@@ -3748,11 +3800,11 @@ async function testMain_companyExcluded():
         [ \
             'markdownPrint', \
             [ \
-                'Officers and directors who reported transactions: 1, of whom 1 took cash out.', \
+                'Officers and directors who reported transactions: 1, of whom 1 took out more than they put in.', \
                 'Together they took $1.2M out through stock. They were granted stock worth $0 and options over shares worth $0 at the time.', \
                 '', \
                 [ \
-                    '| Year | Cash taken out | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
+                    '| Year | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
                     '| :-- | --: | --: | --: | --: | --: | --: |', \
                     '| 2021 | $0 | $0 | $0 | $0 | $0 | $0 |', \
                     '| 2022 | $1.2M | $1.2M | $0 | $0 | $0 | $0 |', \
@@ -3770,7 +3822,7 @@ async function testMain_companyExcluded():
                 '**Who took out the most.** Select a name to list that person\'s filings.', \
                 '', \
                 [ \
-                    '| Insider | Latest title | Cash taken out | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
+                    '| Insider | Latest title | Net taken out through stock | Sold on the open market | Withheld for taxes or sold to the company | Paid to buy shares or exercise options | Stock granted | Options granted, at the price of the shares |', \
                     '| :-- | :-- | --: | --: | --: | --: | --: | --: |', \
                     '| [Doe Jane](#var.vCik=5&var.vPage=\'company\'&var.vPerson=1001&filings-of-the-selected-insider) | Chief Executive Officer | $1.2M | $1.2M | $0 | $0 | $0 | $0 |' \
                 ] \
@@ -3780,7 +3832,7 @@ async function testMain_companyExcluded():
             'markdownPrint', \
             [ \
                 '', \
-                'From the SEC insider filings (Forms 4 and 5) of officers and directors. Cash taken out is open-market sales, plus shares', \
+                'From the SEC insider filings (Forms 4 and 5) of officers and directors. The net taken out is open-market sales, plus shares', \
                 'withheld for taxes or sold to the company, less open-market purchases and what was paid to exercise options, each at the', \
                 'price reported. Shares withheld count', \
                 'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
@@ -3895,11 +3947,15 @@ async function testMain_companyNoIndustryName():
                 [ \
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
-                    '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. 0.6% in the latest 12 months. |', \
-                    '| Operating costs | Leave part of gross profit | Take all of gross profit | Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025 |', \
+                    '| Owner cash as the company grows | Appears | Stays near zero | ✅ Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. 0.6% in the latest 12 months. |', \
+                    '| Operating costs | Leave part of gross profit | Take all of gross profit | ❌ Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025 |', \
                     '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | n/a: no insider transactions in the SEC data sets |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | n/a: the share count cannot be followed; no buybacks |' \
-                ] \
+                ], \
+                '', \
+                '✅ marks figures that match the treadmill column, and ❌ figures that do not: owner cash under 3.0% of revenue in the latest 12 months; operating costs of 100.0% of gross profit or more; insiders taking out more than owners got;', \
+                'a share count that did not fall despite buybacks. No mark means the figures are missing, or there were no buybacks.', \
+                'The marks say what the figures are, not why.' \
             ] \
         ], \
         [ \
@@ -4091,11 +4147,15 @@ async function testMain_companyNoIndustry():
                 [ \
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
-                    '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -13.0% in the latest 12 months. |', \
-                    '| Operating costs | Leave part of gross profit | Take all of gross profit | Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025 |', \
+                    '| Owner cash as the company grows | Appears | Stays near zero | ✅ Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -13.0% in the latest 12 months. |', \
+                    '| Operating costs | Leave part of gross profit | Take all of gross profit | ❌ Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025 |', \
                     '| Insiders, 2021‑2025 | Take out little next to what owners get | Take out more than owners get | n/a: no insider transactions in the SEC data sets |', \
                     '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | n/a: the share count cannot be followed; no buybacks |' \
-                ] \
+                ], \
+                '', \
+                '✅ marks figures that match the treadmill column, and ❌ figures that do not: owner cash under 3.0% of revenue in the latest 12 months; operating costs of 100.0% of gross profit or more; insiders taking out more than owners got;', \
+                'a share count that did not fall despite buybacks. No mark means the figures are missing, or there were no buybacks.', \
+                'The marks say what the figures are, not why.' \
             ] \
         ], \
         [ \
@@ -4513,7 +4573,7 @@ async function testMain_method():
                 '', \
                 '## What the Index Measures', \
                 '', \
-                'Mature companies whose revenue growth has not become meaningful cash for outside owners because the cash goes out as', \
+                'Large, growing companies whose revenue growth has not become meaningful cash for outside owners because the cash goes out as', \
                 'stock pay. It ranks how owners have been treated. It does not predict share prices, it is not a trading', \
                 'recommendation, and it does not measure intent: the view that some companies keep the pattern going on purpose is', \
                 'this index\'s, stated on the index page, and is not a finding about any one company. Paying staff in stock, and', \
@@ -4694,7 +4754,7 @@ async function testMain_data():
                 '', \
                 '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
                 '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
-                '  File size 123,456,789 bytes, SHA-256 `23378be9a292c824e5f59d2b5c771b5f91845e3111096fc068da940adc88ffe6`.', \
+                '  File size 123,456,789 bytes, SHA-256 `f9fc1223d3ff884cfe44c41716347f598258f6961f99e9244e583aadd288f5b8`.', \
                 '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
                 '- Insider transactions: the SEC [insider transactions data sets](https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets), 20 quarterly files from `2021q1_form345.zip` to `2025q4_form345.zip`.', \
                 '- Method version 1.1.0. A figure cited from this page can be reproduced from the same', \
@@ -4792,7 +4852,8 @@ async function testMain_data():
                 '', \
                 '## Corrections', \
                 '', \
-                'If a figure here does not match the linked SEC filing, it is an error in this index. Report it at the', \
+                'If a figure here does not match the linked SEC filing, it is an error in this index. Confirmed errors are corrected in', \
+                'the next build and noted in the change log. Report one at the', \
                 '[project repository](https://github.com/craigahobbs/treadmill-index/issues) with the company and the year.' \
             ] \
         ], \
@@ -4849,7 +4910,7 @@ async function testMain_dataNoBuilds():
                 '', \
                 '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
                 '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
-                '  File size 123,456,789 bytes, SHA-256 `23378be9a292c824e5f59d2b5c771b5f91845e3111096fc068da940adc88ffe6`.', \
+                '  File size 123,456,789 bytes, SHA-256 `f9fc1223d3ff884cfe44c41716347f598258f6961f99e9244e583aadd288f5b8`.', \
                 '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
                 '- Insider transactions: the SEC [insider transactions data sets](https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets), 20 quarterly files from `2021q1_form345.zip` to `2025q4_form345.zip`.', \
                 '- Method version 1.1.0. A figure cited from this page can be reproduced from the same', \
@@ -4945,7 +5006,8 @@ async function testMain_dataNoBuilds():
                 '', \
                 '## Corrections', \
                 '', \
-                'If a figure here does not match the linked SEC filing, it is an error in this index. Report it at the', \
+                'If a figure here does not match the linked SEC filing, it is an error in this index. Confirmed errors are corrected in', \
+                'the next build and noted in the change log. Report one at the', \
                 '[project repository](https://github.com/craigahobbs/treadmill-index/issues) with the company and the year.' \
             ] \
         ], \
@@ -5007,11 +5069,12 @@ async function testMain_indexNoInsider():
                 'such as a large sales force, a valuation on owner cash would be far lower. At the higher valuation its insiders are', \
                 'granted shares, and can sell them, every year. The view of this index is that at some companies this is the point: owner', \
                 'cash is kept near zero so that the company is never valued on it, while insiders turn grants into cash at the price that', \
-                'results. Shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which companies', \
-                'this is deliberate: a real bet on growth looks the same until it pays off.', \
+                'results. At those companies, shareholders who take "investing in growth" on trust bear the cost. The numbers cannot say at which', \
+                'companies this is deliberate: a real bet on growth looks the same until it pays off.', \
                 '', \
-                '**The three signs.** The index looks for three things together, each one visible in the filings. A real growth bet', \
-                'loses them in time: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little.', \
+                '**The three signs.** The index looks for three things together, each one visible in the filings. In a growth bet that', \
+                'pays off, they fade: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little', \
+                'next to what owners get.', \
                 '', \
                 '1. **Owner cash that stays near zero.** Together the 5 companies here recorded $6.8B of stock pay against $5.2B of free cash flow.', \
                 '   At 5 of the 5, owner cash has been under 3.0% of revenue for five or more fiscal years running.', \
@@ -5021,8 +5084,9 @@ async function testMain_indexNoInsider():
                 '   the count still rose at 1, after $40.0M spent on buybacks and employees\' vesting taxes.', \
                 '3. **Insiders who cash out.** Insider transactions are not in this build, so no company has a score.', \
                 '', \
-                '**What it costs a shareholder.** Each share owns a smaller part of a company that produces no cash for its owners, at a', \
-                'price that cannot be checked against what it earns. A falling share price makes it worse: the same pay takes more shares.', \
+                '**What it costs a shareholder.** Where the pattern holds, each share owns a smaller part of a company that produces little', \
+                'or no cash for its owners, at a price that cannot be checked against what it earns. A falling share price makes it worse:', \
+                'the same pay takes more shares.', \
                 '', \
                 '**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company\'s purpose, and not', \
                 'a forecast that its shares will fall. 0 of the 5 had meaningful owner cash in their latest 12 months. Each company page shows which way', \
@@ -5091,8 +5155,8 @@ async function testMain_indexNoInsider():
             'markdownPrint', \
             [ \
                 '', \
-                '**Rank** is by score, among the companies that pass the screen and have all three signs. Unranked companies are listed', \
-                'for comparison only.', \
+                '**Rank** is by score, among the companies that pass the screen and have all three signs. A high rank is not a statement', \
+                'that a company keeps the pattern going on purpose. Unranked companies are listed for comparison only.', \
                 '', \
                 '**The score is out of 75**, 25 for each sign: owner cash + (owner cash / 25) x (costs + insiders). Costs and insider', \
                 'cash-out count only to the extent owners are getting no cash.', \
@@ -5191,10 +5255,14 @@ async function testMain_companyNoInsider():
                 [ \
                     '| Sign | A growth bet paying off | A treadmill | This company |', \
                     '| :-- | :-- | :-- | :-- |', \
-                    '| Owner cash as the company grows | Appears | Stays near zero | Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -2.0% in the latest 12 months. |', \
-                    '| Operating costs | Leave part of gross profit | Take all of gross profit | Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025; sales and marketing 32.0% to 28.0% |', \
-                    '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | Rose 2.0% a year, after $40.0M of buybacks and employees\' vesting taxes |' \
-                ] \
+                    '| Owner cash as the company grows | Appears | Stays near zero | ✅ Under 3.0% of revenue in 7 of 7 years, and for the latest 7 running. -2.0% in the latest 12 months. |', \
+                    '| Operating costs | Leave part of gross profit | Take all of gross profit | ❌ Took 91.7% of gross profit in 2025. Against revenue: 55.0% in 2021, 55.0% in 2025; sales and marketing 32.0% to 28.0% |', \
+                    '| Share count, 2021‑2025 | Falls when the company buys back shares | Holds or rises despite buybacks | ✅ Rose 2.0% a year, after $40.0M of buybacks and employees\' vesting taxes |' \
+                ], \
+                '', \
+                '✅ marks figures that match the treadmill column, and ❌ figures that do not: owner cash under 3.0% of revenue in the latest 12 months; operating costs of 100.0% of gross profit or more; insiders taking out more than owners got;', \
+                'a share count that did not fall despite buybacks. No mark means the figures are missing, or there were no buybacks.', \
+                'The marks say what the figures are, not why.' \
             ] \
         ], \
         [ \
@@ -5457,7 +5525,7 @@ async function testMain_dataNoInsider():
                 '', \
                 '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
                 '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
-                '  File size 123,456,789 bytes, SHA-256 `23378be9a292c824e5f59d2b5c771b5f91845e3111096fc068da940adc88ffe6`.', \
+                '  File size 123,456,789 bytes, SHA-256 `f9fc1223d3ff884cfe44c41716347f598258f6961f99e9244e583aadd288f5b8`.', \
                 '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
                 '- Insider transactions: not in this build.', \
                 '- Method version 1.1.0. A figure cited from this page can be reproduced from the same', \
@@ -5550,7 +5618,8 @@ async function testMain_dataNoInsider():
                 '', \
                 '## Corrections', \
                 '', \
-                'If a figure here does not match the linked SEC filing, it is an error in this index. Report it at the', \
+                'If a figure here does not match the linked SEC filing, it is an error in this index. Confirmed errors are corrected in', \
+                'the next build and noted in the change log. Report one at the', \
                 '[project repository](https://github.com/craigahobbs/treadmill-index/issues) with the company and the year.' \
             ] \
         ], \

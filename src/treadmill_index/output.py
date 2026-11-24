@@ -379,7 +379,7 @@ def insider_totals(results):
         'companies': len(insiders),
         'revenue': dollars(sum(result['five']['revenue'] for result in with_insiders)),
         'ownerCash': dollars(sum(result['five']['ownerCash'] for result in with_insiders)),
-        'tookMore': sum(1 for result in with_insiders if result['insider']['cashOut'] > result['five']['ownerCash']),
+        'tookMore': sum(1 for result in with_insiders if result['insider']['cashOut'] > max(result['five']['ownerCash'], 0)),
         'quarters': sum(insider['quarters'] for insider in insiders),
         'buybackQuarters': sum(insider['buybackQuarters'] for insider in insiders),
         **{amount: dollars(sum(insider[amount] for insider in insiders)) for amount in (*INSIDER_AMOUNTS, *INSIDER_QUARTER_AMOUNTS)}

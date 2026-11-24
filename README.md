@@ -83,3 +83,9 @@ The web application's test data, `test/data/`, is made by the build step itself 
 `test/makeTestData.py`. The page render tests, `test/testTreadmillIndexPages.bare`, are generated from the page
 states listed in `test/makeTestPages.py`. After a change to the content of the data files, or to what a page
 renders, run `make test-data` and `make test-pages`, and read the diff before committing it.
+
+
+## License
+
+The code is under the [MIT License](LICENSE). The figures in `data/` are computed from public SEC filings; each
+one links to the filing it came from.
