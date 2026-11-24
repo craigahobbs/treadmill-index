@@ -1,0 +1,68 @@
+include <dataLineChart.bare>
+include <unittest.bare>
+include <unittestMock.bare>
+
+
+# Load test data files for the systemFetch mock
+async function testData(urls):
+    texts = systemFetch(urls)
+    data = {}
+    for url, ixURL in urls:
+        objectSet(data, url, arrayGet(texts, ixURL))
+    endfor
+    return {'systemFetch': data}
+endfunction
+
+
+# Get the expected chart render call for a test company file
+function testChartCall(data, url):
+    company = jsonParse(objectGet(objectGet(data, 'systemFetch'), url))
+    chartData = []
+    for year in objectGet(company, 'years'):
+        arrayPush(chartData, {'Fiscal year': numberParseInt(objectGet(year, 'fy')), 'Owner-cash margin (%)': objectGet(year, 'margin') * 100})
+    endfor
+    return ['elementModelRender', [{'html': 'p', 'elem': dataLineChartElements(chartData, { \
+        'title': 'Owner cash as a percent of revenue', \
+        'width': 720, \
+        'height': 300, \
+        'x': 'Fiscal year', \
+        'y': ['Owner-cash margin (%)'], \
+        'precision': 0, \
+        'yLines': [{'value': 3, 'label': '3.0%'}] \
+    })}]]
+endfunction
+
+
+# Find a control's event callback in a rendered element model - by the control's ID, or by its text
+function testFindCallback(model, idOrText, event):
+    type = systemType(model)
+    if type == 'array':
+        for item in model:
+            found = testFindCallback(item, idOrText, event)
+            if found != null:
+                return found
+            endif
+        endfor
+    elif type == 'object':
+        elem = objectGet(model, 'elem')
+        callback = objectGet(model, 'callback')
+        isMatch = objectGet(objectGet(model, 'attr', {}), 'id') == idOrText || \
+            (systemType(elem) == 'object' && objectGet(elem, 'text') == idOrText)
+        if callback != null && isMatch:
+            return objectGet(callback, event)
+        endif
+        return testFindCallback(elem, idOrText, event)
+    endif
+    return null
+endfunction
+
+
+# Verify that two functions have the same effect
+async function testSameEffect(actualFn, expectedFn, data):
+    unittestMockAll(data)
+    expectedFn()
+    expected = unittestMockEnd()
+    unittestMockAll(data)
+    actualFn()
+    unittestDeepEqual(unittestMockEnd(), expected)
+endfunction

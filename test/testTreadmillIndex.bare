@@ -1,0 +1,278 @@
+include <args.bare>
+include <forms.bare>
+include <unittest.bare>
+include <unittestMock.bare>
+include '../treadmillIndex.bare'
+include 'testHelpers.bare'
+
+
+function testNumber():
+    unittestEqual(tiNumber(0, 0), '0')
+    unittestEqual(tiNumber(999, 0), '999')
+    unittestEqual(tiNumber(1000, 0), '1,000')
+    unittestEqual(tiNumber(1234567.4, 0), '1,234,567')
+    unittestEqual(tiNumber(-20609, 0), '-20,609')
+    unittestEqual(tiNumber(6533.84, 1), '6,533.8')
+    unittestEqual(tiNumber(-0.25, 2), '-0.25')
+endfunction
+unittestRunTest('testNumber')
+
+
+function testMoney():
+    unittestEqual(tiMoney(null), 'n/a')
+    unittestEqual(tiMoney(2583000000), '$2,583M')
+    unittestEqual(tiMoney(-1375355000), '-$1,375M')
+    unittestEqual(tiMoney(0), '$0M')
+endfunction
+unittestRunTest('testMoney')
+
+
+function testBillions():
+    unittestEqual(tiBillions(6533800000000), '$6,533.8B')
+    unittestEqual(tiBillions(-20800000000), '-$20.8B')
+    unittestEqual(tiBillions(500000000), '$0.5B')
+endfunction
+unittestRunTest('testBillions')
+
+
+function testPercent():
+    unittestEqual(tiPercent(null), 'n/a')
+    unittestEqual(tiPercent(0.03), '3.0%')
+    unittestEqual(tiPercent(-0.07001), '-7.0%')
+endfunction
+unittestRunTest('testPercent')
+
+
+function testScore():
+    unittestEqual(tiScore(null), 'n/a')
+    unittestEqual(tiScore(36.998), '37.0')
+    unittestEqual(tiScore(0), '0.0')
+endfunction
+unittestRunTest('testScore')
+
+
+function testTable():
+    unittestDeepEqual( \
+        tiTable(['Name', 'Value'], ['l', 'r'], [['A', '1'], ['B', '2']]), \
+        ['| Name | Value |', '| :-- | --: |', '| A | 1 |', '| B | 2 |'] \
+    )
+    unittestDeepEqual(tiTable(['Name'], ['l'], []), ['| Name |', '| :-- |'])
+endfunction
+unittestRunTest('testTable')
+
+
+function testFilingURL():
+    unittestEqual( \
+        tiFilingURL(1617640, '0001617640-26-000015'), \
+        'https://www.sec.gov/Archives/edgar/data/1617640/000161764026000015/0001617640-26-000015-index.htm' \
+    )
+endfunction
+unittestRunTest('testFilingURL')
+
+
+function testFact():
+    unittestEqual(tiFact(1617640, null), 'n/a')
+    unittestEqual( \
+        tiFact(1617640, {'v': 390000000, 'accn': '0001617640-26-000015', 'filed': '2026-02-11', 'form': '10-K', 'tag': 'ShareBasedCompensation'}), \
+        '[$390M](https://www.sec.gov/Archives/edgar/data/1617640/000161764026000015/0001617640-26-000015-index.htm)' \
+    )
+endfunction
+unittestRunTest('testFact')
+
+
+function testFactLinks():
+    unittestEqual(tiFactLinks(7, []), '')
+    unittestEqual( \
+        tiFactLinks(7, [ \
+            {'v': 750000000, 'accn': '0000000007-22-000010', 'tag': 'GrossProfit'}, \
+            {'v': -62500000, 'accn': '0000000007-22-000011', 'tag': 'OperatingIncomeLoss'} \
+        ]), \
+        '[GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/7/000000000722000010/0000000007-22-000010-index.htm), ' + \
+            '[OperatingIncomeLoss -$63M](https://www.sec.gov/Archives/edgar/data/7/000000000722000011/0000000007-22-000011-index.htm)' \
+    )
+endfunction
+unittestRunTest('testFactLinks')
+
+
+function testFind():
+    unittestEqual(objectGet(tiFind(tiTypes, 'cash_burner'), 'title'), 'Cash burner')
+    unittestEqual(tiFind(tiTypes, 'unknown'), null)
+endfunction
+unittestRunTest('testFind')
+
+
+function testRowNotes():
+    unittestEqual(tiRowNotes({'flags': [], 'capitalLed': false}), '')
+    unittestEqual(tiRowNotes({'flags': [], 'capitalLed': true}), 'C')
+    unittestEqual(tiRowNotes({'flags': ['share_count_jump', 'one_off_years'], 'capitalLed': false}), 'O S')
+    unittestEqual( \
+        tiRowNotes({ \
+            'flags': ['capex_missing', 'no_cost_line', 'latest_is_fiscal_year', 'one_off_years', 'gap_years', 'revenue_jump', 'share_count_jump'], \
+            'capitalLed': true \
+        }), \
+        'C O F N X G J S' \
+    )
+endfunction
+unittestRunTest('testRowNotes')
+
+
+function testCompareRows():
+    rowA = {'name': 'A', 'p1': 10}
+    rowB = {'name': 'B', 'p1': 20}
+    unittestEqual(tiCompareRows('name', false, rowA, rowB), -1)
+    unittestEqual(tiCompareRows('name', false, rowB, rowA), 1)
+    unittestEqual(tiCompareRows('p1', true, rowA, rowB), 1)
+    unittestEqual(tiCompareRows('p1', true, rowB, rowA), -1)
+    unittestEqual(tiCompareRows('p1', true, rowA, rowA), 0)
+endfunction
+unittestRunTest('testCompareRows')
+
+
+function testLin():
+    unittestEqual(tiLin(0.05, 0.05, -0.1, 8), 0)
+    unittestEqual(tiLin(0.2, 0.05, -0.1, 8), 0)
+    unittestEqual(tiLin(-0.1, 0.05, -0.1, 8), 8)
+    unittestEqual(tiLin(-0.5, 0.05, -0.1, 8), 8)
+    unittestEqual(mathRound(tiLin(-0.025, 0.05, -0.1, 8) * 1000000), 4000000)
+endfunction
+unittestRunTest('testLin')
+
+
+# Re-scoring every test company at the definition's thresholds gives the published type and scores
+async function testRescore():
+    data = objectGet(testData(['data/meta.json', 'data/index.json']), 'systemFetch')
+    thresholds = objectGet(jsonParse(objectGet(data, 'data/meta.json')), 'thresholds')
+    companies = objectGet(jsonParse(objectGet(data, 'data/index.json')), 'companies')
+    unittestEqual(arrayLength(companies), 9)
+    for company in companies:
+        result = tiRescore(company, thresholds)
+        name = objectGet(company, 'name')
+        unittestEqual(objectGet(result, 'type'), objectGet(company, 'type'), name)
+        unittestEqual(objectGet(objectGet(result, 'company'), 'cik'), objectGet(company, 'cik'), name)
+
+        # Excluded industries have no published scores
+        if objectGet(company, 'type') != 'excluded':
+            unittestEqual(tiScore(objectGet(result, 'p1')), tiScore(objectGet(company, 'p1')), name)
+            unittestEqual(tiScore(objectGet(result, 'p2b')), tiScore(objectGet(company, 'p2b')), name)
+            unittestEqual(tiScore(objectGet(result, 'screenScore')), tiScore(objectGet(company, 'screenScore')), name)
+        endif
+    endfor
+endfunction
+unittestRunTest('testRescore')
+
+
+function testRescoreMoved():
+    thresholds = { \
+        'meaningful_margin': 0.03, 'sbc_revenue_min': 0.02, 'sbc_fcf_min': 0.5, 'p1_years_points': 10, 'p1_cum_points': 8, \
+        'p1_cum_zero': 0.05, 'p1_cum_full': -0.1, 'p1_latest_points': 7, 'p1_latest_zero': 0.05, 'p1_latest_full': -0.05, \
+        'p2b_points': 13, 'p2b_zero_drop': 10 \
+    }
+    company = { \
+        'excluded': null, 'margins': [0.04, 0.025, 0.01, -0.02], 'cumMargin': 0.01, 'latestMargin': 0, 'costChange': -5, \
+        'cumFcf': 50, 'cumSbc': 40, 'cumRevenue': 1000 \
+    }
+
+    # The definition's thresholds: 3 of 4 low years
+    result = tiRescore(company, thresholds)
+    unittestEqual(objectGet(result, 'type'), 'stock_pay')
+    unittestEqual(tiScore(objectGet(result, 'p1')), tiScore(7.5 + 8 * 0.04 / 0.15 + 3.5))
+    unittestEqual(objectGet(result, 'p2b'), 6.5)
+    unittestEqual(tiScore(objectGet(result, 'screenScore')), tiScore((7.5 + 8 * 0.04 / 0.15 + 3.5) * 1.5))
+
+    # A lower line: 2 of 4 low years
+    result = tiRescore(company, objectAssign(objectCopy(thresholds), {'meaningful_margin': 0.02}))
+    unittestEqual(tiScore(objectGet(result, 'p1')), tiScore(5 + 8 * 0.04 / 0.15 + 3.5))
+
+    # A line under the cumulative margin
+    result = tiRescore(company, objectAssign(objectCopy(thresholds), {'meaningful_margin': 0.005}))
+    unittestEqual(objectGet(result, 'type'), 'cash_generative')
+
+    # Stock pay is not the cause
+    result = tiRescore(company, objectAssign(objectCopy(thresholds), {'sbc_revenue_min': 0.05}))
+    unittestEqual(objectGet(result, 'type'), 'thin_margin')
+    result = tiRescore(company, objectAssign(objectCopy(thresholds), {'sbc_fcf_min': 0.9}))
+    unittestEqual(objectGet(result, 'type'), 'thin_margin')
+
+    # Negative free cash flow
+    result = tiRescore(objectAssign(objectCopy(company), {'cumFcf': -1}), thresholds)
+    unittestEqual(objectGet(result, 'type'), 'cash_burner')
+
+    # An excluded industry
+    result = tiRescore(objectAssign(objectCopy(company), {'excluded': 'bank'}), thresholds)
+    unittestEqual(objectGet(result, 'type'), 'excluded')
+
+    # No cost line
+    result = tiRescore(objectAssign(objectCopy(company), {'costChange': null}), thresholds)
+    unittestEqual(objectGet(result, 'p2b'), null)
+    unittestEqual(objectGet(result, 'screenScore'), null)
+endfunction
+unittestRunTest('testRescoreMoved')
+
+
+function testCompareRescored():
+    resultA = {'screenScore': 30, 'company': {'name': 'A'}}
+    resultB = {'screenScore': 20, 'company': {'name': 'B'}}
+    resultC = {'screenScore': 20, 'company': {'name': 'C'}}
+    unittestEqual(tiCompareRescored(resultA, resultB), -1)
+    unittestEqual(tiCompareRescored(resultB, resultA), 1)
+    unittestEqual(tiCompareRescored(resultB, resultC), -1)
+    unittestEqual(tiCompareRescored(resultC, resultB), 1)
+endfunction
+unittestRunTest('testCompareRescored')
+
+
+function testThresholdList():
+    unittestEqual(tiThresholdList({'years_min': 5, 'growth_min': 0.5}), '`growth_min` = 0.5, `years_min` = 5')
+endfunction
+unittestRunTest('testThresholdList')
+
+
+# The find handler sets the "find" argument, resets "all" and keeps the other arguments
+function testOnFind():
+    systemGlobalSet('vType', 'all')
+    systemGlobalSet('vAll', true)
+    unittestMockAll({'documentInputValue': {'tiFind': '  Zillow '}})
+    tiOnFind()
+    unittestDeepEqual(unittestMockEnd(), [ \
+        ['documentInputValue', ['tiFind']], \
+        ['windowSetLocation', ["#var.vFind='Zillow'&var.vType='all'"]] \
+    ])
+
+    # Empty find text clears the "find" argument
+    systemGlobalSet('vFind', 'Zillow')
+    unittestMockAll({'documentInputValue': {'tiFind': ' '}})
+    tiOnFind()
+    unittestDeepEqual(unittestMockEnd(), [ \
+        ['documentInputValue', ['tiFind']], \
+        ['windowSetLocation', ["#var.vType='all'"]] \
+    ])
+    systemGlobalSet('vType', null)
+    systemGlobalSet('vAll', null)
+    systemGlobalSet('vFind', null)
+endfunction
+unittestRunTest('testOnFind')
+
+
+# The find text input's enter key and the find button are bound to the find handler
+async function testOnFindBinding():
+    data = testData(['data/meta.json', 'data/index.json'])
+    objectSet(data, 'documentInputValue', {'tiFind': 'cash'})
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+
+    # The enter key (13) finds; other keys do not
+    keyup = testFindCallback(log, 'tiFind', 'keyup')
+    testSameEffect(systemPartial(keyup, 13), tiOnFind, data)
+    unittestMockAll(data)
+    keyup(65)
+    unittestDeepEqual(unittestMockEnd(), [])
+
+    # The find button
+    click = testFindCallback(log, 'Find', 'click')
+    testSameEffect(click, tiOnFind, data)
+
+    # Unknown controls
+    unittestEqual(testFindCallback(log, 'Unknown', 'click'), null)
+endfunction
+unittestRunTest('testOnFindBinding')

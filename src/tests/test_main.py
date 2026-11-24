@@ -1,0 +1,105 @@
+# pylint: disable=missing-class-docstring, missing-function-docstring, missing-module-docstring
+
+from concurrent.futures import ThreadPoolExecutor
+from io import StringIO
+import json
+import os
+from tempfile import TemporaryDirectory
+import unittest
+from unittest.mock import patch
+import zipfile
+
+import treadmill_index.__main__
+from treadmill_index.main import main
+
+from .helpers import company_bytes
+
+
+def fetch_submission(url, unused_user_agent):
+    if url.endswith('CIK0000000004.json'):
+        raise OSError('HTTP Error 404')
+    sic = '6021' if url.endswith('CIK0000000003.json') else '7372'
+    return json.dumps({'sic': sic, 'sicDescription': 'Test Industry', 'tickers': ['TEST'], 'exchanges': ['Nasdaq']}).encode('utf-8')
+
+
+def write_companyfacts(raw_dir, ciks):
+    names = {1: 'Stock Pay Co', 2: 'Cash Co', 3: 'Bank Co', 4: 'Unknown Co'}
+    with zipfile.ZipFile(os.path.join(raw_dir, 'companyfacts.zip'), 'w') as archive:
+        for cik in ciks:
+            archive.writestr(f'CIK{cik:010d}.json', company_bytes(cik=cik, name=names[cik], sbc=(0.02 if cik == 2 else 0.12)))
+        archive.writestr('CIK0000000009.json', '{}')
+
+
+class TestMain(unittest.TestCase):
+
+    def test_main_submodule(self):
+        self.assertTrue(treadmill_index.__main__)
+
+
+    def test_main(self):
+        with TemporaryDirectory() as temp_dir:
+            raw_dir = os.path.join(temp_dir, 'raw')
+            out_dir = os.path.join(temp_dir, 'out')
+            os.mkdir(raw_dir)
+            write_companyfacts(raw_dir, [1, 2, 3])
+            with patch('treadmill_index.extract.ProcessPoolExecutor', ThreadPoolExecutor), \
+                 patch('treadmill_index.sec.fetch_url', side_effect=fetch_submission) as mock_fetch, \
+                 patch('time.sleep'), \
+                 patch('sys.stdout', StringIO()) as stdout, \
+                 patch('sys.stderr', StringIO()) as stderr:
+                self.assertEqual(main(['--raw', raw_dir, '--out', out_dir, '--processes', '1', '--user-agent', 'test-client/1.0']), 0)
+
+            zip_path = os.path.join(raw_dir, 'companyfacts.zip')
+            self.assertEqual(stdout.getvalue().splitlines(), [
+                f'Extracting {zip_path} ...',
+                '{"inFile": 4, "prefilter": 3, "current": 3, "revenue": 3, "years": 3, "growth": 3, "industry": 2, "lowMargin": 1, '
+                '"stockPay": 1, "ranked": 1}',
+                f'Wrote 3 companies to "{out_dir}" - data as of 2026-11-05'
+            ])
+            self.assertEqual(stderr.getvalue(), '')
+            self.assertEqual([call.args[1] for call in mock_fetch.call_args_list], ['test-client/1.0'] * 3)
+            self.assertEqual(sorted(os.listdir(raw_dir)), ['companyfacts.zip', 'extract-cache.json', 'submissions-cache.json'])
+            self.assertEqual(sorted(os.listdir(out_dir)), ['archive', 'company', 'index.csv', 'index.json', 'meta.json'])
+            self.assertEqual(sorted(os.listdir(os.path.join(out_dir, 'company'))), ['1.json', '2.json', '3.json'])
+
+            with open(os.path.join(out_dir, 'index.json'), 'r', encoding='utf-8') as index_file:
+                index = json.load(index_file)
+            self.assertEqual(
+                [(row['rank'], row['name'], row['type'], row['ticker'], row['sic']) for row in index['companies']],
+                [
+                    (1, 'Stock Pay Co', 'stock_pay', 'TEST', 7372),
+                    (None, 'Cash Co', 'cash_generative', 'TEST', 7372),
+                    (None, 'Bank Co', 'excluded', 'TEST', 6021)
+                ]
+            )
+
+            with open(os.path.join(out_dir, 'meta.json'), 'r', encoding='utf-8') as meta_file:
+                meta = json.load(meta_file)
+            self.assertEqual(meta['dataDate'], '2026-11-05')
+            self.assertEqual(meta['sources']['companyfacts']['bytes'], os.path.getsize(zip_path))
+            self.assertEqual(len(meta['sources']['companyfacts']['sha256']), 64)
+            self.assertEqual(meta['sources']['submissions'], {'url': 'https://data.sec.gov/submissions/', 'companies': 3})
+            self.assertEqual(len(meta['sensitivity']), 24)
+
+
+    def test_main_check_failed(self):
+        with TemporaryDirectory() as temp_dir:
+            raw_dir = os.path.join(temp_dir, 'raw')
+            out_dir = os.path.join(temp_dir, 'out')
+            os.mkdir(raw_dir)
+            write_companyfacts(raw_dir, [1, 4])
+            with patch('treadmill_index.extract.ProcessPoolExecutor', ThreadPoolExecutor), \
+                 patch('treadmill_index.sec.fetch_url', side_effect=fetch_submission), \
+                 patch('time.sleep'), \
+                 patch('sys.stdout', StringIO()) as stdout, \
+                 patch('sys.stderr', StringIO()) as stderr:
+                self.assertEqual(main(['--raw', raw_dir, '--out', out_dir]), 1)
+            self.assertEqual(stdout.getvalue().splitlines(), [
+                f'Extracting {os.path.join(raw_dir, "companyfacts.zip")} ...',
+                'Warning: no SEC company information for CIK 4: HTTP Error 404'
+            ])
+            self.assertEqual(
+                stderr.getvalue(),
+                'Check failed: Unknown Co (CIK 4): no SEC company information, so the industry test was not applied\n'
+            )
+            self.assertFalse(os.path.exists(out_dir))

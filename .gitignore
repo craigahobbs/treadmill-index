@@ -1,0 +1,12 @@
+/.coverage
+/Makefile.base
+/build/
+/dist/
+/pylintrc
+/src/*.egg-info/
+__pycache__/
+.DS_Store
+
+# SEC bulk files and build caches
+*.zip
+/data/raw/

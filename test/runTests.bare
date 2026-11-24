@@ -1,0 +1,18 @@
+include <unittest.bare>
+
+
+# Start coverage
+unittestCoverageStart()
+
+# Test includes
+include 'testTreadmillIndex.bare'
+include 'testTreadmillIndexPages.bare'
+
+# Stop coverage
+unittestCoverageStop()
+
+# Test report
+return unittestReport({ \
+    'coverageExclude': ['runTests.bare'], \
+    'coverageMin': 100 \
+})

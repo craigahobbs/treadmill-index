@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "treadmill-index"
+version = "0.1.0"
+description = "The Treadmill Index build step: SEC bulk data in, the web application's data files out"
+readme = "README.md"
+authors = [
+    {name = "Craig A. Hobbs"}
+]
+classifiers = [
+    "Environment :: Console",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3"
+]
+
+[project.urls]
+Homepage = "https://github.com/craigahobbs/treadmill-index"
+
+[project.scripts]
+treadmill-index = "treadmill_index.main:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["treadmill_index"]

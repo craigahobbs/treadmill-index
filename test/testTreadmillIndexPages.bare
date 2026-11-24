@@ -1,0 +1,3438 @@
+include <dataLineChart.bare>
+include <unittest.bare>
+include <unittestMock.bare>
+include '../treadmillIndex.bare'
+include 'testHelpers.bare'
+
+
+# The page render tests. Each compares the whole render log of a page against the expected log.
+# The test data, test/data/, is made by "make test-data" from the made-up companies in test/makeTestData.py.
+
+
+# The index page: the companies that pass the screen, in rank order
+async function testMain_index():
+    data = testData(['data/meta.json', 'data/index.json'])
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Index | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# The Treadmill Index', \
+                '', \
+                'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
+                'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                '', \
+                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
+                '[How it is computed](#var.vPage=\'method\').', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Show:** Stock pay (5) | [Thin margin \\(1\\)](#var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vType=\'excluded\') | [All \\(9\\)](#var.vType=\'all\') \\\n**Sort:** Rank | [P1](#var.vSort=\'p1\') | [Cumulative margin](#var.vSort=\'cum\') | [Latest margin](#var.vSort=\'latest\') | [Stock pay](#var.vSort=\'pay\') | [Revenue](#var.vSort=\'revenue\') | [Name](#var.vSort=\'name\')', \
+                '', \
+                '*Stock pay:* Passed the screen: owner cash is under the line and stock pay is the cause.' \
+            ] \
+        ], \
+        [ \
+            'elementModelRender', \
+            [ \
+                { \
+                    'elem': [ \
+                        {'elem': {'text': 'Find a company or ticker: '}, 'html': 'b'}, \
+                        { \
+                            'attr': { \
+                                'autocomplete': 'off', \
+                                'id': 'tiFind', \
+                                'size': 30, \
+                                'style': 'font-size: inherit; border: thin solid black; padding: 0.4em;', \
+                                'type': 'text', \
+                                'value': '' \
+                            }, \
+                            'callback': {'keyup': '<function>'}, \
+                            'html': 'input' \
+                        }, \
+                        {'text': ' '}, \
+                        { \
+                            'attr': {'style': 'cursor: pointer; user-select: none;'}, \
+                            'callback': {'click': '<function>'}, \
+                            'elem': {'text': 'Find'}, \
+                            'html': 'a' \
+                        }, \
+                        [] \
+                    ], \
+                    'html': 'p' \
+                } \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes |', \
+                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
+                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | 2019-2025 | O F S |', \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019-2025 |  |', \
+                    '| 3 | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\') |  | 32.6 | 18.6 | 9.8 | -2.0% | -2.0% | 12.0% | $2,000M | 2019-2025 | C |', \
+                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | 2019-2025 |  |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019-2025 | F N X |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
+                'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**Notes**', \
+                '' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **C** - Capital-led: capital spending is more than twice stock pay, so the shortfall is mostly investment.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **O** - Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows P1 with and without those years.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **F** - The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **N** - The cost line cannot be built from the filing tags, so there is no P2b and no screen score. The company has P1 alone and is unranked.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **X** - No capital spending tag in at least one year; that year counts capital spending as zero.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- **G** - At least one fiscal year is missing between the first and last year.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **J** - Revenue more than tripled in one year, which often marks a merger or a change of reporting entity.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_index')
+
+
+# All types, sorted by P1, with more rows than the row limit
+async function testMain_indexAll():
+    data = testData(['data/meta.json', 'data/index.json'])
+    systemGlobalSet('vType', 'all')
+    systemGlobalSet('vSort', 'p1')
+    systemGlobalSet('tiRowLimit', 3)
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vType', null)
+    systemGlobalSet('vSort', null)
+    systemGlobalSet('tiRowLimit', 100)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Index | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# The Treadmill Index', \
+                '', \
+                'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
+                'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                '', \
+                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
+                '[How it is computed](#var.vPage=\'method\').', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Show:** [Stock pay \\(5\\)](#var.vSort=\'p1\') | [Thin margin \\(1\\)](#var.vSort=\'p1\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vSort=\'p1\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vSort=\'p1\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vSort=\'p1\'&var.vType=\'excluded\') | All (9) \\\n**Sort:** [Rank](#var.vType=\'all\') | P1 | [Cumulative margin](#var.vSort=\'cum\'&var.vType=\'all\') | [Latest margin](#var.vSort=\'latest\'&var.vType=\'all\') | [Stock pay](#var.vSort=\'pay\'&var.vType=\'all\') | [Revenue](#var.vSort=\'revenue\'&var.vType=\'all\') | [Name](#var.vSort=\'name\'&var.vType=\'all\')', \
+                '', \
+                '*All companies that pass the basic tests.*' \
+            ] \
+        ], \
+        [ \
+            'elementModelRender', \
+            [ \
+                { \
+                    'elem': [ \
+                        {'elem': {'text': 'Find a company or ticker: '}, 'html': 'b'}, \
+                        { \
+                            'attr': { \
+                                'autocomplete': 'off', \
+                                'id': 'tiFind', \
+                                'size': 30, \
+                                'style': 'font-size: inherit; border: thin solid black; padding: 0.4em;', \
+                                'type': 'text', \
+                                'value': '' \
+                            }, \
+                            'callback': {'keyup': '<function>'}, \
+                            'html': 'input' \
+                        }, \
+                        {'text': ' '}, \
+                        { \
+                            'attr': {'style': 'cursor: pointer; user-select: none;'}, \
+                            'callback': {'click': '<function>'}, \
+                            'elem': {'text': 'Find'}, \
+                            'html': 'a' \
+                        }, \
+                        [] \
+                    ], \
+                    'html': 'p' \
+                } \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes | Type |', \
+                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
+                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\') | BURN | 50.0 | 25.0 | 13.0 | -13.0% | -13.0% | 12.0% | $2,000M | 2019-2025 |  | Cash burner |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019-2025 | F N X | Stock pay |', \
+                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | 2019-2025 | O F S | Stock pay |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', 'Showing 3 of 9 companies. [Show all](#var.vAll=true&var.vSort=\'p1\'&var.vType=\'all\')'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
+                'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**Notes**', \
+                '' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **C** - Capital-led: capital spending is more than twice stock pay, so the shortfall is mostly investment.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **O** - Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows P1 with and without those years.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **F** - The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **N** - The cost line cannot be built from the filing tags, so there is no P2b and no screen score. The company has P1 alone and is unranked.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **X** - No capital spending tag in at least one year; that year counts capital spending as zero.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- **G** - At least one fiscal year is missing between the first and last year.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **J** - Revenue more than tripled in one year, which often marks a merger or a change of reporting entity.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_indexAll')
+
+
+# All types, sorted by name, showing all rows
+async function testMain_indexShowAll():
+    data = testData(['data/meta.json', 'data/index.json'])
+    systemGlobalSet('vType', 'all')
+    systemGlobalSet('vSort', 'name')
+    systemGlobalSet('vAll', true)
+    systemGlobalSet('tiRowLimit', 3)
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vType', null)
+    systemGlobalSet('vSort', null)
+    systemGlobalSet('vAll', null)
+    systemGlobalSet('tiRowLimit', 100)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Index | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# The Treadmill Index', \
+                '', \
+                'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
+                'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                '', \
+                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
+                '[How it is computed](#var.vPage=\'method\').', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Show:** [Stock pay \\(5\\)](#var.vSort=\'name\') | [Thin margin \\(1\\)](#var.vSort=\'name\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vSort=\'name\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vSort=\'name\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vSort=\'name\'&var.vType=\'excluded\') | All (9) \\\n**Sort:** [Rank](#var.vAll=true&var.vType=\'all\') | [P1](#var.vAll=true&var.vSort=\'p1\'&var.vType=\'all\') | [Cumulative margin](#var.vAll=true&var.vSort=\'cum\'&var.vType=\'all\') | [Latest margin](#var.vAll=true&var.vSort=\'latest\'&var.vType=\'all\') | [Stock pay](#var.vAll=true&var.vSort=\'pay\'&var.vType=\'all\') | [Revenue](#var.vAll=true&var.vSort=\'revenue\'&var.vType=\'all\') | Name', \
+                '', \
+                '*All companies that pass the basic tests.*' \
+            ] \
+        ], \
+        [ \
+            'elementModelRender', \
+            [ \
+                { \
+                    'elem': [ \
+                        {'elem': {'text': 'Find a company or ticker: '}, 'html': 'b'}, \
+                        { \
+                            'attr': { \
+                                'autocomplete': 'off', \
+                                'id': 'tiFind', \
+                                'size': 30, \
+                                'style': 'font-size: inherit; border: thin solid black; padding: 0.4em;', \
+                                'type': 'text', \
+                                'value': '' \
+                            }, \
+                            'callback': {'keyup': '<function>'}, \
+                            'html': 'input' \
+                        }, \
+                        {'text': ' '}, \
+                        { \
+                            'attr': {'style': 'cursor: pointer; user-select: none;'}, \
+                            'callback': {'click': '<function>'}, \
+                            'elem': {'text': 'Find'}, \
+                            'html': 'a' \
+                        }, \
+                        [] \
+                    ], \
+                    'html': 'p' \
+                } \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes | Type |', \
+                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
+                    '|  | [Bank Co](#var.vCik=5&var.vPage=\'company\') | BANK | n/a | n/a | n/a | -10.0% | -10.0% | 20.0% | $2,000M | 2019-2025 |  | Excluded industry |', \
+                    '|  | [Burner Co](#var.vCik=8&var.vPage=\'company\') | BURN | 50.0 | 25.0 | 13.0 | -13.0% | -13.0% | 12.0% | $2,000M | 2019-2025 |  | Cash burner |', \
+                    '| 3 | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\') |  | 32.6 | 18.6 | 9.8 | -2.0% | -2.0% | 12.0% | $2,000M | 2019-2025 | C | Stock pay |', \
+                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\') | CASH | 0.0 | 0.0 | 0.0 | 8.0% | 8.0% | 2.0% | $2,000M | 2019-2025 |  | Cash generative |', \
+                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | 2019-2025 |  | Stock pay |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019-2025 | F N X | Stock pay |', \
+                    '| 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | OOC | 42.2 | 21.1 | 13.0 | -4.0% | -4.0% | 13.0% | $2,000M | 2019-2025 | O F S | Stock pay |', \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019-2025 |  | Stock pay |', \
+                    '|  | [Thin Co](#var.vCik=7&var.vPage=\'company\') | THIN | 30.9 | 15.4 | 13.0 | 0.6% | 0.6% | 1.9% | $2,000M | 2019-2025 |  | Thin margin |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
+                'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**Notes**', \
+                '' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **C** - Capital-led: capital spending is more than twice stock pay, so the shortfall is mostly investment.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **O** - Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows P1 with and without those years.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **F** - The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **N** - The cost line cannot be built from the filing tags, so there is no P2b and no screen score. The company has P1 alone and is unranked.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **X** - No capital spending tag in at least one year; that year counts capital spending as zero.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- **G** - At least one fiscal year is missing between the first and last year.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **J** - Revenue more than tripled in one year, which often marks a merger or a change of reporting entity.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_indexShowAll')
+
+
+# Find by name within an industry
+async function testMain_indexFind():
+    data = testData(['data/meta.json', 'data/index.json'])
+    systemGlobalSet('vType', 'all')
+    systemGlobalSet('vSort', 'latest')
+    systemGlobalSet('vSic', 7372)
+    systemGlobalSet('vFind', 'CO')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vType', null)
+    systemGlobalSet('vSort', null)
+    systemGlobalSet('vSic', null)
+    systemGlobalSet('vFind', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Index | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# The Treadmill Index', \
+                '', \
+                'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
+                'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                '', \
+                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
+                '[How it is computed](#var.vPage=\'method\').', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Show:** [Stock pay \\(5\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\') | [Thin margin \\(1\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'latest\'&var.vType=\'excluded\') | All (9) \\\n**Sort:** [Rank](#var.vFind=\'CO\'&var.vSic=7372&var.vType=\'all\') | [P1](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'p1\'&var.vType=\'all\') | [Cumulative margin](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'cum\'&var.vType=\'all\') | Latest margin | [Stock pay](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'pay\'&var.vType=\'all\') | [Revenue](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'revenue\'&var.vType=\'all\') | [Name](#var.vFind=\'CO\'&var.vSic=7372&var.vSort=\'name\'&var.vType=\'all\') \\\n**Industry:** SIC code 7372 ([all industries](#var.vFind=\'CO\'&var.vSort=\'latest\'&var.vType=\'all\'))', \
+                '', \
+                '*All companies that pass the basic tests.*' \
+            ] \
+        ], \
+        [ \
+            'elementModelRender', \
+            [ \
+                { \
+                    'elem': [ \
+                        {'elem': {'text': 'Find a company or ticker: '}, 'html': 'b'}, \
+                        { \
+                            'attr': { \
+                                'autocomplete': 'off', \
+                                'id': 'tiFind', \
+                                'size': 30, \
+                                'style': 'font-size: inherit; border: thin solid black; padding: 0.4em;', \
+                                'type': 'text', \
+                                'value': 'CO' \
+                            }, \
+                            'callback': {'keyup': '<function>'}, \
+                            'html': 'input' \
+                        }, \
+                        {'text': ' '}, \
+                        { \
+                            'attr': {'style': 'cursor: pointer; user-select: none;'}, \
+                            'callback': {'click': '<function>'}, \
+                            'elem': {'text': 'Find'}, \
+                            'html': 'a' \
+                        }, \
+                        [ \
+                            {'text': ' | '}, \
+                            { \
+                                'attr': {'href': '#var.vSic=7372&var.vSort=\'latest\'&var.vType=\'all\''}, \
+                                'elem': {'text': 'Clear'}, \
+                                'html': 'a' \
+                            } \
+                        ] \
+                    ], \
+                    'html': 'p' \
+                } \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes | Type |', \
+                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- | :-- |', \
+                    '|  | [No Cost Line Co](#var.vCik=3&var.vPage=\'company\') | NCL | n/a | 24.0 | n/a | -8.2% | -8.0% | 20.0% | $2,000M | 2019-2025 | F N X | Stock pay |', \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019-2025 |  | Stock pay |', \
+                    '| 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | MARG | 25.9 | 13.0 | 13.0 | 2.6% | 2.6% | 7.4% | $2,000M | 2019-2025 |  | Stock pay |', \
+                    '|  | [Cash Co](#var.vCik=4&var.vPage=\'company\') | CASH | 0.0 | 0.0 | 0.0 | 8.0% | 8.0% | 2.0% | $2,000M | 2019-2025 |  | Cash generative |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
+                'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**Notes**', \
+                '' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **C** - Capital-led: capital spending is more than twice stock pay, so the shortfall is mostly investment.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **O** - Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows P1 with and without those years.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **F** - The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **N** - The cost line cannot be built from the filing tags, so there is no P2b and no screen score. The company has P1 alone and is unranked.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **X** - No capital spending tag in at least one year; that year counts capital spending as zero.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- **G** - At least one fiscal year is missing between the first and last year.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **J** - Revenue more than tripled in one year, which often marks a merger or a change of reporting entity.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_indexFind')
+
+
+# Find by ticker
+async function testMain_indexFindTicker():
+    data = testData(['data/meta.json', 'data/index.json'])
+    systemGlobalSet('vFind', 'spay')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vFind', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Index | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# The Treadmill Index', \
+                '', \
+                'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
+                'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                '', \
+                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
+                '[How it is computed](#var.vPage=\'method\').', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Show:** Stock pay (5) | [Thin margin \\(1\\)](#var.vFind=\'spay\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vFind=\'spay\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vFind=\'spay\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vFind=\'spay\'&var.vType=\'excluded\') | [All \\(9\\)](#var.vFind=\'spay\'&var.vType=\'all\') \\\n**Sort:** Rank | [P1](#var.vFind=\'spay\'&var.vSort=\'p1\') | [Cumulative margin](#var.vFind=\'spay\'&var.vSort=\'cum\') | [Latest margin](#var.vFind=\'spay\'&var.vSort=\'latest\') | [Stock pay](#var.vFind=\'spay\'&var.vSort=\'pay\') | [Revenue](#var.vFind=\'spay\'&var.vSort=\'revenue\') | [Name](#var.vFind=\'spay\'&var.vSort=\'name\')', \
+                '', \
+                '*Stock pay:* Passed the screen: owner cash is under the line and stock pay is the cause.' \
+            ] \
+        ], \
+        [ \
+            'elementModelRender', \
+            [ \
+                { \
+                    'elem': [ \
+                        {'elem': {'text': 'Find a company or ticker: '}, 'html': 'b'}, \
+                        { \
+                            'attr': { \
+                                'autocomplete': 'off', \
+                                'id': 'tiFind', \
+                                'size': 30, \
+                                'style': 'font-size: inherit; border: thin solid black; padding: 0.4em;', \
+                                'type': 'text', \
+                                'value': 'spay' \
+                            }, \
+                            'callback': {'keyup': '<function>'}, \
+                            'html': 'input' \
+                        }, \
+                        {'text': ' '}, \
+                        { \
+                            'attr': {'style': 'cursor: pointer; user-select: none;'}, \
+                            'callback': {'click': '<function>'}, \
+                            'elem': {'text': 'Find'}, \
+                            'html': 'a' \
+                        }, \
+                        [ \
+                            {'text': ' | '}, \
+                            {'attr': {'href': '#var='}, 'elem': {'text': 'Clear'}, 'html': 'a'} \
+                        ] \
+                    ], \
+                    'html': 'p' \
+                } \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Rank | Company | Ticker | Screen score (50) | P1 (25) | P2b (13) | Cumulative owner-cash margin | Latest owner-cash margin | Stock pay / revenue | Latest revenue | Years | Notes |', \
+                    '| --: | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |', \
+                    '| 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | SPAY | 37.3 | 18.6 | 13.0 | -2.0% | -2.0% | 12.0% | $2,000M | 2019-2025 |  |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
+                'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**Notes**', \
+                '' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **C** - Capital-led: capital spending is more than twice stock pay, so the shortfall is mostly investment.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **O** - Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows P1 with and without those years.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **F** - The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **N** - The cost line cannot be built from the filing tags, so there is no P2b and no screen score. The company has P1 alone and is unranked.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **X** - No capital spending tag in at least one year; that year counts capital spending as zero.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- **G** - At least one fiscal year is missing between the first and last year.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **J** - Revenue more than tripled in one year, which often marks a merger or a change of reporting entity.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_indexFindTicker')
+
+
+# No companies match
+async function testMain_indexNoMatch():
+    data = testData(['data/meta.json', 'data/index.json'])
+    systemGlobalSet('vType', 'thin_margin')
+    systemGlobalSet('vFind', 'zzz')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vType', null)
+    systemGlobalSet('vFind', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Index | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# The Treadmill Index', \
+                '', \
+                'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
+                'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                '', \
+                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
+                '[How it is computed](#var.vPage=\'method\').', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Show:** [Stock pay \\(5\\)](#var.vFind=\'zzz\') | Thin margin (1) | [Cash burner \\(1\\)](#var.vFind=\'zzz\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vFind=\'zzz\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vFind=\'zzz\'&var.vType=\'excluded\') | [All \\(9\\)](#var.vFind=\'zzz\'&var.vType=\'all\') \\\n**Sort:** Rank | [P1](#var.vFind=\'zzz\'&var.vSort=\'p1\'&var.vType=\'thin_margin\') | [Cumulative margin](#var.vFind=\'zzz\'&var.vSort=\'cum\'&var.vType=\'thin_margin\') | [Latest margin](#var.vFind=\'zzz\'&var.vSort=\'latest\'&var.vType=\'thin_margin\') | [Stock pay](#var.vFind=\'zzz\'&var.vSort=\'pay\'&var.vType=\'thin_margin\') | [Revenue](#var.vFind=\'zzz\'&var.vSort=\'revenue\'&var.vType=\'thin_margin\') | [Name](#var.vFind=\'zzz\'&var.vSort=\'name\'&var.vType=\'thin_margin\')', \
+                '', \
+                '*Thin margin:* Owner cash is under the line, but stock pay is too small to be the cause.' \
+            ] \
+        ], \
+        [ \
+            'elementModelRender', \
+            [ \
+                { \
+                    'elem': [ \
+                        {'elem': {'text': 'Find a company or ticker: '}, 'html': 'b'}, \
+                        { \
+                            'attr': { \
+                                'autocomplete': 'off', \
+                                'id': 'tiFind', \
+                                'size': 30, \
+                                'style': 'font-size: inherit; border: thin solid black; padding: 0.4em;', \
+                                'type': 'text', \
+                                'value': 'zzz' \
+                            }, \
+                            'callback': {'keyup': '<function>'}, \
+                            'html': 'input' \
+                        }, \
+                        {'text': ' '}, \
+                        { \
+                            'attr': {'style': 'cursor: pointer; user-select: none;'}, \
+                            'callback': {'click': '<function>'}, \
+                            'elem': {'text': 'Find'}, \
+                            'html': 'a' \
+                        }, \
+                        [ \
+                            {'text': ' | '}, \
+                            { \
+                                'attr': {'href': '#var.vType=\'thin_margin\''}, \
+                                'elem': {'text': 'Clear'}, \
+                                'html': 'a' \
+                            } \
+                        ] \
+                    ], \
+                    'html': 'p' \
+                } \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', 'No companies match.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
+                'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**Notes**', \
+                '' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **C** - Capital-led: capital spending is more than twice stock pay, so the shortfall is mostly investment.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **O** - Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows P1 with and without those years.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **F** - The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **N** - The cost line cannot be built from the filing tags, so there is no P2b and no screen score. The company has P1 alone and is unranked.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **X** - No capital spending tag in at least one year; that year counts capital spending as zero.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- **G** - At least one fiscal year is missing between the first and last year.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **J** - Revenue more than tripled in one year, which often marks a merger or a change of reporting entity.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_indexNoMatch')
+
+
+# An unknown type and sort
+async function testMain_indexUnknownArgs():
+    data = testData(['data/meta.json', 'data/index.json'])
+    systemGlobalSet('vType', 'bogus')
+    systemGlobalSet('vSort', 'bogus')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vType', null)
+    systemGlobalSet('vSort', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Index | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# The Treadmill Index', \
+                '', \
+                'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
+                'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                '', \
+                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
+                '[How it is computed](#var.vPage=\'method\').', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Show:** [Stock pay \\(5\\)](#var.vSort=\'bogus\') | [Thin margin \\(1\\)](#var.vSort=\'bogus\'&var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vSort=\'bogus\'&var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vSort=\'bogus\'&var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vSort=\'bogus\'&var.vType=\'excluded\') | [All \\(9\\)](#var.vSort=\'bogus\'&var.vType=\'all\') \\\n**Sort:** [Rank](#var.vType=\'bogus\') | [P1](#var.vSort=\'p1\'&var.vType=\'bogus\') | [Cumulative margin](#var.vSort=\'cum\'&var.vType=\'bogus\') | [Latest margin](#var.vSort=\'latest\'&var.vType=\'bogus\') | [Stock pay](#var.vSort=\'pay\'&var.vType=\'bogus\') | [Revenue](#var.vSort=\'revenue\'&var.vType=\'bogus\') | [Name](#var.vSort=\'name\'&var.vType=\'bogus\')', \
+                '', \
+                '*All companies that pass the basic tests.*' \
+            ] \
+        ], \
+        [ \
+            'elementModelRender', \
+            [ \
+                { \
+                    'elem': [ \
+                        {'elem': {'text': 'Find a company or ticker: '}, 'html': 'b'}, \
+                        { \
+                            'attr': { \
+                                'autocomplete': 'off', \
+                                'id': 'tiFind', \
+                                'size': 30, \
+                                'style': 'font-size: inherit; border: thin solid black; padding: 0.4em;', \
+                                'type': 'text', \
+                                'value': '' \
+                            }, \
+                            'callback': {'keyup': '<function>'}, \
+                            'html': 'input' \
+                        }, \
+                        {'text': ' '}, \
+                        { \
+                            'attr': {'style': 'cursor: pointer; user-select: none;'}, \
+                            'callback': {'click': '<function>'}, \
+                            'elem': {'text': 'Find'}, \
+                            'html': 'a' \
+                        }, \
+                        [] \
+                    ], \
+                    'html': 'p' \
+                } \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', 'No companies match.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
+                'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**Notes**', \
+                '' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **C** - Capital-led: capital spending is more than twice stock pay, so the shortfall is mostly investment.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **O** - Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows P1 with and without those years.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **F** - The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **N** - The cost line cannot be built from the filing tags, so there is no P2b and no screen score. The company has P1 alone and is unranked.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **X** - No capital spending tag in at least one year; that year counts capital spending as zero.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- **G** - At least one fiscal year is missing between the first and last year.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **J** - Revenue more than tripled in one year, which often marks a merger or a change of reporting entity.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_indexUnknownArgs')
+
+
+# The index data failed to load
+async function testMain_indexFailed():
+    data = testData(['data/meta.json'])
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Index | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# The Treadmill Index', \
+                '', \
+                'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
+                'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is 3.0% of revenue.', \
+                '', \
+                'Of 10 companies in the SEC data, 9 are large, current and growing; 5 of those pass the screen and 4 are ranked.', \
+                '[How it is computed](#var.vPage=\'method\').', \
+                '', \
+                '**The screen score is out of 50.** It is the automated, whole-market tier. The full score, out of 100, adds headcount,', \
+                'insider selling and earnings-release framing for the top 25. It needs hand-checked data and is not published yet.', \
+                'Screen scores must not be compared with full scores.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Show:** Stock pay (5) | [Thin margin \\(1\\)](#var.vType=\'thin_margin\') | [Cash burner \\(1\\)](#var.vType=\'cash_burner\') | [Cash generative \\(1\\)](#var.vType=\'cash_generative\') | [Excluded industry \\(1\\)](#var.vType=\'excluded\') | [All \\(9\\)](#var.vType=\'all\') \\\n**Sort:** Rank | [P1](#var.vSort=\'p1\') | [Cumulative margin](#var.vSort=\'cum\') | [Latest margin](#var.vSort=\'latest\') | [Stock pay](#var.vSort=\'pay\') | [Revenue](#var.vSort=\'revenue\') | [Name](#var.vSort=\'name\')', \
+                '', \
+                '*Stock pay:* Passed the screen: owner cash is under the line and stock pay is the cause.' \
+            ] \
+        ], \
+        [ \
+            'elementModelRender', \
+            [ \
+                { \
+                    'elem': [ \
+                        {'elem': {'text': 'Find a company or ticker: '}, 'html': 'b'}, \
+                        { \
+                            'attr': { \
+                                'autocomplete': 'off', \
+                                'id': 'tiFind', \
+                                'size': 30, \
+                                'style': 'font-size: inherit; border: thin solid black; padding: 0.4em;', \
+                                'type': 'text', \
+                                'value': '' \
+                            }, \
+                            'callback': {'keyup': '<function>'}, \
+                            'html': 'input' \
+                        }, \
+                        {'text': ' '}, \
+                        { \
+                            'attr': {'style': 'cursor: pointer; user-select: none;'}, \
+                            'callback': {'click': '<function>'}, \
+                            'elem': {'text': 'Find'}, \
+                            'html': 'a' \
+                        }, \
+                        [] \
+                    ], \
+                    'html': 'p' \
+                } \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', 'No companies match.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Rank** is by screen score, among the companies that pass the screen and have both pillars. Unranked companies are', \
+                'listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+                '', \
+                '**Notes**', \
+                '' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **C** - Capital-led: capital spending is more than twice stock pay, so the shortfall is mostly investment.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **O** - Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows P1 with and without those years.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **F** - The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **N** - The cost line cannot be built from the filing tags, so there is no P2b and no screen score. The company has P1 alone and is unranked.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **X** - No capital spending tag in at least one year; that year counts capital spending as zero.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- **G** - At least one fiscal year is missing between the first and last year.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **J** - Revenue more than tripled in one year, which often marks a merger or a change of reporting entity.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- **S** - The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_indexFailed')
+
+
+# The meta data failed to load
+async function testMain_metaFailed():
+    data = testData(['data/index.json'])
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Index | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '# The Treadmill Index', '', 'The index data failed to load.'] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_metaFailed')
+
+
+# A ranked company with latest-12-month figures
+async function testMain_company():
+    data = testData(['data/meta.json', 'data/company/1.json'])
+    systemGlobalSet('vPage', 'company')
+    systemGlobalSet('vCik', 1)
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    systemGlobalSet('vCik', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/company/1.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Stock Pay Co - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Stock Pay Co', \
+                '', \
+                '**Ticker:** SPAY (Nasdaq) \\\n**SEC filings:** [CIK 1](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=1&type=10-K) \\\n**Industry:** Services\\-Prepackaged Software ([SIC 7372](#var.vSic=7372&var.vType=\'all\')) \\\n**Type:** Stock pay. Passed the screen: owner cash is under the line and stock pay is the cause.', \
+                '', \
+                'From fiscal 2019 to 2025, Stock Pay Co reported $10.2 billion of revenue and $1.0 billion of free cash flow. Stock pay was $1.2 billion, which leaves -$203 million of owner cash: -2.0% of revenue. Owner cash was under 3.0% of revenue in 7 of 7 years. In the 12 months to 2026-09-30 it was -2.0% of revenue.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## What cuts the other way', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Nothing in the numbers the index uses. Stated targets and one-off events are not yet reviewed by hand.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Screen score: 37.3 of 50 (rank 2 of 4)', \
+                '', \
+                '**P1. No meaningful cash for owners: 18.6 of 25**', \
+                '', \
+                [ \
+                    '| Part | Input | Points |', \
+                    '| :-- | --: | --: |', \
+                    '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
+                    '| Cumulative owner-cash margin, 2019-2025 | -2.0% | 3.7 of 8 |', \
+                    '| Owner-cash margin, 12 months to 2026-09-30 | -2.0% | 4.9 of 7 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '**P2b. Operating costs as a share of revenue: 13.0 of 13**', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 55.0% in 2025: a change of 0.0 points.', \
+                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
+                'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $100M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
+                '', \
+                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 18.6 + (18.6 / 25) x 25.0 = 37.3' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
+                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Year by year', ''] \
+        ], \
+        testChartCall(data, 'data/company/1.json'), \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
+                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/1/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$20M | -2.0% | n/a | n/a |  |', \
+                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/1/000000000121000010/0000000001-21-000010-index.htm) | $110M | -$22M | -2.0% | n/a | n/a |  |', \
+                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/1/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$25M | -2.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/1/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$28M | -2.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/1/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$32M | -2.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/1/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | n/a | n/a |  |', \
+                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/1/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$40M | -2.0% | n/a | n/a |  |', \
+                    '| **12 months** | 2026-09-30 | $2,150M | $258M | $43M | $258M | $215M | -$43M | -2.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/1/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/1/000000000125000030/0000000001-25-000030-index.htm) |' \
+                ], \
+                '', \
+                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
+                'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
+                '"n/a" means the filings have no tagged figure. History starts about 2009.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Notes on the data', \
+                '', \
+                '- Diluted share count: no annual change is shown (share count missing for the first or last year).' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_company')
+
+
+# One-off years, two capital spending tags, no latest 12 months, a share count jump
+async function testMain_companyOneOff():
+    data = testData(['data/meta.json', 'data/company/6.json'])
+    systemGlobalSet('vPage', 'company')
+    systemGlobalSet('vCik', 6)
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    systemGlobalSet('vCik', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/company/6.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['One-Off Co - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# One\\-Off Co', \
+                '', \
+                '**Ticker:** OOC (Nasdaq) \\\n**SEC filings:** [CIK 6](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=6&type=10-K) \\\n**Industry:** Retail\\-Catalog & Mail\\-Order Houses ([SIC 5961](#var.vSic=5961&var.vType=\'all\')) \\\n**Type:** Stock pay. Passed the screen: owner cash is under the line and stock pay is the cause.', \
+                '', \
+                'From fiscal 2019 to 2025, One-Off Co reported $10.2 billion of revenue and $914 million of free cash flow. Stock pay was $1.3 billion, which leaves -$406 million of owner cash: -4.0% of revenue. Owner cash was under 3.0% of revenue in 7 of 7 years. In the latest fiscal year, to 2025-12-31, it was -4.0% of revenue.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## What cuts the other way', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- In 2019 and 2020, inventory moved operating cash flow by more than 25.0% of revenue. Without those years the cumulative owner-cash margin is -4.0% and P1 is 21.1 instead of 21.1.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Screen score: 42.2 of 50 (rank 1 of 4)', \
+                '', \
+                '**P1. No meaningful cash for owners: 21.1 of 25**', \
+                '', \
+                [ \
+                    '| Part | Input | Points |', \
+                    '| :-- | --: | --: |', \
+                    '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
+                    '| Cumulative owner-cash margin, 2019-2025 | -4.0% | 4.8 of 8 |', \
+                    '| Owner-cash margin, fiscal year to 2025-12-31 | -4.0% | 6.3 of 7 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                'The latest fiscal year stands in for the latest 12 months: quarterly PaymentsToDevelopSoftware is missing for the latest or the year-earlier period.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                'Without the years marked "one-off" below, P1 is 21.1 and the cumulative owner-cash margin is -4.0%.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '**P2b. Operating costs as a share of revenue: 13.0 of 13**', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 55.0% in 2025: a change of 0.0 points.', \
+                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
+                'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $100M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
+                '', \
+                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 21.1 + (21.1 / 25) x 25.0 = 42.2' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
+                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Year by year', ''] \
+        ], \
+        testChartCall(data, 'data/company/6.json'), \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
+                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) + [$10M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) | [$130M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) | $90M | -$40M | -4.0% | n/a | n/a | inventory [-$300M](https://www.sec.gov/Archives/edgar/data/6/000000000120000010/0000000001-20-000010-index.htm) |', \
+                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) + [$11M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) | [$143M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) | $99M | -$44M | -4.0% | n/a | n/a | inventory [$300M](https://www.sec.gov/Archives/edgar/data/6/000000000121000010/0000000001-21-000010-index.htm) |', \
+                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) + [$13M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) | [$163M](https://www.sec.gov/Archives/edgar/data/6/000000000122000010/0000000001-22-000010-index.htm) | $113M | -$50M | -4.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) + [$14M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) | [$182M](https://www.sec.gov/Archives/edgar/data/6/000000000123000010/0000000001-23-000010-index.htm) | $126M | -$56M | -4.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) + [$16M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) | [$208M](https://www.sec.gov/Archives/edgar/data/6/000000000124000010/0000000001-24-000010-index.htm) | $144M | -$64M | -4.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) + [$18M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) | [$234M](https://www.sec.gov/Archives/edgar/data/6/000000000125000010/0000000001-25-000010-index.htm) | $162M | -$72M | -4.0% | n/a | n/a |  |', \
+                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) + [$20M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | [$260M](https://www.sec.gov/Archives/edgar/data/6/000000000126000010/0000000001-26-000010-index.htm) | $180M | -$80M | -4.0% | n/a | n/a |  |' \
+                ], \
+                '', \
+                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
+                'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
+                '"n/a" means the filings have no tagged figure. History starts about 2009.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Notes on the data', \
+                '', \
+                '- Diluted share count: no annual change is shown (share count jumps in one year (a stock split, or a conversion at listing); not adjusted).' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows P1 with and without those years.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_companyOneOff')
+
+
+# Capital-led, no ticker, a name that needs escaping
+async function testMain_companyCapitalLed():
+    data = testData(['data/meta.json', 'data/company/2.json'])
+    systemGlobalSet('vPage', 'company')
+    systemGlobalSet('vCik', 2)
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    systemGlobalSet('vCik', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/company/2.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Capital & Sons [Holdings] - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Capital & Sons \\[Holdings\\]', \
+                '', \
+                '**SEC filings:** [CIK 2](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=2&type=10-K) \\\n**Industry:** Semiconductors & Related Devices ([SIC 3674](#var.vSic=3674&var.vType=\'all\')) \\\n**Type:** Stock pay. Passed the screen: owner cash is under the line and stock pay is the cause.', \
+                '', \
+                'From fiscal 2019 to 2025, Capital & Sons [Holdings] reported $10.2 billion of revenue and $1.0 billion of free cash flow. Stock pay was $1.2 billion, which leaves -$203 million of owner cash: -2.0% of revenue. Owner cash was under 3.0% of revenue in 7 of 7 years. In the 12 months to 2026-09-30 it was -2.0% of revenue.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## What cuts the other way', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- Capital spending was 2.5 times stock pay. The shortfall is mostly investment, not stock pay.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- Operating costs fell from 55.0% of revenue in 2021 to 52.5% in 2025.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Screen score: 32.6 of 50 (rank 3 of 4)', \
+                '', \
+                '**P1. No meaningful cash for owners: 18.6 of 25**', \
+                '', \
+                [ \
+                    '| Part | Input | Points |', \
+                    '| :-- | --: | --: |', \
+                    '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
+                    '| Cumulative owner-cash margin, 2019-2025 | -2.0% | 3.7 of 8 |', \
+                    '| Owner-cash margin, 12 months to 2026-09-30 | -2.0% | 4.9 of 7 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '**P2b. Operating costs as a share of revenue: 9.8 of 13**', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 52.5% in 2025: a change of -2.5 points.', \
+                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
+                'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $150M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
+                '', \
+                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 18.6 + (18.6 / 25) x 18.8 = 32.6' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
+                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Year by year', ''] \
+        ], \
+        testChartCall(data, 'data/company/2.json'), \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
+                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/2/000000000120000010/0000000001-20-000010-index.htm) | [$400M](https://www.sec.gov/Archives/edgar/data/2/000000000120000010/0000000001-20-000010-index.htm) | [$300M](https://www.sec.gov/Archives/edgar/data/2/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/2/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$20M | -2.0% | n/a | n/a |  |', \
+                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/2/000000000121000010/0000000001-21-000010-index.htm) | [$440M](https://www.sec.gov/Archives/edgar/data/2/000000000121000010/0000000001-21-000010-index.htm) | [$330M](https://www.sec.gov/Archives/edgar/data/2/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/2/000000000121000010/0000000001-21-000010-index.htm) | $110M | -$22M | -2.0% | n/a | n/a |  |', \
+                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm) | [$500M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm) | [$375M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/2/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$25M | -2.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/2/000000000123000010/0000000001-23-000010-index.htm) | [$560M](https://www.sec.gov/Archives/edgar/data/2/000000000123000010/0000000001-23-000010-index.htm) | [$420M](https://www.sec.gov/Archives/edgar/data/2/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/2/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$28M | -2.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/2/000000000124000010/0000000001-24-000010-index.htm) | [$640M](https://www.sec.gov/Archives/edgar/data/2/000000000124000010/0000000001-24-000010-index.htm) | [$480M](https://www.sec.gov/Archives/edgar/data/2/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/2/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$32M | -2.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/2/000000000125000010/0000000001-25-000010-index.htm) | [$720M](https://www.sec.gov/Archives/edgar/data/2/000000000125000010/0000000001-25-000010-index.htm) | [$540M](https://www.sec.gov/Archives/edgar/data/2/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/2/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$36M | -2.0% | n/a | n/a |  |', \
+                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm) | [$800M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm) | [$600M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/2/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$40M | -2.0% | n/a | n/a |  |', \
+                    '| **12 months** | 2026-09-30 | $2,150M | $860M | $645M | $258M | $215M | -$43M | -2.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/2/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/2/000000000125000030/0000000001-25-000030-index.htm) |' \
+                ], \
+                '', \
+                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
+                'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
+                '"n/a" means the filings have no tagged figure. History starts about 2009.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Notes on the data', \
+                '', \
+                '- Diluted share count: no annual change is shown (share count missing for the first or last year).' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- Capital-led: capital spending is more than twice stock pay, so the shortfall is mostly investment.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_companyCapitalLed')
+
+
+# No cost line, missing capital spending
+async function testMain_companyNoCostLine():
+    data = testData(['data/meta.json', 'data/company/3.json'])
+    systemGlobalSet('vPage', 'company')
+    systemGlobalSet('vCik', 3)
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    systemGlobalSet('vCik', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/company/3.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['No Cost Line Co - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# No Cost Line Co', \
+                '', \
+                '**Ticker:** NCL (NYSE) \\\n**SEC filings:** [CIK 3](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=3&type=10-K) \\\n**Industry:** Services\\-Prepackaged Software ([SIC 7372](#var.vSic=7372&var.vType=\'all\')) \\\n**Type:** Stock pay. Passed the screen: owner cash is under the line and stock pay is the cause.', \
+                '', \
+                'From fiscal 2019 to 2025, No Cost Line Co reported $10.2 billion of revenue and $1.2 billion of free cash flow. Stock pay was $2.0 billion, which leaves -$832 million of owner cash: -8.2% of revenue. Owner cash was under 3.0% of revenue in 7 of 7 years. In the latest fiscal year, to 2025-12-31, it was -8.0% of revenue.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## What cuts the other way', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Nothing in the numbers the index uses. Stated targets and one-off events are not yet reviewed by hand.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Screen score: not scored (unranked)', \
+                '', \
+                '**P1. No meaningful cash for owners: 24.0 of 25**', \
+                '', \
+                [ \
+                    '| Part | Input | Points |', \
+                    '| :-- | --: | --: |', \
+                    '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
+                    '| Cumulative owner-cash margin, 2019-2025 | -8.2% | 7.0 of 8 |', \
+                    '| Owner-cash margin, fiscal year to 2025-12-31 | -8.0% | 7.0 of 7 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                'The latest fiscal year stands in for the latest 12 months: no quarterly report since the latest fiscal year.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '**P2b. Operating costs as a share of revenue: cannot be built**', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'The filings do not tag gross profit, operating income, total costs and cost of revenue consistently enough to build', \
+                'the cost line the same way in both years. The company has P1 alone and is left unranked; missing is not treated as zero.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
+                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Year by year', ''] \
+        ], \
+        testChartCall(data, 'data/company/3.json'), \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
+                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/3/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/3/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/3/000000000120000010/0000000001-20-000010-index.htm) | [$200M](https://www.sec.gov/Archives/edgar/data/3/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$100M | -10.0% | n/a | n/a |  |', \
+                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/3/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/3/000000000121000010/0000000001-21-000010-index.htm) | n/a | [$220M](https://www.sec.gov/Archives/edgar/data/3/000000000121000010/0000000001-21-000010-index.htm) | $132M | -$88M | -8.0% | n/a | n/a |  |', \
+                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/3/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/3/000000000122000010/0000000001-22-000010-index.htm) | n/a | [$250M](https://www.sec.gov/Archives/edgar/data/3/000000000122000010/0000000001-22-000010-index.htm) | $150M | -$100M | -8.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/3/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/3/000000000123000010/0000000001-23-000010-index.htm) | n/a | [$280M](https://www.sec.gov/Archives/edgar/data/3/000000000123000010/0000000001-23-000010-index.htm) | $168M | -$112M | -8.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/3/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/3/000000000124000010/0000000001-24-000010-index.htm) | n/a | [$320M](https://www.sec.gov/Archives/edgar/data/3/000000000124000010/0000000001-24-000010-index.htm) | $192M | -$128M | -8.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/3/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/3/000000000125000010/0000000001-25-000010-index.htm) | n/a | [$360M](https://www.sec.gov/Archives/edgar/data/3/000000000125000010/0000000001-25-000010-index.htm) | $216M | -$144M | -8.0% | n/a | n/a |  |', \
+                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/3/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/3/000000000126000010/0000000001-26-000010-index.htm) | n/a | [$400M](https://www.sec.gov/Archives/edgar/data/3/000000000126000010/0000000001-26-000010-index.htm) | $240M | -$160M | -8.0% | n/a | n/a |  |' \
+                ], \
+                '', \
+                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
+                'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
+                '"n/a" means the filings have no tagged figure. History starts about 2009.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Notes on the data', \
+                '', \
+                '- Diluted share count: no annual change is shown (share count missing for the first or last year).' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- The cost line cannot be built from the filing tags, so there is no P2b and no screen score. The company has P1 alone and is unranked.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- No capital spending tag in at least one year; that year counts capital spending as zero.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_companyNoCostLine')
+
+
+# Unranked with a score, former names, a share count change, cash returned
+async function testMain_companyCashGenerative():
+    data = testData(['data/meta.json', 'data/company/4.json'])
+    systemGlobalSet('vPage', 'company')
+    systemGlobalSet('vCik', 4)
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    systemGlobalSet('vCik', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/company/4.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Cash Co - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Cash Co', \
+                '', \
+                '**Ticker:** CASH (NYSE) \\\n**SEC filings:** [CIK 4](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=4&type=10-K) \\\n**Industry:** Services\\-Prepackaged Software ([SIC 7372](#var.vSic=7372&var.vType=\'all\')) \\\n**Formerly:** Old Cash Co; Older Cash Co \\\n**Type:** Cash generative. Owner cash is at or above the line. These companies are the baseline.', \
+                '', \
+                'From fiscal 2019 to 2025, Cash Co reported $10.2 billion of revenue and $1.0 billion of free cash flow. Stock pay was $203 million, which leaves $812 million of owner cash: 8.0% of revenue. Owner cash was under 3.0% of revenue in 0 of 7 years. In the 12 months to 2026-09-30 it was 8.0% of revenue.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## What cuts the other way', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- Owner cash in the latest 12 months was 8.0% of revenue, above the 3.0% line.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '- The company paid $250 million to buy back shares and $20 million in dividends over the period.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['- Operating costs fell from 55.0% of revenue in 2021 to 40.0% in 2025.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Screen score: 0.0 of 50 (unranked)', \
+                '', \
+                '**P1. No meaningful cash for owners: 0.0 of 25**', \
+                '', \
+                [ \
+                    '| Part | Input | Points |', \
+                    '| :-- | --: | --: |', \
+                    '| Years with owner cash under 3.0% of revenue | 0 of 7 | 0.0 of 10 |', \
+                    '| Cumulative owner-cash margin, 2019-2025 | 8.0% | 0.0 of 8 |', \
+                    '| Owner-cash margin, 12 months to 2026-09-30 | 8.0% | 0.0 of 7 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '**P2b. Operating costs as a share of revenue: 0.0 of 13**', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 40.0% in 2025: a change of -15.0 points.', \
+                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
+                'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $400M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
+                '', \
+                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 0.0 + (0.0 / 25) x 0.0 = 0.0' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                'The company is unranked because it did not pass the screen (see its type above). Its score is shown for comparison.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
+                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Year by year', ''] \
+        ], \
+        testChartCall(data, 'data/company/4.json'), \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
+                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/4/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/4/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/4/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/4/000000000120000010/0000000001-20-000010-index.htm) | $100M | $80M | 8.0% | n/a | n/a |  |', \
+                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/4/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/4/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/4/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/4/000000000121000010/0000000001-21-000010-index.htm) | $110M | $88M | 8.0% | n/a | n/a |  |', \
+                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/4/000000000122000010/0000000001-22-000010-index.htm) | $125M | $100M | 8.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/4/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/4/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/4/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/4/000000000123000010/0000000001-23-000010-index.htm) | $140M | $112M | 8.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/4/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/4/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/4/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/4/000000000124000010/0000000001-24-000010-index.htm) | $160M | $128M | 8.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | $180M | $144M | 8.0% | [$100M](https://www.sec.gov/Archives/edgar/data/4/000000000125000010/0000000001-25-000010-index.htm) | n/a |  |', \
+                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | $200M | $160M | 8.0% | [$150M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/4/000000000126000010/0000000001-26-000010-index.htm) |  |', \
+                    '| **12 months** | 2026-09-30 | $2,150M | $258M | $43M | $43M | $215M | $172M | 8.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/4/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/4/000000000125000030/0000000001-25-000030-index.htm) |' \
+                ], \
+                '', \
+                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
+                'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
+                '"n/a" means the filings have no tagged figure. History starts about 2009.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Notes on the data', '', '- Diluted share count: changed +5.0% a year over the period.'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_companyCashGenerative')
+
+
+# An excluded industry
+async function testMain_companyExcluded():
+    data = testData(['data/meta.json', 'data/company/5.json'])
+    systemGlobalSet('vPage', 'company')
+    systemGlobalSet('vCik', 5)
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    systemGlobalSet('vCik', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/company/5.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Bank Co - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Bank Co', \
+                '', \
+                '**Ticker:** BANK (NYSE) \\\n**SEC filings:** [CIK 5](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=5&type=10-K) \\\n**Industry:** National Commercial Banks ([SIC 6021](#var.vSic=6021&var.vType=\'all\')) \\\n**Type:** Excluded industry. A bank, insurer, lender, broker, asset manager, REIT or drug developer. This company is classed as a bank.', \
+                '', \
+                'From fiscal 2019 to 2025, Bank Co reported $10.2 billion of revenue and $1.0 billion of free cash flow. Stock pay was $2.0 billion, which leaves -$1.0 billion of owner cash: -10.0% of revenue. Owner cash was under 3.0% of revenue in 7 of 7 years. In the 12 months to 2026-09-30 it was -10.0% of revenue.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Not scored.** The index leaves this industry out, because its cash flows include customer money, loans, property', \
+                'or research spending that make free cash flow mean something different. The figures below are for reference only.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Year by year', ''] \
+        ], \
+        testChartCall(data, 'data/company/5.json'), \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
+                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/5/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/5/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/5/000000000120000010/0000000001-20-000010-index.htm) | [$200M](https://www.sec.gov/Archives/edgar/data/5/000000000120000010/0000000001-20-000010-index.htm) | $100M | -$100M | -10.0% | n/a | n/a |  |', \
+                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/5/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/5/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/5/000000000121000010/0000000001-21-000010-index.htm) | [$220M](https://www.sec.gov/Archives/edgar/data/5/000000000121000010/0000000001-21-000010-index.htm) | $110M | -$110M | -10.0% | n/a | n/a |  |', \
+                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/5/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/5/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/5/000000000122000010/0000000001-22-000010-index.htm) | [$250M](https://www.sec.gov/Archives/edgar/data/5/000000000122000010/0000000001-22-000010-index.htm) | $125M | -$125M | -10.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/5/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/5/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/5/000000000123000010/0000000001-23-000010-index.htm) | [$280M](https://www.sec.gov/Archives/edgar/data/5/000000000123000010/0000000001-23-000010-index.htm) | $140M | -$140M | -10.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/5/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/5/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/5/000000000124000010/0000000001-24-000010-index.htm) | [$320M](https://www.sec.gov/Archives/edgar/data/5/000000000124000010/0000000001-24-000010-index.htm) | $160M | -$160M | -10.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/5/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/5/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/5/000000000125000010/0000000001-25-000010-index.htm) | [$360M](https://www.sec.gov/Archives/edgar/data/5/000000000125000010/0000000001-25-000010-index.htm) | $180M | -$180M | -10.0% | n/a | n/a |  |', \
+                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/5/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/5/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/5/000000000126000010/0000000001-26-000010-index.htm) | [$400M](https://www.sec.gov/Archives/edgar/data/5/000000000126000010/0000000001-26-000010-index.htm) | $200M | -$200M | -10.0% | n/a | n/a |  |', \
+                    '| **12 months** | 2026-09-30 | $2,150M | $258M | $43M | $430M | $215M | -$215M | -10.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/5/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/5/000000000125000030/0000000001-25-000030-index.htm) |' \
+                ], \
+                '', \
+                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
+                'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
+                '"n/a" means the filings have no tagged figure. History starts about 2009.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Notes on the data', \
+                '', \
+                '- Diluted share count: no annual change is shown (share count missing for the first or last year).' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_companyExcluded')
+
+
+# No industry description or exchange
+async function testMain_companyNoIndustryName():
+    data = testData(['data/meta.json', 'data/company/7.json'])
+    systemGlobalSet('vPage', 'company')
+    systemGlobalSet('vCik', 7)
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    systemGlobalSet('vCik', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/company/7.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Thin Co - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Thin Co', \
+                '', \
+                '**Ticker:** THIN \\\n**SEC filings:** [CIK 7](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=7&type=10-K) \\\n**Industry:** SIC code ([SIC 5000](#var.vSic=5000&var.vType=\'all\')) \\\n**Type:** Thin margin. Owner cash is under the line, but stock pay is too small to be the cause.', \
+                '', \
+                'From fiscal 2019 to 2025, Thin Co reported $10.2 billion of revenue and $254 million of free cash flow. Stock pay was $193 million, which leaves $61 million of owner cash: 0.6% of revenue. Owner cash was under 3.0% of revenue in 7 of 7 years. In the 12 months to 2026-09-30 it was 0.6% of revenue.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## What cuts the other way', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Nothing in the numbers the index uses. Stated targets and one-off events are not yet reviewed by hand.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Screen score: 30.9 of 50 (unranked)', \
+                '', \
+                '**P1. No meaningful cash for owners: 15.4 of 25**', \
+                '', \
+                [ \
+                    '| Part | Input | Points |', \
+                    '| :-- | --: | --: |', \
+                    '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
+                    '| Cumulative owner-cash margin, 2019-2025 | 0.6% | 2.4 of 8 |', \
+                    '| Owner-cash margin, 12 months to 2026-09-30 | 0.6% | 3.1 of 7 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '**P2b. Operating costs as a share of revenue: 13.0 of 13**', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 55.0% in 2025: a change of 0.0 points.', \
+                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
+                'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $100M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
+                '', \
+                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 15.4 + (15.4 / 25) x 25.0 = 30.9' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                'The company is unranked because it did not pass the screen (see its type above). Its score is shown for comparison.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
+                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Year by year', ''] \
+        ], \
+        testChartCall(data, 'data/company/7.json'), \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
+                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/7/000000000120000010/0000000001-20-000010-index.htm) | [$45M](https://www.sec.gov/Archives/edgar/data/7/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/7/000000000120000010/0000000001-20-000010-index.htm) | [$19M](https://www.sec.gov/Archives/edgar/data/7/000000000120000010/0000000001-20-000010-index.htm) | $25M | $6M | 0.6% | n/a | n/a |  |', \
+                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/7/000000000121000010/0000000001-21-000010-index.htm) | [$50M](https://www.sec.gov/Archives/edgar/data/7/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/7/000000000121000010/0000000001-21-000010-index.htm) | [$21M](https://www.sec.gov/Archives/edgar/data/7/000000000121000010/0000000001-21-000010-index.htm) | $28M | $7M | 0.6% | n/a | n/a |  |', \
+                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm) | [$56M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm) | [$24M](https://www.sec.gov/Archives/edgar/data/7/000000000122000010/0000000001-22-000010-index.htm) | $31M | $8M | 0.6% | n/a | n/a |  |', \
+                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/7/000000000123000010/0000000001-23-000010-index.htm) | [$63M](https://www.sec.gov/Archives/edgar/data/7/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/7/000000000123000010/0000000001-23-000010-index.htm) | [$27M](https://www.sec.gov/Archives/edgar/data/7/000000000123000010/0000000001-23-000010-index.htm) | $35M | $8M | 0.6% | n/a | n/a |  |', \
+                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/7/000000000124000010/0000000001-24-000010-index.htm) | [$72M](https://www.sec.gov/Archives/edgar/data/7/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/7/000000000124000010/0000000001-24-000010-index.htm) | [$30M](https://www.sec.gov/Archives/edgar/data/7/000000000124000010/0000000001-24-000010-index.htm) | $40M | $10M | 0.6% | n/a | n/a |  |', \
+                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/7/000000000125000010/0000000001-25-000010-index.htm) | [$81M](https://www.sec.gov/Archives/edgar/data/7/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/7/000000000125000010/0000000001-25-000010-index.htm) | [$34M](https://www.sec.gov/Archives/edgar/data/7/000000000125000010/0000000001-25-000010-index.htm) | $45M | $11M | 0.6% | n/a | n/a |  |', \
+                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm) | [$90M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm) | [$38M](https://www.sec.gov/Archives/edgar/data/7/000000000126000010/0000000001-26-000010-index.htm) | $50M | $12M | 0.6% | n/a | n/a |  |', \
+                    '| **12 months** | 2026-09-30 | $2,150M | $97M | $43M | $41M | $54M | $13M | 0.6% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/7/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/7/000000000125000030/0000000001-25-000030-index.htm) |' \
+                ], \
+                '', \
+                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
+                'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
+                '"n/a" means the filings have no tagged figure. History starts about 2009.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Notes on the data', \
+                '', \
+                '- Diluted share count: no annual change is shown (share count missing for the first or last year).' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_companyNoIndustryName')
+
+
+# No industry code
+async function testMain_companyNoIndustry():
+    data = testData(['data/meta.json', 'data/company/8.json'])
+    systemGlobalSet('vPage', 'company')
+    systemGlobalSet('vCik', 8)
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    systemGlobalSet('vCik', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/company/8.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Burner Co - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Burner Co', \
+                '', \
+                '**Ticker:** BURN (Nasdaq) \\\n**SEC filings:** [CIK 8](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=8&type=10-K) \\\n**Type:** Cash burner. Free cash flow is negative before any stock pay.', \
+                '', \
+                'From fiscal 2019 to 2025, Burner Co reported $10.2 billion of revenue and -$102 million of free cash flow. Stock pay was $1.2 billion, which leaves -$1.3 billion of owner cash: -13.0% of revenue. Owner cash was under 3.0% of revenue in 7 of 7 years. In the 12 months to 2026-09-30 it was -13.0% of revenue.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## What cuts the other way', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Nothing in the numbers the index uses. Stated targets and one-off events are not yet reviewed by hand.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Screen score: 50.0 of 50 (unranked)', \
+                '', \
+                '**P1. No meaningful cash for owners: 25.0 of 25**', \
+                '', \
+                [ \
+                    '| Part | Input | Points |', \
+                    '| :-- | --: | --: |', \
+                    '| Years with owner cash under 3.0% of revenue | 7 of 7 | 10.0 of 10 |', \
+                    '| Cumulative owner-cash margin, 2019-2025 | -13.0% | 8.0 of 8 |', \
+                    '| Owner-cash margin, 12 months to 2026-09-30 | -13.0% | 7.0 of 7 |' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '**P2b. Operating costs as a share of revenue: 13.0 of 13**', ''] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                'Operating expenses excluding cost of revenue (gross profit - operating income) were 55.0% of revenue in 2021 and 55.0% in 2025: a change of 0.0 points.', \
+                'Flat or rising costs score 13; a fall of 10 points scores 0.', \
+                'Sources: [GrossProfit $750M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm), [OperatingIncomeLoss $63M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm) (2021), [GrossProfit $1,200M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm), [OperatingIncomeLoss $100M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm) (2025).', \
+                '', \
+                '**Screen score** = P1 + (P1 / 25) x (P2b x 25 / 13) = 25.0 + (25.0 / 25) x 25.0 = 50.0' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                'The company is unranked because it did not pass the screen (see its type above). Its score is shown for comparison.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '**Full score (100): not published.** P2a (gross profit per employee), P3 (insider grants and sales) and P4 (headline', \
+                'numbers that leave out stock pay) need hand-checked data and have not been scored for any company.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            ['', '## Year by year', ''] \
+        ], \
+        testChartCall(data, 'data/company/8.json'), \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                [ \
+                    '| Fiscal year | Year end | Revenue | Operating cash flow | Capital spending | Stock pay | Free cash flow | Owner cash | Owner-cash margin | Buybacks | Dividends | One-off |', \
+                    '| :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- |', \
+                    '| 2019 | 2019-12-31 | [$1,000M](https://www.sec.gov/Archives/edgar/data/8/000000000120000010/0000000001-20-000010-index.htm) | [$10M](https://www.sec.gov/Archives/edgar/data/8/000000000120000010/0000000001-20-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/8/000000000120000010/0000000001-20-000010-index.htm) | [$120M](https://www.sec.gov/Archives/edgar/data/8/000000000120000010/0000000001-20-000010-index.htm) | -$10M | -$130M | -13.0% | n/a | n/a |  |', \
+                    '| 2020 | 2020-12-31 | [$1,100M](https://www.sec.gov/Archives/edgar/data/8/000000000121000010/0000000001-21-000010-index.htm) | [$11M](https://www.sec.gov/Archives/edgar/data/8/000000000121000010/0000000001-21-000010-index.htm) | [$22M](https://www.sec.gov/Archives/edgar/data/8/000000000121000010/0000000001-21-000010-index.htm) | [$132M](https://www.sec.gov/Archives/edgar/data/8/000000000121000010/0000000001-21-000010-index.htm) | -$11M | -$143M | -13.0% | n/a | n/a |  |', \
+                    '| 2021 | 2021-12-31 | [$1,250M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm) | [$13M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm) | [$25M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm) | [$150M](https://www.sec.gov/Archives/edgar/data/8/000000000122000010/0000000001-22-000010-index.htm) | -$13M | -$163M | -13.0% | n/a | n/a |  |', \
+                    '| 2022 | 2022-12-31 | [$1,400M](https://www.sec.gov/Archives/edgar/data/8/000000000123000010/0000000001-23-000010-index.htm) | [$14M](https://www.sec.gov/Archives/edgar/data/8/000000000123000010/0000000001-23-000010-index.htm) | [$28M](https://www.sec.gov/Archives/edgar/data/8/000000000123000010/0000000001-23-000010-index.htm) | [$168M](https://www.sec.gov/Archives/edgar/data/8/000000000123000010/0000000001-23-000010-index.htm) | -$14M | -$182M | -13.0% | n/a | n/a |  |', \
+                    '| 2023 | 2023-12-31 | [$1,600M](https://www.sec.gov/Archives/edgar/data/8/000000000124000010/0000000001-24-000010-index.htm) | [$16M](https://www.sec.gov/Archives/edgar/data/8/000000000124000010/0000000001-24-000010-index.htm) | [$32M](https://www.sec.gov/Archives/edgar/data/8/000000000124000010/0000000001-24-000010-index.htm) | [$192M](https://www.sec.gov/Archives/edgar/data/8/000000000124000010/0000000001-24-000010-index.htm) | -$16M | -$208M | -13.0% | n/a | n/a |  |', \
+                    '| 2024 | 2024-12-31 | [$1,800M](https://www.sec.gov/Archives/edgar/data/8/000000000125000010/0000000001-25-000010-index.htm) | [$18M](https://www.sec.gov/Archives/edgar/data/8/000000000125000010/0000000001-25-000010-index.htm) | [$36M](https://www.sec.gov/Archives/edgar/data/8/000000000125000010/0000000001-25-000010-index.htm) | [$216M](https://www.sec.gov/Archives/edgar/data/8/000000000125000010/0000000001-25-000010-index.htm) | -$18M | -$234M | -13.0% | n/a | n/a |  |', \
+                    '| 2025 | 2025-12-31 | [$2,000M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm) | [$20M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm) | [$40M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm) | [$240M](https://www.sec.gov/Archives/edgar/data/8/000000000126000010/0000000001-26-000010-index.htm) | -$20M | -$260M | -13.0% | n/a | n/a |  |', \
+                    '| **12 months** | 2026-09-30 | $2,150M | $22M | $43M | $258M | -$22M | -$280M | -13.0% |  |  | quarterly filings: [1](https://www.sec.gov/Archives/edgar/data/8/000000000126000030/0000000001-26-000030-index.htm), [2](https://www.sec.gov/Archives/edgar/data/8/000000000125000030/0000000001-25-000030-index.htm) |' \
+                ], \
+                '', \
+                'Every linked figure opens the SEC filing it was taken from; each is the most recently filed value for that year.', \
+                'Free cash flow = operating cash flow - capital spending. Owner cash = free cash flow - stock pay.', \
+                'The 12-month row is the latest fiscal year, plus the year-to-date period since, less the same period a year earlier.', \
+                '"n/a" means the filings have no tagged figure. History starts about 2009.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '## Notes on the data', \
+                '', \
+                '- Diluted share count: no annual change is shown (share count missing for the first or last year).' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_companyNoIndustry')
+
+
+# An unknown company
+async function testMain_companyUnknown():
+    data = testData(['data/meta.json'])
+    systemGlobalSet('vPage', 'company')
+    systemGlobalSet('vCik', 99)
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    systemGlobalSet('vCik', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/company/99.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# The Treadmill Index', \
+                '', \
+                'Unknown company. Only companies that pass the basic tests have a page.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_companyUnknown')
+
+
+# No company
+async function testMain_companyNoCik():
+    data = testData(['data/meta.json'])
+    systemGlobalSet('vPage', 'company')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# The Treadmill Index', \
+                '', \
+                'Unknown company. Only companies that pass the basic tests have a page.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_companyNoCik')
+
+
+# The group totals page
+async function testMain_totals():
+    data = testData(['data/meta.json'])
+    systemGlobalSet('vPage', 'totals')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | Group totals | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Group totals - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Group totals', \
+                '', \
+                'The 5 companies that pass the screen, added together over each company\'s own history', \
+                '(about 2009 onward). 1 of them are capital-led: their capital spending', \
+                'is more than twice their stock pay, so their shortfall is mostly investment. The last column leaves them out.', \
+                '', \
+                [ \
+                    '|  | All 5 | Without the capital-led (4) |', \
+                    '| :-- | --: | --: |', \
+                    '| Revenue | $50.8B | $40.6B |', \
+                    '| Free cash flow | $5.2B | $4.1B |', \
+                    '| Stock pay | $6.5B | $5.3B |', \
+                    '| Owner cash (free cash flow - stock pay) | -$1.4B | -$1.2B |', \
+                    '| Capital spending | $3.8B | $0.7B |', \
+                    '| Share buybacks | $0.0B | $0.0B |', \
+                    '| Cash paid for employees\' vesting taxes | $0.0B | $0.0B |', \
+                    '| Dividends | $0.0B | $0.0B |' \
+                ], \
+                '', \
+                'Buybacks and dividends are cash paid out, shown for comparison; they are not scored.', \
+                '', \
+                '## Latest 12 months', \
+                '', \
+                'Of the 5 companies:', \
+                '', \
+                '- Owner cash of 3.0% of revenue or more: 0', \
+                '- Negative owner cash: 4', \
+                '- The latest fiscal year stands in for the latest 12 months: 2', \
+                '', \
+                '## Operating costs', \
+                '', \
+                'Of the 5 companies, over the latest five fiscal years:', \
+                '', \
+                '- Flat or rising costs as a share of revenue (full P2b): 3', \
+                '- Costs cut by 10 points of revenue or more (P2b of zero): 0', \
+                '- No usable cost line (unranked): 1' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_totals')
+
+
+# The threshold explorer page at the definition's thresholds
+async function testMain_explore():
+    data = testData(['data/meta.json', 'data/index.json'])
+    systemGlobalSet('vPage', 'explore')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | Threshold explorer | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Threshold explorer - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Threshold explorer', \
+                '', \
+                'The point scales are judgment. This page re-scores every company in your browser with a threshold moved, so you can', \
+                'see which ranks depend on it. The published index always uses the definition\'s values.', \
+                '[Reset all](#var.vPage=\'explore\')', \
+                '', \
+                [ \
+                    '| Threshold | Definition | Now | Set to |', \
+                    '| :-- | --: | --: | :-- |', \
+                    '| Meaningful owner cash, as a share of revenue | 3.0% | 3.0% | [a fifth lower](#var.vLine=0.024&var.vPage=\'explore\') \\| definition \\| [a fifth higher](#var.vLine=0.036&var.vPage=\'explore\') |', \
+                    '| Stock pay is the cause: least stock pay, as a share of revenue | 2.0% | 2.0% | [a fifth lower](#var.vPage=\'explore\'&var.vSbcRevenue=0.016) \\| definition \\| [a fifth higher](#var.vPage=\'explore\'&var.vSbcRevenue=0.024) |', \
+                    '| Stock pay is the cause: least stock pay, as a share of free cash flow | 50.0% | 50.0% | [a fifth lower](#var.vPage=\'explore\'&var.vSbcFcf=0.4) \\| definition \\| [a fifth higher](#var.vPage=\'explore\'&var.vSbcFcf=0.6) |', \
+                    '| P1: cumulative owner-cash margin that scores 0 | 5.0% | 5.0% | [a fifth lower](#var.vCumZero=0.04&var.vPage=\'explore\') \\| definition \\| [a fifth higher](#var.vCumZero=0.06&var.vPage=\'explore\') |', \
+                    '| P1: cumulative owner-cash margin that scores 8 | -10.0% | -10.0% | [a fifth lower](#var.vCumFull=-0.08&var.vPage=\'explore\') \\| definition \\| [a fifth higher](#var.vCumFull=-0.12&var.vPage=\'explore\') |', \
+                    '| P1: latest owner-cash margin that scores 0 | 5.0% | 5.0% | [a fifth lower](#var.vLatestZero=0.04&var.vPage=\'explore\') \\| definition \\| [a fifth higher](#var.vLatestZero=0.06&var.vPage=\'explore\') |', \
+                    '| P1: latest owner-cash margin that scores 7 | -5.0% | -5.0% | [a fifth lower](#var.vLatestFull=-0.04&var.vPage=\'explore\') \\| definition \\| [a fifth higher](#var.vLatestFull=-0.06&var.vPage=\'explore\') |', \
+                    '| P2b: fall in the cost ratio, in points of revenue, that scores 0 | 10 | 10 | [a fifth lower](#var.vDrop=8&var.vPage=\'explore\') \\| definition \\| [a fifth higher](#var.vDrop=12&var.vPage=\'explore\') |' \
+                ], \
+                '', \
+                '## The top 25 at these thresholds', \
+                '', \
+                '4 companies pass the screen and are ranked at these thresholds; 4 are in the published index.', \
+                '', \
+                [ \
+                    '| Rank here | Published rank | Company | Screen score here | Published screen score | P1 here | P2b here |', \
+                    '| --: | --: | :-- | --: | --: | --: | --: |', \
+                    '| 1 | 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | 42.2 | 42.2 | 21.1 | 13.0 |', \
+                    '| 2 | 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | 37.3 | 37.3 | 18.6 | 13.0 |', \
+                    '| 3 | 3 | [Capital & Sons \\[Holdings\\]](#var.vCik=2&var.vPage=\'company\') | 32.6 | 32.6 | 18.6 | 9.8 |', \
+                    '| 4 | 4 | [Marginal Co](#var.vCik=10&var.vPage=\'company\') | 25.9 | 25.9 | 13.0 | 13.0 |' \
+                ], \
+                '', \
+                'Scores here are computed from rounded yearly margins, so they can differ from the published scores in the last digit.', \
+                'The basic tests (revenue, years of data, growth) and the five-year cost window cannot be moved here. The', \
+                '[data and limits](#var.vPage=\'data\') page reports how moving each of those changes the top ten.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_explore')
+
+
+# The threshold explorer page with thresholds moved and more companies than the limit
+async function testMain_exploreMoved():
+    data = testData(['data/meta.json', 'data/index.json'])
+    systemGlobalSet('vPage', 'explore')
+    systemGlobalSet('vLine', 0.024)
+    systemGlobalSet('vDrop', 12)
+    systemGlobalSet('vSbcFcf', 0.6)
+    systemGlobalSet('tiExploreLimit', 2)
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    systemGlobalSet('vLine', null)
+    systemGlobalSet('vDrop', null)
+    systemGlobalSet('vSbcFcf', null)
+    systemGlobalSet('tiExploreLimit', 25)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | Threshold explorer | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Threshold explorer - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Threshold explorer', \
+                '', \
+                'The point scales are judgment. This page re-scores every company in your browser with a threshold moved, so you can', \
+                'see which ranks depend on it. The published index always uses the definition\'s values.', \
+                '[Reset all](#var.vPage=\'explore\')', \
+                '', \
+                [ \
+                    '| Threshold | Definition | Now | Set to |', \
+                    '| :-- | --: | --: | :-- |', \
+                    '| Meaningful owner cash, as a share of revenue | 3.0% | 2.4% | a fifth lower \\| [definition](#var.vDrop=12&var.vPage=\'explore\'&var.vSbcFcf=0.6) \\| [a fifth higher](#var.vDrop=12&var.vLine=0.036&var.vPage=\'explore\'&var.vSbcFcf=0.6) |', \
+                    '| Stock pay is the cause: least stock pay, as a share of revenue | 2.0% | 2.0% | [a fifth lower](#var.vDrop=12&var.vLine=0.024&var.vPage=\'explore\'&var.vSbcFcf=0.6&var.vSbcRevenue=0.016) \\| definition \\| [a fifth higher](#var.vDrop=12&var.vLine=0.024&var.vPage=\'explore\'&var.vSbcFcf=0.6&var.vSbcRevenue=0.024) |', \
+                    '| Stock pay is the cause: least stock pay, as a share of free cash flow | 50.0% | 60.0% | [a fifth lower](#var.vDrop=12&var.vLine=0.024&var.vPage=\'explore\'&var.vSbcFcf=0.4) \\| [definition](#var.vDrop=12&var.vLine=0.024&var.vPage=\'explore\') \\| a fifth higher |', \
+                    '| P1: cumulative owner-cash margin that scores 0 | 5.0% | 5.0% | [a fifth lower](#var.vCumZero=0.04&var.vDrop=12&var.vLine=0.024&var.vPage=\'explore\'&var.vSbcFcf=0.6) \\| definition \\| [a fifth higher](#var.vCumZero=0.06&var.vDrop=12&var.vLine=0.024&var.vPage=\'explore\'&var.vSbcFcf=0.6) |', \
+                    '| P1: cumulative owner-cash margin that scores 8 | -10.0% | -10.0% | [a fifth lower](#var.vCumFull=-0.08&var.vDrop=12&var.vLine=0.024&var.vPage=\'explore\'&var.vSbcFcf=0.6) \\| definition \\| [a fifth higher](#var.vCumFull=-0.12&var.vDrop=12&var.vLine=0.024&var.vPage=\'explore\'&var.vSbcFcf=0.6) |', \
+                    '| P1: latest owner-cash margin that scores 0 | 5.0% | 5.0% | [a fifth lower](#var.vDrop=12&var.vLatestZero=0.04&var.vLine=0.024&var.vPage=\'explore\'&var.vSbcFcf=0.6) \\| definition \\| [a fifth higher](#var.vDrop=12&var.vLatestZero=0.06&var.vLine=0.024&var.vPage=\'explore\'&var.vSbcFcf=0.6) |', \
+                    '| P1: latest owner-cash margin that scores 7 | -5.0% | -5.0% | [a fifth lower](#var.vDrop=12&var.vLatestFull=-0.04&var.vLine=0.024&var.vPage=\'explore\'&var.vSbcFcf=0.6) \\| definition \\| [a fifth higher](#var.vDrop=12&var.vLatestFull=-0.06&var.vLine=0.024&var.vPage=\'explore\'&var.vSbcFcf=0.6) |', \
+                    '| P2b: fall in the cost ratio, in points of revenue, that scores 0 | 10 | 12 | [a fifth lower](#var.vDrop=8&var.vLine=0.024&var.vPage=\'explore\'&var.vSbcFcf=0.6) \\| [definition](#var.vLine=0.024&var.vPage=\'explore\'&var.vSbcFcf=0.6) \\| a fifth higher |' \
+                ], \
+                '', \
+                '## The top 2 at these thresholds', \
+                '', \
+                '3 companies pass the screen and are ranked at these thresholds; 4 are in the published index.', \
+                '', \
+                [ \
+                    '| Rank here | Published rank | Company | Screen score here | Published screen score | P1 here | P2b here |', \
+                    '| --: | --: | :-- | --: | --: | --: | --: |', \
+                    '| 1 | 1 | [One\\-Off Co](#var.vCik=6&var.vPage=\'company\') | 42.2 | 42.2 | 21.1 | 13.0 |', \
+                    '| 2 | 2 | [Stock Pay Co](#var.vCik=1&var.vPage=\'company\') | 37.3 | 37.3 | 18.6 | 13.0 |' \
+                ], \
+                '', \
+                'Scores here are computed from rounded yearly margins, so they can differ from the published scores in the last digit.', \
+                'The basic tests (revenue, years of data, growth) and the five-year cost window cannot be moved here. The', \
+                '[data and limits](#var.vPage=\'data\') page reports how moving each of those changes the top ten.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_exploreMoved')
+
+
+# The threshold explorer page when the index data failed to load
+async function testMain_exploreFailed():
+    data = testData(['data/meta.json'])
+    systemGlobalSet('vPage', 'explore')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/index.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | Threshold explorer | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Threshold explorer - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Threshold explorer', \
+                '', \
+                'The point scales are judgment. This page re-scores every company in your browser with a threshold moved, so you can', \
+                'see which ranks depend on it. The published index always uses the definition\'s values.', \
+                '[Reset all](#var.vPage=\'explore\')', \
+                '', \
+                [ \
+                    '| Threshold | Definition | Now | Set to |', \
+                    '| :-- | --: | --: | :-- |', \
+                    '| Meaningful owner cash, as a share of revenue | 3.0% | 3.0% | [a fifth lower](#var.vLine=0.024&var.vPage=\'explore\') \\| definition \\| [a fifth higher](#var.vLine=0.036&var.vPage=\'explore\') |', \
+                    '| Stock pay is the cause: least stock pay, as a share of revenue | 2.0% | 2.0% | [a fifth lower](#var.vPage=\'explore\'&var.vSbcRevenue=0.016) \\| definition \\| [a fifth higher](#var.vPage=\'explore\'&var.vSbcRevenue=0.024) |', \
+                    '| Stock pay is the cause: least stock pay, as a share of free cash flow | 50.0% | 50.0% | [a fifth lower](#var.vPage=\'explore\'&var.vSbcFcf=0.4) \\| definition \\| [a fifth higher](#var.vPage=\'explore\'&var.vSbcFcf=0.6) |', \
+                    '| P1: cumulative owner-cash margin that scores 0 | 5.0% | 5.0% | [a fifth lower](#var.vCumZero=0.04&var.vPage=\'explore\') \\| definition \\| [a fifth higher](#var.vCumZero=0.06&var.vPage=\'explore\') |', \
+                    '| P1: cumulative owner-cash margin that scores 8 | -10.0% | -10.0% | [a fifth lower](#var.vCumFull=-0.08&var.vPage=\'explore\') \\| definition \\| [a fifth higher](#var.vCumFull=-0.12&var.vPage=\'explore\') |', \
+                    '| P1: latest owner-cash margin that scores 0 | 5.0% | 5.0% | [a fifth lower](#var.vLatestZero=0.04&var.vPage=\'explore\') \\| definition \\| [a fifth higher](#var.vLatestZero=0.06&var.vPage=\'explore\') |', \
+                    '| P1: latest owner-cash margin that scores 7 | -5.0% | -5.0% | [a fifth lower](#var.vLatestFull=-0.04&var.vPage=\'explore\') \\| definition \\| [a fifth higher](#var.vLatestFull=-0.06&var.vPage=\'explore\') |', \
+                    '| P2b: fall in the cost ratio, in points of revenue, that scores 0 | 10 | 10 | [a fifth lower](#var.vDrop=8&var.vPage=\'explore\') \\| definition \\| [a fifth higher](#var.vDrop=12&var.vPage=\'explore\') |' \
+                ], \
+                '', \
+                '## The top 25 at these thresholds', \
+                '', \
+                '0 companies pass the screen and are ranked at these thresholds; 4 are in the published index.', \
+                '', \
+                [ \
+                    '| Rank here | Published rank | Company | Screen score here | Published screen score | P1 here | P2b here |', \
+                    '| --: | --: | :-- | --: | --: | --: | --: |' \
+                ], \
+                '', \
+                'Scores here are computed from rounded yearly margins, so they can differ from the published scores in the last digit.', \
+                'The basic tests (revenue, years of data, growth) and the five-year cost window cannot be moved here. The', \
+                '[data and limits](#var.vPage=\'data\') page reports how moving each of those changes the top ten.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_exploreFailed')
+
+
+# The methodology page
+async function testMain_method():
+    data = testData(['data/meta.json'])
+    systemGlobalSet('vPage', 'method')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | Methodology | [Data and limits](#var.vPage=\'data\') | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Methodology - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Methodology', \
+                '', \
+                '## What the index measures', \
+                '', \
+                'Mature companies whose revenue growth has not become meaningful cash for outside owners because the cash goes out as', \
+                'stock pay. It ranks how owners have been treated. It does not predict share prices, it is not a trading', \
+                'recommendation, and it does not measure intent. Paying staff in stock, and reporting profit before stock pay, are', \
+                'legal and disclosed.', \
+                '', \
+                '## Definitions', \
+                '', \
+                '- **Free cash flow** = operating cash flow - capital spending (including capitalized software).', \
+                '- **Stock pay** = stock-based compensation expense.', \
+                '- **Owner cash** = free cash flow - stock pay.', \
+                '- **Owner-cash margin** = owner cash / revenue.', \
+                '- **Meaningful** owner cash is 3.0% of revenue or more. It is not zero, so a company cannot pass by a hair.', \
+                '', \
+                'Annual figures come from the financial data companies file with the SEC. Where a figure was filed more than once,', \
+                'the most recently filed value is used. Nothing is estimated; a figure that is not in the filings is shown as "n/a".', \
+                '', \
+                '## Stage 1: the market screen', \
+                '', \
+                'Every company in the SEC data is tested. A company is kept if all of these hold:', \
+                '', \
+                [ \
+                    '| Test | Companies left |', \
+                    '| :-- | --: |', \
+                    '| In the SEC financial data file | 10 |', \
+                    '| Ever reported $0.5B of annual revenue, and reports stock pay | 10 |', \
+                    '| Still filing: the latest fiscal year ended within 548 days of the data date | 10 |', \
+                    '| Latest annual revenue of $1.0B or more | 10 |', \
+                    '| 5 or more years of data | 10 |', \
+                    '| Revenue up 50.0% or more over those years | 9 |', \
+                    '| Not in an excluded industry | 8 |', \
+                    '| Cumulative owner-cash margin under 3.0% | 7 |', \
+                    '| Stock pay is the cause | 5 |', \
+                    '| ...and both pillars of the screen score can be built (ranked) | 4 |' \
+                ], \
+                '', \
+                '**Excluded industries**, by SIC code: drug developer (2834); drug developer (2836); bank (6000-6099); lender (6100-6199); broker or asset manager (6200-6289); insurer (6300-6411); asset manager (6722-6726); REIT (6798); asset manager (6799). Their cash flows include customer money,', \
+                'loans or property, so free cash flow does not mean the same thing.', \
+                '', \
+                '**Stock pay is the cause** when cumulative free cash flow is zero or positive, stock pay is at least 2.0% of revenue, and stock pay is at least 50.0% of free cash flow. Without this rule the screen is', \
+                'dominated by distributors, retailers and companies that burn cash before any stock pay. Those are listed', \
+                'separately, unranked, as "thin margin" and "cash burner".', \
+                '', \
+                '**Capital-led** companies are flagged, not removed: their capital spending is more than 2 times their stock pay, so their shortfall is mostly investment.', \
+                '', \
+                '## The screen score (50 points)', \
+                '', \
+                'Points are linear between the two values given, and capped.', \
+                '', \
+                '**P1. No meaningful cash for owners (25 points)**', \
+                '', \
+                '- Share of years with an owner-cash margin under 3.0%: 0 to 10 points.', \
+                '- Cumulative owner-cash margin: 0 points at 5.0%, 8 at -10.0%.', \
+                '- Latest-12-month owner-cash margin: 0 points at 5.0%, 7 at -5.0%.', \
+                '  The latest 12 months are the latest fiscal year, plus the year-to-date period reported since, less the same', \
+                '  period a year earlier. If the quarterly figures are unusable, the latest fiscal year is used and the row is noted.', \
+                '', \
+                'Where inventory, lending or a discontinued business moved operating cash flow by more than 25.0% of revenue in a year, the company page shows P1 with and', \
+                'without those years. The ranking uses all years.', \
+                '', \
+                '**P2b. Revenue that needs matching costs (13 points, scaled to 25)**', \
+                '', \
+                '- Operating expenses excluding cost of revenue, as a percent of revenue, compared between the first and last of the', \
+                '  latest 5 fiscal years: 13 points if flat or up, 0 if down 10 points.', \
+                '- The cost line is built the same way in both years, by the first of these that works: gross profit - operating income; total costs - cost of revenue; revenue - operating income - cost of revenue.', \
+                '- If it cannot be built, the company has P1 alone and is unranked. Missing is not treated as zero.', \
+                '', \
+                '**Screen score = P1 + (P1 / 25) x (P2b scaled to 25)**', \
+                '', \
+                'P2b counts only to the extent owners are getting no cash. Flat costs are common at cash-rich companies too, so on', \
+                'their own they say nothing.', \
+                '', \
+                '## Why these choices', \
+                '', \
+                '- The cost test uses the latest five years because a full-history test rewards any company that listed young.', \
+                '- Points scale with size because hard cut-offs made ranks flip on small changes. The [data and limits](#var.vPage=\'data\') page shows which top-ten ranks still move', \
+                '  when a threshold moves by a fifth, and the [threshold explorer](#var.vPage=\'explore\') lets you move them.', \
+                '', \
+                '## Not in this release', \
+                '', \
+                'The full index (100 points) for the top 25 adds three pillars. None has been scored, and their point scales are', \
+                'untested judgment:', \
+                '', \
+                '- **P2a.** Real gross profit per employee, annual growth. Needs headcount from annual reports.', \
+                '- **P3.** Insiders granting and selling: grants and open-market sales by officers and directors as a group.', \
+                '- **P4.** Headline numbers that leave out stock pay: stock pay as a share of adjusted profit in earnings releases.', \
+                '', \
+                'Also not done: confirming each company was founded ten or more years ago, combining predecessor companies,', \
+                'adjusting share counts for splits, valuation, and governance facts.', \
+                '', \
+                '## Rules', \
+                '', \
+                '- Every published figure traces to an SEC filing, linked from the company page.', \
+                '- The index includes what cuts the other way: recent improvement, one-off causes and cash returned.', \
+                '- No statement here says a company\'s reporting is false or misleading. Only a court or regulator can find that.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_method')
+
+
+# The data and limits page
+async function testMain_data():
+    data = testData(['data/meta.json'])
+    systemGlobalSet('vPage', 'data')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | Data and limits | [Downloads](#var.vPage=\'downloads\')' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Data and limits - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Data and limits', \
+                '', \
+                '## Sources', \
+                '', \
+                '- Financial figures: the SEC bulk file [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip). The latest filing in', \
+                '  it is dated **2026-11-05**; that is the as-of date of everything here.', \
+                '  File size 123,456,789 bytes, SHA-256 `bbc886ba1498c48468e20a3a0ac0176bba8d1160c127149369b5f61b385b60d7`.', \
+                '- Industry codes, tickers and former names: the [SEC company API](https://data.sec.gov/submissions/).', \
+                '- Method version 1.0.0. A figure cited from this page can be reproduced from the same', \
+                '  SEC file and the same method version.', \
+                '', \
+                '## What is in the data', \
+                '', \
+                [ \
+                    '| Type | Companies | Meaning |', \
+                    '| :-- | --: | :-- |', \
+                    '| Stock pay | 5 | Passed the screen: owner cash is under the line and stock pay is the cause. |', \
+                    '| Thin margin | 1 | Owner cash is under the line, but stock pay is too small to be the cause. |', \
+                    '| Cash burner | 1 | Free cash flow is negative before any stock pay. |', \
+                    '| Cash generative | 1 | Owner cash is at or above the line. These companies are the baseline. |', \
+                    '| Excluded industry | 1 | A bank, insurer, lender, broker, asset manager, REIT or drug developer. |' \
+                ], \
+                '', \
+                'Excluded industries: bank 1.', \
+                '', \
+                '## Known limits', \
+                '', \
+                '- **History starts about 2009.** The SEC has collected financial statements as data only since then. A company\'s', \
+                '  "whole period" is the years it has in that data, which can be shorter than its life.', \
+                '- **Fiscal years.** A fiscal year ending in January, February or March is labelled with the prior calendar year.', \
+                '- **Revenue** is the largest of four revenue tags for the year. Pass-through revenue (for example, the face value', \
+                '  of cryptocurrency sold) makes revenue-based ratios look smaller.', \
+                '- **Capital spending** is purchases of property and equipment (or of productive assets) plus capitalized software.', \
+                '  A year with neither tag counts as zero and is noted.', \
+                '- **The cost line** cannot be built for 1 companies (1 of those that pass the screen) because of inconsistent tagging. They are unranked.', \
+                '- **Latest 12 months** fall back to the latest fiscal year when a quarterly figure is missing or tagged differently.', \
+                '- **Industry codes** are the SEC\'s and are coarse. Brokers and insurance agents are excluded along with asset', \
+                '  managers and insurers. Some real-estate and payment companies are not excluded.', \
+                '- **Restated years.** Each year uses its most recently filed value. When a company restates recent years for a', \
+                '  business it has left, older years are not restated, so the two can sit side by side.', \
+                '- **Foreign companies** that file financial data with the SEC in US dollars are included.', \
+                '- **Predecessor companies** are not combined, and **share counts** are not adjusted for splits.', \
+                '- **Founding dates** are not in the data. Some listed companies are less than ten years old.', \
+                '- **Capital-led companies** pass the screen but their shortfall is mostly capital spending. They are flagged.', \
+                '', \
+                '## If a threshold moves by a fifth', \
+                '', \
+                'Each threshold in the definition was moved down and up by a fifth, one at a time, and the index rebuilt. These are the', \
+                'changes in the top ten.', \
+                '', \
+                [ \
+                    '| Threshold moved | Value | Changes in the top ten |', \
+                    '| :-- | :-- | :-- |', \
+                    '| Least revenue growth, a fifth lower | `growth_min` = 0.4 | Slower Co enters at 1; One\\-Off Co 1 to 2; Stock Pay Co 2 to 3; Capital & Sons \\[Holdings\\] 3 to 4; Marginal Co 4 to 5 |', \
+                    '| Meaningful owner cash, a fifth lower | `meaningful_margin` = 0.024 | Marginal Co leaves (was 4) |', \
+                    '| Least stock pay, share of revenue, a fifth lower | `sbc_revenue_min` = 0.016 | Thin Co enters at 4; Marginal Co 4 to 5 |' \
+                ], \
+                '', \
+                'No change in the top ten: Least latest revenue, a fifth lower; Least latest revenue, a fifth higher; Least years of data, a fifth lower; Least years of data, a fifth higher; Least revenue growth, a fifth higher; Meaningful owner cash, a fifth higher; Least stock pay, share of revenue, a fifth higher; Least stock pay, share of free cash flow, a fifth lower; Least stock pay, share of free cash flow, a fifth higher; P1 cumulative margin that scores 0, a fifth lower; P1 cumulative margin that scores 0, a fifth higher; P1 cumulative margin that scores 8, a fifth lower; P1 cumulative margin that scores 8, a fifth higher; P1 latest margin that scores 0, a fifth lower; P1 latest margin that scores 0, a fifth higher; P1 latest margin that scores 7, a fifth lower; P1 latest margin that scores 7, a fifth higher; P2b window, in years, a fifth lower; P2b window, in years, a fifth higher; P2b cost fall that scores 0, a fifth lower; P2b cost fall that scores 0, a fifth higher.', \
+                '', \
+                'The thresholds, at the definition\'s values: `capital_led_ratio` = 2, `growth_min` = 0.5, `meaningful_margin` = 0.03, `one_off_ocf_share` = 0.25, `p1_cum_full` = -0.1, `p1_cum_points` = 8, `p1_cum_zero` = 0.05, `p1_latest_full` = -0.05, `p1_latest_points` = 7, `p1_latest_zero` = 0.05, `p1_years_points` = 10, `p2b_points` = 13, `p2b_window_years` = 5, `p2b_zero_drop` = 10, `prefilter_revenue` = 500000000, `revenue_min` = 1000000000, `sbc_fcf_min` = 0.5, `sbc_revenue_min` = 0.02, `still_filing_days` = 548, `years_min` = 5.', \
+                '', \
+                '## Corrections', \
+                '', \
+                'If a figure here does not match the linked SEC filing, it is an error in this index. Report it at the', \
+                '[project repository](https://github.com/craigahobbs/treadmill-index/issues) with the company and the year.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_data')
+
+
+# The downloads page
+async function testMain_downloads():
+    data = testData(['data/meta.json', 'data/archive/builds.json'])
+    systemGlobalSet('vPage', 'downloads')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/archive/builds.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | Downloads' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Downloads - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Downloads', \
+                '', \
+                '- [index.csv](data/index.csv): one row per company that passes the basic tests, with every input, score, type and flag.', \
+                '- [index.json](data/index.json): the same rows, plus each company\'s yearly owner-cash margins.', \
+                '- [meta.json](data/meta.json): the as-of date, source file hash, screen counts, every threshold, group totals and the', \
+                '  sensitivity test.', \
+                '- `data/company/<CIK>.json`: one file per company, with its yearly series. Every figure carries the accession number,', \
+                '  form and filing date of the SEC filing it came from.', \
+                '', \
+                'Money is in US dollars. Margins and ratios are fractions (0.03 is 3%). An empty CSV cell, or a JSON null, means the', \
+                'figure is not in the filings.', \
+                '', \
+                '## Every build', \
+                '', \
+                'Each build is kept, so a figure cited from an earlier one can be found again. Company files are kept only for the', \
+                'latest build.', \
+                '', \
+                [ \
+                    '- Data as of **2026-11-05**, method version 1.0.0, 4 ranked: [index.csv](data/archive/2026-11-05/index.csv), [index.json](data/archive/2026-11-05/index.json), [meta.json](data/archive/2026-11-05/meta.json)' \
+                ] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_downloads')
+
+
+# The downloads page when the list of builds failed to load
+async function testMain_downloadsNoBuilds():
+    data = testData(['data/meta.json'])
+    systemGlobalSet('vPage', 'downloads')
+    unittestMockAll(data)
+    tiMain()
+    log = unittestMockEnd()
+    systemGlobalSet('vPage', null)
+    unittestDeepEqual(log, [ \
+        [ \
+            'systemFetch', \
+            [ \
+                ['data/meta.json', 'data/archive/builds.json'] \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '[Index](#var=) | [Group totals](#var.vPage=\'totals\') | [Threshold explorer](#var.vPage=\'explore\') | [Methodology](#var.vPage=\'method\') | [Data and limits](#var.vPage=\'data\') | Downloads' \
+            ] \
+        ], \
+        [ \
+            'documentSetTitle', \
+            ['Downloads - The Treadmill Index'] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '# Downloads', \
+                '', \
+                '- [index.csv](data/index.csv): one row per company that passes the basic tests, with every input, score, type and flag.', \
+                '- [index.json](data/index.json): the same rows, plus each company\'s yearly owner-cash margins.', \
+                '- [meta.json](data/meta.json): the as-of date, source file hash, screen counts, every threshold, group totals and the', \
+                '  sensitivity test.', \
+                '- `data/company/<CIK>.json`: one file per company, with its yearly series. Every figure carries the accession number,', \
+                '  form and filing date of the SEC filing it came from.', \
+                '', \
+                'Money is in US dollars. Margins and ratios are fractions (0.03 is 3%). An empty CSV cell, or a JSON null, means the', \
+                'figure is not in the filings.', \
+                '', \
+                '## Every build', \
+                '', \
+                'Each build is kept, so a figure cited from an earlier one can be found again. Company files are kept only for the', \
+                'latest build.', \
+                '', \
+                'No builds are listed.' \
+            ] \
+        ], \
+        [ \
+            'markdownPrint', \
+            [ \
+                '', \
+                '---', \
+                '', \
+                'Data as of 2026-11-05, from SEC filings. Method version 1.0.0.', \
+                'History starts about 2009, when the SEC began collecting financial statements as data.', \
+                '', \
+                'The index ranks how outside owners have been treated. It is not a short list, a price forecast or investment advice,', \
+                'and it makes no statement about any company\'s intent.' \
+            ] \
+        ] \
+    ])
+endfunction
+unittestRunTest('testMain_downloadsNoBuilds')
