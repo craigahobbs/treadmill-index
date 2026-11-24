@@ -46,7 +46,9 @@ async function testMain_index():
                 '', \
                 '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
                 'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
+                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
+                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
                 'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
                 'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
                 'which companies: a real bet on growth looks the same until it pays off.', \
@@ -65,10 +67,11 @@ async function testMain_index():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
-                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
-                '  to check, and more likely to be wrong.', \
+                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
+                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
+                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
+                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
                 '', \
@@ -259,7 +262,9 @@ async function testMain_indexAll():
                 '', \
                 '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
                 'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
+                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
+                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
                 'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
                 'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
                 'which companies: a real bet on growth looks the same until it pays off.', \
@@ -278,10 +283,11 @@ async function testMain_indexAll():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
-                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
-                '  to check, and more likely to be wrong.', \
+                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
+                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
+                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
+                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
                 '', \
@@ -476,7 +482,9 @@ async function testMain_indexShowAll():
                 '', \
                 '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
                 'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
+                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
+                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
                 'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
                 'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
                 'which companies: a real bet on growth looks the same until it pays off.', \
@@ -495,10 +503,11 @@ async function testMain_indexShowAll():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
-                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
-                '  to check, and more likely to be wrong.', \
+                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
+                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
+                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
+                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
                 '', \
@@ -695,7 +704,9 @@ async function testMain_indexFind():
                 '', \
                 '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
                 'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
+                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
+                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
                 'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
                 'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
                 'which companies: a real bet on growth looks the same until it pays off.', \
@@ -714,10 +725,11 @@ async function testMain_indexFind():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
-                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
-                '  to check, and more likely to be wrong.', \
+                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
+                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
+                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
+                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
                 '', \
@@ -910,7 +922,9 @@ async function testMain_indexFindTicker():
                 '', \
                 '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
                 'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
+                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
+                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
                 'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
                 'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
                 'which companies: a real bet on growth looks the same until it pays off.', \
@@ -929,10 +943,11 @@ async function testMain_indexFindTicker():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
-                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
-                '  to check, and more likely to be wrong.', \
+                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
+                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
+                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
+                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
                 '', \
@@ -1120,7 +1135,9 @@ async function testMain_indexNoMatch():
                 '', \
                 '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
                 'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
+                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
+                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
                 'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
                 'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
                 'which companies: a real bet on growth looks the same until it pays off.', \
@@ -1139,10 +1156,11 @@ async function testMain_indexNoMatch():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
-                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
-                '  to check, and more likely to be wrong.', \
+                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
+                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
+                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
+                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
                 '', \
@@ -1327,7 +1345,9 @@ async function testMain_indexUnknownArgs():
                 '', \
                 '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
                 'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
+                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
+                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
                 'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
                 'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
                 'which companies: a real bet on growth looks the same until it pays off.', \
@@ -1346,10 +1366,11 @@ async function testMain_indexUnknownArgs():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
-                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
-                '  to check, and more likely to be wrong.', \
+                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
+                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
+                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
+                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
                 '', \
@@ -1523,7 +1544,9 @@ async function testMain_indexFailed():
                 '', \
                 '**The view behind this index.** Years of little owner cash at a large, growing company are not an accident. Pay and', \
                 'spending are set by management and approved by the board every year. Insiders are paid in grants whether or not owners', \
-                'ever see cash, and a company with no cash to measure is valued on its growth story, which is hard to check. So the', \
+                'ever see cash. And while owner cash stays near zero, the company cannot be valued on what it earns for its owners. It is', \
+                'valued on revenue growth, or on profit measures that leave stock pay out. A valuation on owner cash, at the costs the', \
+                'company itself reports, would be far lower, so there is a standing incentive never to let that figure settle. The', \
                 'arrangement rewards the people who run it for keeping it going. The view of this index is that some companies keep it', \
                 'going on purpose, at the expense of shareholders who take "investing in growth" on trust. The numbers alone cannot say', \
                 'which companies: a real bet on growth looks the same until it pays off.', \
@@ -1542,10 +1565,11 @@ async function testMain_indexFailed():
                 '  can go to offsetting new shares rather than to owners.', \
                 '- **Headline profit leaves stock pay out.** Adjusted profit and free cash flow, which most earnings releases lead with,', \
                 '  do not subtract it. That is legal and disclosed, but those measures can rise while owner cash stays near zero.', \
-                '- **The company is hard to value.** With owner cash near zero for years there is no cash figure to value it on, so the', \
-                '  price rests on revenue growth and on margins that have not arrived. Growth can be bought with spending: 3 of the 4 ranked', \
-                '  companies kept operating costs flat or rising as a share of revenue over five years. A price set that way is harder', \
-                '  to check, and more likely to be wrong.', \
+                '  Leaving out the capital-led companies, the group reported $4.1B of free cash flow and paid $5.3B in stock.', \
+                '- **The company cannot be valued on what it earns.** Owner cash near zero gives nothing to value it on, so the price', \
+                '  rests on revenue growth and on margins that have not arrived. At the costs the company reports today, the cash left', \
+                '  for owners would support a far lower price. Growth can be bought with spending: 3 of the 4 ranked', \
+                '  companies kept operating costs flat or rising as a share of revenue over five years.', \
                 '- **A falling share price raises the cost.** The same pay takes more shares at a lower price, so dilution grows just', \
                 '  when the price is weak, or pay has to move to cash.', \
                 '', \
