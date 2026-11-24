@@ -11,14 +11,13 @@ async function tiMain():
 
     # Load the data
     cik = objectGet(args, 'cik')
-    needIndex = page == 'index' || page == 'explore'
     urls = ['data/meta.json']
-    if needIndex:
-        arrayPush(urls, 'data/index.json')
-    elif page == 'company' && cik != null:
+    if page == 'company' && cik != null:
         arrayPush(urls, 'data/company/' + cik + '.json')
-    elif page == 'downloads':
+    elif page == 'data':
         arrayPush(urls, 'data/archive/builds.json')
+    elif page == 'index':
+        arrayPush(urls, 'data/index.json')
     endif
     texts = systemFetch(urls)
     meta = if(arrayGet(texts, 0) != null, jsonParse(arrayGet(texts, 0)))
@@ -44,13 +43,9 @@ async function tiMain():
     elif page == 'method':
         tiMethodPage(meta)
     elif page == 'data':
-        tiDataPage(meta)
+        tiDataPage(meta, data)
     elif page == 'totals':
         tiTotalsPage(meta)
-    elif page == 'downloads':
-        tiDownloadsPage(data)
-    elif page == 'explore':
-        tiExplorePage(args, meta, data)
     else:
         tiIndexPage(args, meta, data)
     endif
@@ -76,24 +71,9 @@ tiTitle = 'The Treadmill Index'
 # The application pages
 tiPages = [ \
     {'name': 'index', 'title': 'Index'}, \
-    {'name': 'totals', 'title': 'Group totals'}, \
-    {'name': 'explore', 'title': 'Threshold explorer'}, \
+    {'name': 'totals', 'title': 'Group Totals'}, \
     {'name': 'method', 'title': 'Methodology'}, \
-    {'name': 'data', 'title': 'Data and limits'}, \
-    {'name': 'downloads', 'title': 'Downloads'} \
-]
-
-
-# The thresholds the explorer page can move - the URL argument, the meta.json threshold, and a description
-tiExploreThresholds = [ \
-    {'arg': 'line', 'key': 'meaningful_margin', 'percent': true, 'label': 'Meaningful owner cash, as a share of revenue'}, \
-    {'arg': 'sbcRevenue', 'key': 'sbc_revenue_min', 'percent': true, 'label': 'Stock pay is the cause: least stock pay, as a share of revenue'}, \
-    {'arg': 'sbcFcf', 'key': 'sbc_fcf_min', 'percent': true, 'label': 'Stock pay is the cause: least stock pay, as a share of free cash flow'}, \
-    {'arg': 'cumZero', 'key': 'p1_cum_zero', 'percent': true, 'label': 'P1: cumulative owner-cash margin that scores 0'}, \
-    {'arg': 'cumFull', 'key': 'p1_cum_full', 'percent': true, 'label': 'P1: cumulative owner-cash margin that scores 8'}, \
-    {'arg': 'latestZero', 'key': 'p1_latest_zero', 'percent': true, 'label': 'P1: latest owner-cash margin that scores 0'}, \
-    {'arg': 'latestFull', 'key': 'p1_latest_full', 'percent': true, 'label': 'P1: latest owner-cash margin that scores 7'}, \
-    {'arg': 'drop', 'key': 'p2b_zero_drop', 'percent': false, 'label': 'P2b: fall in the cost ratio, in points of revenue, that scores 0'} \
+    {'name': 'data', 'title': 'Data and Limits'} \
 ]
 
 
@@ -102,25 +82,18 @@ tiArguments = argsValidate([ \
     {'name': 'page', 'default': 'index'}, \
     {'name': 'cik', 'type': 'int'}, \
     {'name': 'type', 'default': 'stock_pay'}, \
-    {'name': 'sort', 'default': 'three'}, \
+    {'name': 'sort', 'default': 'score'}, \
     {'name': 'sic', 'type': 'int'}, \
     {'name': 'find'}, \
     {'name': 'all', 'type': 'bool', 'default': false}, \
-    {'name': 'person', 'type': 'int', 'explicit': true}, \
-    {'name': 'line', 'type': 'float'}, \
-    {'name': 'sbcRevenue', 'type': 'float'}, \
-    {'name': 'sbcFcf', 'type': 'float'}, \
-    {'name': 'cumZero', 'type': 'float'}, \
-    {'name': 'cumFull', 'type': 'float'}, \
-    {'name': 'latestZero', 'type': 'float'}, \
-    {'name': 'latestFull', 'type': 'float'}, \
-    {'name': 'drop', 'type': 'float'} \
+    {'name': 'person', 'type': 'int', 'explicit': true} \
 ])
 
 
 # The company types, in display order
 tiTypes = [ \
     {'name': 'stock_pay', 'title': 'Stock pay', 'text': 'Passed the screen: owner cash is under the line and stock pay is the cause.'}, \
+    {'name': 'capital_led', 'title': 'Capital-led', 'text': 'Would pass the screen, but capital spending is more than twice stock pay, so the shortfall is mostly investment. Listed, not ranked.'}, \
     {'name': 'thin_margin', 'title': 'Thin margin', 'text': 'Owner cash is under the line, but stock pay is too small to be the cause.'}, \
     {'name': 'cash_burner', 'title': 'Cash burner', 'text': 'Free cash flow is negative before any stock pay.'}, \
     {'name': 'cash_generative', 'title': 'Cash generative', 'text': 'Owner cash is at or above the line. These companies are the baseline.'}, \
@@ -128,32 +101,26 @@ tiTypes = [ \
 ]
 
 
-# The index sort orders - the row field and whether it sorts descending
+# The index sort orders - the row field and whether it sorts descending. The data file is in score order.
 tiSorts = [ \
-    {'name': 'three', 'title': 'Three signs', 'field': 'threeScore', 'desc': true}, \
-    {'name': 'rank', 'title': 'Screen rank'}, \
-    {'name': 'p1', 'title': 'P1', 'field': 'p1', 'desc': true}, \
-    {'name': 'cum', 'title': 'Cumulative margin', 'field': 'cumMargin', 'desc': false}, \
-    {'name': 'latest', 'title': 'Latest margin', 'field': 'latestMargin', 'desc': false}, \
-    {'name': 'pay', 'title': 'Stock pay', 'field': 'sbcRevenue', 'desc': true}, \
-    {'name': 'revenue', 'title': 'Revenue', 'field': 'revenue', 'desc': true}, \
-    {'name': 'insider', 'title': 'Insider sales', 'field': 'insiderSales', 'desc': true}, \
-    {'name': 'ratio', 'title': 'Sales / grants', 'field': 'salesToGrants', 'desc': true}, \
+    {'name': 'score', 'title': 'Score'}, \
+    {'name': 'owner', 'title': 'Owner cash', 'field': 'cumMargin', 'desc': false}, \
+    {'name': 'costs', 'title': 'Costs', 'field': 'costLevel', 'desc': true}, \
+    {'name': 'insiders', 'title': 'Insider cash-out', 'field': 'cashOutRevenue', 'desc': true}, \
     {'name': 'name', 'title': 'Name', 'field': 'name', 'desc': false} \
 ]
 
 
-# The row notes - the code shown in the index table and what it means
+# The notes on a company's data. A note with a code is shown in the index table; the rest are on the company page only.
 tiNotes = [ \
-    {'flag': 'capital_led', 'code': 'C', 'text': 'Capital-led: capital spending is more than twice stock pay, so the shortfall is mostly investment.'}, \
-    {'flag': 'one_off_years', 'code': 'O', 'text': 'Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows P1 with and without those years.'}, \
-    {'flag': 'latest_is_fiscal_year', 'code': 'F', 'text': 'The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.'}, \
-    {'flag': 'no_cost_line', 'code': 'N', 'text': 'The cost line cannot be built from the filing tags, so there is no P2b and no screen score. The company has P1 alone and is unranked.'}, \
-    {'flag': 'capex_missing', 'code': 'X', 'text': 'No capital spending tag in at least one year; that year counts capital spending as zero.'}, \
-    {'flag': 'gap_years', 'code': 'G', 'text': 'At least one fiscal year is missing between the first and last year.'}, \
-    {'flag': 'revenue_jump', 'code': 'J', 'text': 'Revenue more than tripled in one year, which often marks a merger or a change of reporting entity.'}, \
-    {'flag': 'share_count_jump', 'code': 'S', 'text': 'The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.'}, \
-    {'flag': 'no_insider_filings', 'code': 'I', 'text': 'No insider transactions in the SEC data sets for the five years. Foreign companies have not had to file them.'} \
+    {'flag': 'one_off_years', 'code': 'O', 'text': 'Inventory, lending or a discontinued business moved operating cash flow by more than a quarter of revenue in at least one year. The company page shows the first sign with and without those years.'}, \
+    {'flag': 'no_cost_line', 'code': 'N', 'text': 'The cost line cannot be built from the filing tags, so the costs sign is missing and the company has no score.'}, \
+    {'flag': 'no_insider_filings', 'code': 'I', 'text': 'No insider transactions in the SEC data sets for the five years, so the insiders sign is missing and the company has no score. Foreign companies have not had to file them.'}, \
+    {'flag': 'latest_is_fiscal_year', 'text': 'The latest fiscal year stands in for the latest 12 months, because the quarterly data is unusable or there is no later quarter.'}, \
+    {'flag': 'capex_missing', 'text': 'No capital spending tag in at least one year; that year counts capital spending as zero.'}, \
+    {'flag': 'gap_years', 'text': 'At least one fiscal year is missing between the first and last year.'}, \
+    {'flag': 'revenue_jump', 'text': 'Revenue more than tripled in one year, which often marks a merger or a change of reporting entity.'}, \
+    {'flag': 'share_count_jump', 'text': 'The share count jumps in one year (a stock split, or a conversion at listing). Share counts are not adjusted.'} \
 ]
 
 
@@ -197,12 +164,6 @@ function tiDollars(value):
 endfunction
 
 
-# Format a multiple, for example sales as a multiple of grants - missing is "n/a"
-function tiTimes(value):
-    return if(value != null, numberToFixed(value, 1) + 'x', 'n/a')
-endfunction
-
-
 # Format dollars as billions
 function tiBillions(value):
     return if(value < 0, '-', '') + '$' + tiNumber(mathAbs(value) / 1000000000, 1) + 'B'
@@ -211,7 +172,11 @@ endfunction
 
 # Format a ratio as a percent - missing is "n/a"
 function tiPercent(value):
-    return if(value != null, numberToFixed(value * 100, 1) + '%', 'n/a')
+    if value == null:
+        return 'n/a'
+    endif
+    text = numberToFixed(value * 100, 1)
+    return if(text == '-0.0', '0.0', text) + '%'
 endfunction
 
 
@@ -273,17 +238,23 @@ function tiFind(items, name):
 endfunction
 
 
-# Get a row's note codes
+# Get a row's note codes, for the index table
 function tiRowNotes(row):
     flags = objectGet(row, 'flags')
     codes = []
     for note in tiNotes:
-        flag = objectGet(note, 'flag')
-        if arrayIndexOf(flags, flag) != -1 || (flag == 'capital_led' && objectGet(row, 'capitalLed')):
+        if objectHas(note, 'code') && arrayIndexOf(flags, objectGet(note, 'flag')) != -1:
             arrayPush(codes, objectGet(note, 'code'))
         endif
     endfor
     return arrayJoin(codes, ' ')
+endfunction
+
+
+# Get the five calendar years of the insider figures, for example "2021-2025"
+function tiFiveYears(meta):
+    lastYear = numberParseInt(stringSlice(objectGet(meta, 'dataDate'), 0, 4)) - 1
+    return tiYears('' + (lastYear - objectGet(objectGet(meta, 'thresholds'), 'insider_years') + 1), '' + lastYear)
 endfunction
 
 
@@ -301,14 +272,11 @@ function tiIndexPage(args, meta, index):
     thresholds = objectGet(meta, 'thresholds')
     line = tiPercent(objectGet(thresholds, 'meaningful_margin'))
     companies = if(index != null, objectGet(index, 'companies'), [])
-
-    # Render the introduction and what a high rank can mean for a shareholder
-    totals = objectGet(meta, 'totals')
-    screened = objectGet(totals, 'screened')
-    rest = objectGet(totals, 'notCapitalLed')
+    screened = objectGet(meta, 'totals')
     count = objectGet(screened, 'companies')
-    persistence = objectGet(meta, 'persistence')
-    bought = objectGet(objectGet(meta, 'buybackShares'), 'notCapitalLed')
+    bought = objectGet(objectGet(meta, 'buybackShares'), 'screened')
+
+    # Render the introduction, the headline and the three signs
     documentSetTitle(tiTitle)
     markdownPrint( \
         '', \
@@ -317,9 +285,10 @@ function tiIndexPage(args, meta, index):
         'Large, growing companies whose revenue growth has not become meaningful cash for outside owners, because the cash', \
         'goes out as stock pay. Owner cash is free cash flow less stock-based compensation; "meaningful" is ' + line + ' of revenue.', \
         'Of ' + tiNumber(objectGet(funnel, 'inFile'), 0) + ' companies in the SEC data, ' + count + ' pass the screen and ' + \
-            objectGet(funnel, 'ranked') + ' are ranked. ' + argsLink(tiArguments, 'How it is computed', {'page': 'method'}, true, argsTopHeaderId) + '.', \
+            objectGet(funnel, 'ranked') + ' are ranked. ' + \
+            argsLink(tiArguments, 'How it is computed', {'page': 'method'}, true, argsTopHeaderId) + '.', \
         '', \
-        '## What a high rank can mean for a shareholder', \
+        '## What a High Rank Can Mean for a Shareholder', \
         '', \
         '**The headline.** A company with no owner cash cannot be valued on what it earns for its owners. It is valued on revenue', \
         'growth, and on profit measures that leave stock pay out. Where that revenue is held up by spending that has to go on,', \
@@ -330,20 +299,18 @@ function tiIndexPage(args, meta, index):
         'this is deliberate: a real bet on growth looks the same until it pays off.', \
         '', \
         '**The three signs.** The index looks for three things together, each one visible in the filings. A real growth bet', \
-        'loses them in time: owner cash appears as growth slows, costs fall against revenue, and insiders keep what they are granted.', \
+        'loses them in time: owner cash appears as growth slows, costs leave part of gross profit, and insiders take out little.', \
         '', \
-        '1. **Owner cash that stays near zero (P1).** Together the ' + count + ' companies here recorded ' + \
+        '1. **Owner cash that stays near zero.** Together the ' + count + ' companies here recorded ' + \
             tiBillions(objectGet(screened, 'cumSbc')) + ' of stock pay against ' + tiBillions(objectGet(screened, 'cumFcf')) + \
-            ' of free cash flow;', \
-        '   leaving out the capital-led companies, ' + tiBillions(objectGet(rest, 'cumSbc')) + ' against ' + \
-            tiBillions(objectGet(rest, 'cumFcf')) + '. At ' + objectGet(persistence, 'fivePlus') + ' of the ' + count + \
-            ', owner cash has been under ' + line + ' of revenue for five or more fiscal years running.', \
-        '2. **Revenue held up by costs.** Hiring in sales, marketing and development can absorb whatever growth brings in. At ' + \
-            objectGet(objectGet(meta, 'cost'), 'allGross') + ' of the ' + objectGet(funnel, 'ranked') + ' ranked companies,', \
-        '   operating costs took all of gross profit or more in the latest year; ' + objectGet(objectGet(meta, 'cost'), 'full') + \
-            ' kept them flat or rising as a share of revenue over five years. Cash that does arrive can go to buying back the', \
-        '   shares just granted: of the ' + objectGet(bought, 'companies') + ' that bought back shares over five years and whose share count can', \
-        '   be followed, the count still rose at ' + objectGet(bought, 'rose') + ', after ' + tiDollars(objectGet(bought, 'spentRose')) + \
+            ' of free cash flow.', \
+        '   At ' + objectGet(objectGet(meta, 'persistence'), 'fivePlus') + ' of the ' + count + ', owner cash has been under ' + line + \
+            ' of revenue for five or more fiscal years running.', \
+        '2. **Revenue held up by costs.** Operating costs are mostly people, and have to go on for the revenue to go on. At ' + \
+            objectGet(objectGet(meta, 'cost'), 'allGross') + ' of the ' + count + ',', \
+        '   they took all of gross profit or more in the latest year. Cash that does arrive can go to buying back the shares just', \
+        '   granted: of the ' + objectGet(bought, 'companies') + ' that bought back shares over five years and whose share count can be followed,', \
+        '   the count still rose at ' + objectGet(bought, 'rose') + ', after ' + tiDollars(objectGet(bought, 'spentRose')) + \
             " spent on buybacks and employees' vesting taxes.", \
         tiInsiderLines(meta), \
         '', \
@@ -352,14 +319,12 @@ function tiIndexPage(args, meta, index):
         '', \
         "**What a rank does not prove.** A rank measures a pattern. It is not a finding about any one company's purpose, and not", \
         'a forecast that its shares will fall. ' + objectGet(objectGet(meta, 'latest'), 'cleared') + ' of the ' + count + \
-            ' had meaningful owner cash in their latest 12 months, and ' + \
-            (count - objectGet(rest, 'companies')) + ' are capital-led: their', \
-        'shortfall is mostly investment. The figures in the second and third signs leave the capital-led companies out. Each', \
-        'company page shows which way its own numbers point, and what cuts the other way. ' + \
-            argsLink(tiArguments, 'Group totals', {'page': 'totals'}, true, argsTopHeaderId) + ' has every figure, with the', \
-        'cash-generative companies beside them as a baseline.', \
+            ' had meaningful owner cash in their latest 12 months. Each company page shows which way', \
+        'its own numbers point, and what cuts the other way. ' + \
+            argsLink(tiArguments, 'Group Totals', {'page': 'totals'}, true, argsTopHeaderId) + ' has every figure, with the companies that', \
+        'do produce cash for their owners beside them as a baseline.', \
         '', \
-        '## The index' \
+        '## The Index' \
     )
 
     # Filter the companies
@@ -376,7 +341,7 @@ function tiIndexPage(args, meta, index):
         endif
     endfor
 
-    # Sort the companies - the data file is in rank order
+    # Sort the companies - the data file is in score order
     sortModel = tiFind(tiSorts, sort)
     if sortModel != null && objectHas(sortModel, 'field'):
         arraySort(rows, systemPartial(tiCompareRows, objectGet(sortModel, 'field'), objectGet(sortModel, 'desc')))
@@ -427,23 +392,18 @@ function tiIndexPage(args, meta, index):
             break
         endif
         rank = objectGet(row, 'rank')
-        threeRank = objectGet(row, 'threeRank')
         rowType = tiFind(tiTypes, objectGet(row, 'type'))
         tableRow = [ \
-            if(threeRank != null, '' + threeRank, ''), \
+            if(rank != null, '' + rank, ''), \
             argsLink(tiArguments, objectGet(row, 'name'), {'page': 'company', 'cik': objectGet(row, 'cik')}, true, argsTopHeaderId), \
             markdownEscape(objectGet(row, 'ticker', '') || ''), \
-            tiScore(objectGet(row, 'threeScore')), \
+            tiScore(objectGet(row, 'score')), \
             tiScore(objectGet(row, 'p1')), \
             tiScore(objectGet(row, 'costs')), \
-            tiScore(objectGet(row, 'p3')), \
-            tiScore(objectGet(row, 'screenScore')) + if(rank != null, ' (' + rank + ')', ''), \
+            tiScore(objectGet(row, 'insiders')), \
             tiPercent(objectGet(row, 'cumMargin')), \
-            tiPercent(objectGet(row, 'latestMargin')), \
-            tiPercent(objectGet(row, 'sbcRevenue')), \
-            if(objectGet(row, 'insiderSales') != null, tiDollars(objectGet(row, 'insiderSales')), 'n/a'), \
-            tiTimes(objectGet(row, 'salesToGrants')), \
-            tiYears(objectGet(row, 'firstYear'), objectGet(row, 'lastYear')), \
+            if(objectGet(row, 'costLevel') == null && objectGet(row, 'costs') != null, 'no gross profit', tiPercent(objectGet(row, 'costLevel'))), \
+            tiPercent(objectGet(row, 'cashOutRevenue')), \
             tiRowNotes(row) \
         ]
         if showType:
@@ -451,11 +411,9 @@ function tiIndexPage(args, meta, index):
         endif
         arrayPush(tableRows, tableRow)
     endfor
-    headers = ['Rank', 'Company', 'Ticker', 'Three signs (75)', 'Owner cash, P1 (25)', 'Costs (25)', 'Insiders, P3 (25)', \
-        'Screen score (50) and rank', \
-        'Cumulative owner-cash margin', 'Latest owner-cash margin', 'Stock pay / revenue', 'Insider sales', \
-        'Insider sales / grants', 'Years', 'Notes']
-    aligns = ['r', 'l', 'l', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'l', 'l']
+    headers = ['Rank', 'Company', 'Ticker', 'Score (75)', 'Owner cash (25)', 'Costs (25)', 'Insiders (25)', \
+        'Owner-cash margin', 'Costs / gross profit', 'Insider cash-out / revenue', 'Notes']
+    aligns = ['r', 'l', 'l', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'l']
     if showType:
         arrayPush(headers, 'Type')
         arrayPush(aligns, 'l')
@@ -469,47 +427,60 @@ function tiIndexPage(args, meta, index):
         endif
     endif
 
-    # Render the notes legend
+    # Render the legend
     sensitivity = objectGet(meta, 'sensitivity')
-    changesKey = tiChangesKey(meta)
     moved = 0
     for entry in sensitivity:
-        moved = moved + if(arrayLength(objectGet(entry, changesKey)), 1, 0)
+        moved = moved + if(arrayLength(objectGet(entry, 'changes')), 1, 0)
     endfor
     markdownPrint( \
         '', \
-        '**Rank** is by the three-signs score, among the companies that pass the screen and have all three pillars. Unranked', \
-        'companies are listed for comparison only. **Cumulative** covers every fiscal year shown; **latest** is the latest 12 months.', \
+        '**Rank** is by score, among the companies that pass the screen and have all three signs. Unranked companies are listed', \
+        'for comparison only.', \
         '', \
-        '**The three-signs score is out of 75.** It is P1 + (P1 / 25) x (costs + P3): costs and insider selling count only to', \
-        'the extent owners are getting no cash. The costs sign is half whether operating costs fell against revenue (P2b) and', \
-        'half how much of gross profit they take. The score is provisional: the costs level is new, and insider grants are valued', \
-        'at the full price of the shares they cover, which understates how much of their grants insiders sold.', \
-        '**Insider sales** are open-market sales by officers and directors over five calendar years, and **sales / grants**', \
-        'compares them with the shares and options granted over the same years; each company page has the detail.', \
+        '**The score is out of 75**, 25 for each sign: owner cash + (owner cash / 25) x (costs + insiders). Costs and insider', \
+        'cash-out count only to the extent owners are getting no cash.', \
         '', \
-        "**The screen score is out of 50**, and is the agreed definition's whole-market score: P1 + (P1 / 25) x (P2b scaled to 25).", \
-        'Its rank is in brackets. The full score of the definition, out of 100, also needs headcount and earnings-release framing', \
-        'for the top 25; those need hand-checked data and are not measured. The three scores must not be compared with each other.', \
+        '**Owner-cash margin** covers every fiscal year in the SEC data. **Costs / gross profit** is operating costs in the latest', \
+        'fiscal year. **Insider cash-out / revenue** is what officers and directors took out through stock in ' + tiFiveYears(meta) + ',', \
+        "against the company's revenue in those years.", \
         '', \
-        '**Neighbouring ranks are close.** Moving one threshold of the definition by a fifth changes the top ten in ' + moved + \
-            ' of ' + arrayLength(sensitivity) + ' tests.', \
-        'Read a rank as a rough position, not a precise one. ' + argsLink(tiArguments, 'Data and limits', {'page': 'data'}, true, argsTopHeaderId) + \
-            ' lists every change.', \
+        '**Neighbouring ranks are close.** Moving one threshold by a fifth changes the top ten in ' + moved + ' of ' + \
+            arrayLength(sensitivity) + ' tests.', \
+        'Read a rank as a rough position, not a precise one. ' + \
+            argsLink(tiArguments, 'Data and Limits', {'page': 'data'}, true, argsTopHeaderId) + ' lists every change.', \
         '', \
         '**Notes**', \
         '' \
     )
     for note in tiNotes:
-        markdownPrint('- **' + objectGet(note, 'code') + '** - ' + objectGet(note, 'text'))
+        if objectHas(note, 'code'):
+            markdownPrint('- **' + objectGet(note, 'code') + '** - ' + objectGet(note, 'text'))
+        endif
     endfor
 endfunction
 
 
-# Get the sensitivity report's changes key for the index's default order: the three-signs ranks when the build has
-# insider data, else the screen ranks
-function tiChangesKey(meta):
-    return if(objectGet(meta, 'insider') != null, 'changesThree', 'changes')
+# Get the index page's lines on the third sign: what insiders took out, beside what owners got
+function tiInsiderLines(meta):
+    insiderMeta = objectGet(meta, 'insider')
+    if insiderMeta == null:
+        return '3. **Insiders who cash out.** Insider transactions are not in this build, so no company has a score.'
+    endif
+    group = objectGet(insiderMeta, 'screened')
+    count = objectGet(group, 'companies')
+    baseline = objectGet(insiderMeta, 'cashGenerative')
+    return [ \
+        '3. **Insiders who cash out.** In ' + tiYears(objectGet(insiderMeta, 'firstYear'), objectGet(insiderMeta, 'lastYear')) + \
+            ', the officers and directors of ' + count + ' of these companies took ' + tiDollars(objectGet(group, 'cashOut')) + \
+            ' out through stock:', \
+        "   open-market sales and shares given up for taxes, less what they bought. That is " + \
+            tiPercent(objectGet(group, 'cashOut') / objectGet(group, 'revenue')) + " of those companies' revenue over the same years.", \
+        '   Their owners got ' + tiPercent(objectGet(group, 'ownerCash') / objectGet(group, 'revenue')) + \
+            '. At the companies that do produce cash for owners, insiders took out ' + \
+            tiPercent(objectGet(baseline, 'cashOut') / objectGet(baseline, 'revenue')) + ' of revenue and owners got ' + \
+            tiPercent(objectGet(baseline, 'ownerCash') / objectGet(baseline, 'revenue')) + '.' \
+    ]
 endfunction
 
 
@@ -590,7 +561,7 @@ function tiCompanyPage(args, meta, cik, company):
 endfunction
 
 
-# Render a company's "what cuts the other way" and screen score sections
+# Render a company's three signs, what cuts the other way, and its score
 function tiCompanyScore(meta, cik, company):
     row = objectGet(company, 'row')
     thresholds = objectGet(meta, 'thresholds')
@@ -601,14 +572,14 @@ function tiCompanyScore(meta, cik, company):
     # Render the three signs for this company
     markdownPrint( \
         '', \
-        '## Which way the numbers point', \
+        '## Which Way the Numbers Point', \
         '', \
         tiTable(['Sign', 'A growth bet paying off', 'A treadmill', 'This company'], ['l', 'l', 'l', 'l'], tiCompanySigns(meta, company)) \
     )
 
     # Render what cuts the other way
     otherWay = objectGet(company, 'otherWay')
-    markdownPrint('', '## What cuts the other way', '')
+    markdownPrint('', '## What Cuts the Other Way', '')
     if arrayLength(otherWay):
         for item in otherWay:
             markdownPrint('- ' + objectGet(item, 'text'))
@@ -617,41 +588,37 @@ function tiCompanyScore(meta, cik, company):
         markdownPrint('Nothing in the numbers the index uses. Stated targets and one-off events are not yet reviewed by hand.')
     endif
 
-    # Render the three-signs score
+    # Render the score
     p1 = objectGet(row, 'p1')
-    p2b = objectGet(row, 'p2b')
-    p3 = objectGet(row, 'p3')
     costs = objectGet(row, 'costs')
-    screenScore = objectGet(row, 'screenScore')
-    threeScore = objectGet(row, 'threeScore')
-    threeRank = objectGet(row, 'threeRank')
-    funnel = objectGet(meta, 'funnel')
+    insiders = objectGet(row, 'insiders')
+    score = objectGet(row, 'score')
     markdownPrint( \
         '', \
-        '## Three-signs score: ' + if(threeScore != null, tiScore(threeScore) + ' of 75', 'not scored') + \
-            if(threeRank != null, ' (rank ' + threeRank + ' of ' + objectGet(funnel, 'rankedThree') + ')', if(threeScore != null, ' (unranked)', '')), \
+        '## Score: ' + if(score != null, tiScore(score) + ' of 75', 'Not Scored') + \
+            if(rank != null, ' (Rank ' + rank + ' of ' + objectGet(objectGet(meta, 'funnel'), 'ranked') + ')', if(score != null, ' (Unranked)', '')), \
         '', \
         tiTable(['Sign', 'Points'], ['l', 'r'], [ \
-            ['Owner cash that stays near zero (P1)', tiScore(p1) + ' of 25'], \
+            ['Owner cash that stays near zero', tiScore(p1) + ' of 25'], \
             ['Revenue held up by costs', if(costs != null, tiScore(costs) + ' of 25', 'cannot be built')], \
-            ['Insiders who are granted shares and sell them (P3)', if(p3 != null, tiScore(p3) + ' of 25', \
-                if(objectGet(meta, 'insider') != null, 'cannot be built', 'not measured in this build'))] \
+            ['Insiders who cash out', if(insiders != null, tiScore(insiders) + ' of 25', \
+                if(objectGet(meta, 'insider') != null, 'cannot be built', 'not in this build'))] \
         ]), \
         '', \
-        if(threeScore != null, \
-            'P1 + (P1 / 25) x (costs + P3) = ' + tiScore(p1) + ' + (' + tiScore(p1) + ' / 25) x (' + tiScore(costs) + ' + ' + \
-                tiScore(p3) + ') = ' + tiScore(threeScore) + '. Costs and insider selling count only to the extent owners are getting no cash.', \
-            'The score needs all three signs.'), \
-        'The score is provisional: the costs level and P3 are new measures. Insider grants and sales are set out further down.' \
+        if(score != null, \
+            'Owner cash + (owner cash / 25) x (costs + insiders) = ' + tiScore(p1) + ' + (' + tiScore(p1) + ' / 25) x (' + \
+                tiScore(costs) + ' + ' + tiScore(insiders) + ') = ' + tiScore(score) + \
+                '. Costs and insider cash-out count only to the extent owners are getting no cash.', \
+            'The score needs all three signs. Missing is not treated as zero.') \
     )
-    if threeRank == null && threeScore != null:
-        markdownPrint('', 'The company is unranked because it did not pass the screen (see its type above). Its score is shown for comparison.')
+    if rank == null && score != null:
+        markdownPrint('', 'The company is not ranked because it did not pass the screen (see its type above). Its score is shown for comparison.')
     endif
 
-    # Render P1
+    # Render the first sign
     markdownPrint( \
         '', \
-        '### Owner cash that stays near zero (P1): ' + tiScore(p1) + ' of 25', \
+        '### Owner Cash That Stays Near Zero: ' + tiScore(p1) + ' of 25', \
         '', \
         tiTable(['Part', 'Input', 'Points'], ['l', 'r', 'r'], [ \
             ['Years with owner cash under ' + line + ' of revenue', objectGet(row, 'lowYears') + ' of ' + objectGet(row, 'years'), \
@@ -668,59 +635,53 @@ function tiCompanyScore(meta, cik, company):
     if objectGet(row, 'p1Ex') != null:
         markdownPrint( \
             '', \
-            'Without the years marked "one-off" below, P1 is ' + tiScore(objectGet(row, 'p1Ex')) + \
+            'Without the years marked "one-off" below, this sign scores ' + tiScore(objectGet(row, 'p1Ex')) + \
                 ' and the cumulative owner-cash margin is ' + tiPercent(objectGet(row, 'cumMarginEx')) + '.' \
         )
     endif
 
-    # Render the costs sign
+    # Render the second sign
     cost = objectGet(company, 'cost')
-    markdownPrint('', '### Revenue held up by costs: ' + if(costs != null, tiScore(costs) + ' of 25', 'cannot be built'), '')
+    markdownPrint('', '### Revenue Held Up by Costs: ' + if(costs != null, tiScore(costs) + ' of 25', 'Cannot Be Built'), '')
     if cost != null:
         change = objectGet(cost, 'change')
+        level = objectGet(cost, 'level')
         markdownPrint( \
-            'Operating expenses excluding cost of revenue (' + objectGet(cost, 'methodText') + ') were ' + \
-                tiPercent(objectGet(cost, 'firstRatio')) + ' of revenue in ' + objectGet(cost, 'firstYear') + ' and ' + \
-                tiPercent(objectGet(cost, 'lastRatio')) + ' in ' + objectGet(cost, 'lastYear') + ': a change of ' + \
-                if(change > 0, '+', '') + numberToFixed(change, 1) + ' points.', \
-            'Sources: ' + tiFactLinks(cik, objectGet(cost, 'firstFacts')) + ' (' + objectGet(cost, 'firstYear') + '), ' + \
-                tiFactLinks(cik, objectGet(cost, 'lastFacts')) + ' (' + objectGet(cost, 'lastYear') + ').', \
+            'In ' + objectGet(cost, 'lastYear') + ', operating expenses excluding cost of revenue (' + objectGet(cost, 'methodText') + \
+                ') were ' + tiMoney(objectGet(cost, 'lastCost')) + ': ' + \
+                if(level != null, tiPercent(level) + ' of gross profit.', 'more than all of gross profit, which was not positive.'), \
+            tiPercent(objectGet(thresholds, 'cost_level_zero')) + ' scores 0; ' + tiPercent(objectGet(thresholds, 'cost_level_full')) + \
+                ' or more scores 25.', \
             '', \
-            '- **Change (P2b): ' + tiScore(p2b) + ' of 13**, which counts as ' + tiScore(objectGet(row, 'costsChange')) + \
-                ' of 12.5 here. Flat or rising costs score in full; a fall of ' + objectGet(thresholds, 'p2b_zero_drop') + \
-                ' points of revenue scores 0.', \
-            '- **Level: ' + tiScore(objectGet(row, 'costsLevel')) + ' of 12.5.** In ' + objectGet(cost, 'lastYear') + \
-                ' these costs took ' + if(objectGet(row, 'costLevel') != null, tiPercent(objectGet(row, 'costLevel')) + ' of gross profit', \
-                'more than all of gross profit, which was not positive') + '. ' + \
-                tiPercent(objectGet(thresholds, 'cost_level_zero')) + ' scores 0; ' + \
-                tiPercent(objectGet(thresholds, 'cost_level_full')) + ' or more scores in full.' \
+            'As a share of revenue they were ' + tiPercent(objectGet(cost, 'firstRatio')) + ' in ' + objectGet(cost, 'firstYear') + \
+                ' and ' + tiPercent(objectGet(cost, 'lastRatio')) + ' in ' + objectGet(cost, 'lastYear') + ', a change of ' + \
+                if(change > 0, '+', '') + numberToFixed(change, 1) + ' points. The change is reported, not scored.', \
+            'Sources: ' + tiFactLinks(cik, objectGet(cost, 'firstFacts')) + ' (' + objectGet(cost, 'firstYear') + '), ' + \
+                tiFactLinks(cik, objectGet(cost, 'lastFacts')) + ' (' + objectGet(cost, 'lastYear') + ').' \
         )
     else:
         markdownPrint( \
             'The filings do not tag gross profit, operating income, total costs and cost of revenue consistently enough to build', \
-            'the cost line the same way in both years. Missing is not treated as zero, so the company has P1 alone.' \
+            'the cost line the same way in both years.' \
         )
     endif
 
-    # Render the definition's screen score
+    # Render the third sign
+    share = objectGet(row, 'cashOutRevenue')
     markdownPrint( \
         '', \
-        '### Screen score: ' + if(screenScore != null, tiScore(screenScore) + ' of 50', 'not scored') + \
-            if(rank != null, ' (rank ' + rank + ' of ' + objectGet(funnel, 'ranked') + ')', ' (unranked)'), \
+        '### Insiders Who Cash Out: ' + if(insiders != null, tiScore(insiders) + ' of 25', if(objectGet(meta, 'insider') != null, \
+            'Cannot Be Built', 'Not in This Build')), \
         '', \
-        "The agreed definition's whole-market score, which leaves insiders out: P1 + (P1 / 25) x (P2b x 25 / 13)" + \
-            if(screenScore != null, ' = ' + tiScore(p1) + ' + (' + tiScore(p1) + ' / 25) x ' + tiScore(p2b * 25 / 13) + ' = ' + \
-                tiScore(screenScore), '') + '.', \
-        "The definition's full score, out of 100, also needs gross profit per employee (P2a) and the framing of earnings", \
-        'releases (P4). Those need hand-checked data and are not measured for any company.' \
+        if(share != null, \
+            'In ' + tiFiveYears(meta) + ' officers and directors ' + tiCashOut(objectGet(row, 'cashOut')) + \
+                ', against company revenue of ' + tiDollars(objectGet(row, 'revenueFive')) + ': ' + \
+                tiPercent(share) + '. ' + tiPercent(objectGet(thresholds, 'insider_zero')) + ' scores 0; ' + \
+                tiPercent(objectGet(thresholds, 'insider_full')) + ' or more, the line the index uses for owners, scores 25.', \
+            if(objectGet(meta, 'insider') != null, \
+                'No officer or director of this company has a transaction in the SEC insider data for ' + tiFiveYears(meta) + '.', \
+                'Insider transactions are not in this build.')) \
     )
-endfunction
-
-
-# Get the five calendar years of the insider summary, for example "2021-2025"
-function tiFiveYears(meta):
-    lastYear = numberParseInt(stringSlice(objectGet(meta, 'dataDate'), 0, 4)) - 1
-    return tiYears('' + (lastYear - objectGet(objectGet(meta, 'thresholds'), 'p3_years') + 1), '' + lastYear)
 endfunction
 
 
@@ -732,7 +693,6 @@ tiSpending = [['sm', 'sales and marketing'], ['rnd', 'research and development']
 # is paying off and for a treadmill, and this company's own figures
 function tiCompanySigns(meta, company):
     row = objectGet(company, 'row')
-    insider = objectGet(company, 'insider')
     line = tiPercent(objectGet(objectGet(meta, 'thresholds'), 'meaningful_margin'))
     fiveYears = tiFiveYears(meta)
     lowRun = objectGet(row, 'lowRun')
@@ -746,10 +706,10 @@ function tiCompanySigns(meta, company):
     cost = objectGet(company, 'cost')
     costs = 'n/a: the cost line cannot be built'
     if cost != null:
-        costLevel = objectGet(row, 'costLevel')
-        costs = tiPercent(objectGet(cost, 'firstRatio')) + ' of revenue in ' + objectGet(cost, 'firstYear') + ', ' + \
-            tiPercent(objectGet(cost, 'lastRatio')) + ' in ' + objectGet(cost, 'lastYear') + \
-            if(costLevel != null, ', when they took ' + tiPercent(costLevel) + ' of gross profit', '')
+        level = objectGet(cost, 'level')
+        costs = 'Took ' + if(level != null, tiPercent(level), 'more than all') + ' of gross profit in ' + objectGet(cost, 'lastYear') + \
+            '. Against revenue: ' + tiPercent(objectGet(cost, 'firstRatio')) + ' in ' + objectGet(cost, 'firstYear') + ', ' + \
+            tiPercent(objectGet(cost, 'lastRatio')) + ' in ' + objectGet(cost, 'lastYear')
         spending = objectGet(company, 'spending')
         for kind in tiSpending:
             item = objectGet(spending, arrayGet(kind, 0))
@@ -761,28 +721,17 @@ function tiCompanySigns(meta, company):
     endif
     rows = [ \
         ['Owner cash as the company grows', 'Appears', 'Stays near zero', ownerCash], \
-        ['Operating costs against revenue, over five years', 'Fall, and leave part of gross profit', \
-            'Keep pace or rise, and take all of gross profit', costs] \
+        ['Operating costs', 'Leave part of gross profit', 'Take all of gross profit', costs] \
     ]
 
     # Insiders, where the build has them
     if objectGet(meta, 'insider') != null:
-        selling = 'n/a: no insider transactions in the SEC data sets'
-        taking = 'n/a'
-        if insider != null:
-            low = objectGet(insider, 'salesToGrants')
-            high = objectGet(insider, 'salesToStockGrants')
-            options = objectGet(insider, 'optionGrants')
-            selling = 'Sold ' + tiDollars(objectGet(insider, 'sales')) + '; granted stock worth ' + tiDollars(objectGet(insider, 'grants')) + \
-                if(options > 0, ' and options over shares worth ' + tiDollars(options), '') + ': ' + \
-                if(low == null, objectGet(insider, 'ratioReason'), \
-                    if(high != null && tiTimes(high) != tiTimes(low), 'between ' + tiTimes(low) + ' and ' + tiTimes(high), tiTimes(low)) + \
-                    ' what they were granted')
-            taking = 'Owner cash ' + tiDollars(objectGet(row, 'ownerCashFive')) + '; insider sales ' + tiDollars(objectGet(insider, 'sales'))
-        endif
-        arrayPush(rows, ['Insiders, ' + fiveYears, 'Keep what they are granted', 'Sell it', selling])
-        arrayPush(rows, ['Owner cash against insider sales, ' + fiveYears, 'Owners get more than insiders take out', \
-            'Insiders take out more', taking])
+        share = objectGet(row, 'cashOutRevenue')
+        arrayPush(rows, ['Insiders, ' + fiveYears, 'Take out little next to what owners get', 'Take out more than owners get', \
+            if(share != null, \
+                'Insiders ' + tiCashOut(objectGet(row, 'cashOut')) + ': ' + tiPercent(share) + ' of revenue. Owners got ' + \
+                    tiDollars(objectGet(row, 'ownerCashFive')) + ': ' + tiPercent(objectGet(row, 'ownerMarginFive')) + ' of revenue.', \
+                'n/a: no insider transactions in the SEC data sets')])
     endif
 
     # The share count against buybacks
@@ -796,95 +745,37 @@ function tiCompanySigns(meta, company):
 endfunction
 
 
-# Render a company's insiders: the P3 score, the yearly grants and sales, and the largest sellers
+# Render a company's insiders: what they took out by year, and who took out the most
 function tiCompanyInsiders(args, meta, cik, company):
-    row = objectGet(company, 'row')
     insider = objectGet(company, 'insider')
-    insiderMeta = objectGet(meta, 'insider')
-    if insiderMeta == null:
+    if objectGet(meta, 'insider') == null:
         return
     endif
-    yearsText = tiYears(objectGet(insiderMeta, 'firstYear'), objectGet(insiderMeta, 'lastYear'))
-    markdownPrint('', '## Insiders: grants and sales, ' + yearsText, '')
+    yearsText = tiFiveYears(meta)
+    markdownPrint('', '## Insiders, ' + yearsText, '')
     if insider == null:
         markdownPrint('No officer or director of this company reported a transaction in the SEC insider data sets for these years.', \
             'Foreign companies have not had to file them.')
         return
     endif
 
-    # Render the summary and P3
-    thresholds = objectGet(meta, 'thresholds')
-    ratio = objectGet(insider, 'salesToGrants')
-    markdownPrint( \
-        objectGet(insider, 'insiders') + ' officers and directors reported transactions, and ' + objectGet(insider, 'sellers') + \
-            ' of them sold shares on the open market.', \
-        'Together they sold ' + tiDollars(objectGet(insider, 'sales')) + ', and were granted shares worth ' + \
-            tiDollars(objectGet(insider, 'grants')) + ' and options over shares worth ' + tiDollars(objectGet(insider, 'optionGrants')) + \
-            ' at the time.' \
-    )
-    if objectGet(row, 'p3Years') != null:
-        p3 = objectGet(row, 'p3')
-        markdownPrint( \
-            '', \
-            '**P3. Insiders granting and selling: ' + if(p3 != null, tiScore(p3) + ' of 25', 'cannot be built') + '**', \
-            '', \
-            tiTable(['Part', 'Input', 'Points'], ['l', 'r', 'r'], [ \
-                ['Years with both new grants and open-market sales', \
-                    objectGet(insider, 'bothYears') + ' of ' + objectGet(thresholds, 'p3_years'), \
-                    tiScore(objectGet(row, 'p3Years')) + ' of ' + objectGet(thresholds, 'p3_years_points')], \
-                ['Open-market sales as a multiple of grants, counting options at the full price of their shares', \
-                    if(ratio != null, tiTimes(ratio), objectGet(insider, 'ratioReason')), \
-                    if(objectGet(row, 'p3Ratio') != null, tiScore(objectGet(row, 'p3Ratio')) + ' of ' + \
-                        objectGet(thresholds, 'p3_ratio_points'), 'n/a')] \
-            ]), \
-            '', \
-            'P3 is a first, provisional measure. Sales of ' + objectGet(thresholds, 'p3_ratio_zero') + ' times grants score 0; ' + \
-                objectGet(thresholds, 'p3_ratio_full') + ' times scores ' + objectGet(thresholds, 'p3_ratio_points') + '.' + \
-                if(objectGet(insider, 'salesToStockGrants') != null && objectGet(insider, 'optionGrants') > 0, \
-                    ' Counting options as worth nothing, the multiple would be ' + tiTimes(objectGet(insider, 'salesToStockGrants')) + \
-                    '; the truth lies between.', '') \
-        )
-    endif
-
-    # Render the yearly table
+    # Render the summary and the yearly table
     yearRows = []
     for year in objectGet(insider, 'years'):
         arrayPush(yearRows, tiInsiderAmounts(['' + objectGet(year, 'year')], year))
     endfor
     arrayPush(yearRows, tiInsiderAmounts(['**' + yearsText + '**'], insider))
-    markdownPrint('', tiTable(arrayExtend(['Year'], tiInsiderHeaders), ['l', 'r', 'r', 'r', 'r', 'r', 'r'], yearRows))
+    markdownPrint( \
+        'Officers and directors who reported transactions: ' + objectGet(insider, 'insiders') + ', of whom ' + \
+            objectGet(insider, 'sellers') + ' took cash out.', \
+        'Together they ' + tiCashOut(objectGet(insider, 'cashOut')) + '. They were granted stock worth ' + \
+            tiDollars(objectGet(insider, 'grants')) + ' and options over shares worth ' + tiDollars(objectGet(insider, 'optionGrants')) + \
+            ' at the time.', \
+        '', \
+        tiTable(arrayExtend(['Year'], tiInsiderHeaders), ['l', 'r', 'r', 'r', 'r', 'r', 'r'], yearRows) \
+    )
 
-    # Render the insiders' sales beside the company's buybacks, by quarter
-    quarters = objectGet(insider, 'quarters')
-    if arrayLength(quarters):
-        quarterRows = []
-        for quarter in quarters:
-            arrayPush(quarterRows, [ \
-                tiNoWrap(objectGet(quarter, 'start')) + ' to ' + tiNoWrap(objectGet(quarter, 'end')), \
-                '[' + tiDollars(objectGet(quarter, 'buybacks')) + '](' + tiFilingURL(cik, objectGet(quarter, 'accn')) + ')', \
-                tiDollars(objectGet(quarter, 'sales')) \
-            ])
-        endfor
-        markdownPrint( \
-            '', \
-            "**Sales beside buybacks.** The filings give the company's buybacks for " + arrayLength(quarters) + \
-                ' quarters of these years. It bought back ' + tiDollars(objectGet(insider, 'buybacks')) + ' of shares, in ' + \
-                objectGet(insider, 'buybackQuarters') + ' of them.', \
-            'Insiders sold ' + tiDollars(objectGet(insider, 'salesInBuybackQuarters')) + ' in those quarters, out of ' + \
-                tiDollars(objectGet(insider, 'salesInQuarters')) + ' in all ' + arrayLength(quarters) + '.', \
-            'This shows timing only: shares a company buys on the open market cannot be traced to a seller.', \
-            '', \
-            tiTable(['Quarter', 'The company bought back', 'Insiders sold on the open market'], ['l', 'r', 'r'], quarterRows) \
-        )
-    else:
-        markdownPrint( \
-            '', \
-            '**Sales beside buybacks.** The filings give no buybacks by quarter for these years. A company that has not bought', \
-            'back shares reports none.' \
-        )
-    endif
-
-    # Render the largest sellers, each linked to their filings
+    # Render the insiders who took out the most, each linked to their filings
     people = objectGet(insider, 'people')
     personCik = objectGet(args, 'person')
     person = null
@@ -899,18 +790,18 @@ function tiCompanyInsiders(args, meta, cik, company):
     if arrayLength(people):
         markdownPrint( \
             '', \
-            "**The largest sellers.** Select a name to list that person's filings.", \
+            "**Who took out the most.** Select a name to list that person's filings.", \
             '', \
             tiTable(arrayExtend(['Insider', 'Latest title'], tiInsiderHeaders), ['l', 'l', 'r', 'r', 'r', 'r', 'r', 'r'], peopleRows) \
         )
     endif
     markdownPrint( \
         '', \
-        'From the SEC insider filings (Forms 4 and 5) of officers and directors. A sale, purchase or tax withholding is valued at', \
-        'the price reported for it. A grant is valued at the market price of the shares it covers on the grant date: a stock award', \
-        'at the nearest share price insiders reported, an option at its exercise price. An option is worth less than the shares', \
-        'it covers, and a performance award may never vest, so grants are overstated and sales as a multiple of grants are', \
-        "understated. Shares held through an outside director's investment fund are left out. Amended filings are not used." \
+        'From the SEC insider filings (Forms 4 and 5) of officers and directors. Cash taken out is open-market sales, plus shares', \
+        'withheld for taxes or sold to the company, less open-market purchases, each at the price reported. Shares withheld count', \
+        'because some companies have insiders sell on the market to cover the same taxes. Grants are reported, not scored: a stock', \
+        'award is valued at the nearest share price insiders reported, and an option at its exercise price, which overstates it.', \
+        "Shares held through an outside director's investment fund are left out. Amended filings are not used." \
     )
 
     # Render the selected person's filings
@@ -933,44 +824,30 @@ function tiCompanyInsiders(args, meta, cik, company):
 endfunction
 
 
+# Say what insiders took out through stock, or put in
+function tiCashOut(cashOut):
+    if cashOut < 0:
+        return 'bought ' + tiDollars(-cashOut) + ' more than they took out through stock'
+    endif
+    return 'took ' + tiDollars(cashOut) + ' out through stock'
+endfunction
+
+
 # The header of a person's filings on the company page
-tiFilingsTitle = 'Filings of the selected insider'
+tiFilingsTitle = 'Filings of the Selected Insider'
 
 
 # The insider tables' amount columns
-tiInsiderHeaders = ['Sold on the open market', 'Stock granted', 'Options granted, at the price of the shares', \
-    'Withheld for taxes', 'Sold to the company', 'Bought on the open market']
+tiInsiderHeaders = ['Cash taken out', 'Sold on the open market', 'Withheld for taxes or sold to the company', \
+    'Bought on the open market', 'Stock granted', 'Options granted, at the price of the shares']
 
 
 # Add the insider amount cells to a table row
 function tiInsiderAmounts(tableRow, item):
-    for amount in ['sales', 'grants', 'optionGrants', 'withheld', 'toIssuer', 'purchases']:
-        arrayPush(tableRow, tiDollars(objectGet(item, amount)))
-    endfor
+    arrayPush(tableRow, tiDollars(objectGet(item, 'cashOut')), tiDollars(objectGet(item, 'sales')), \
+        tiDollars(objectGet(item, 'withheld') + objectGet(item, 'toIssuer')), tiDollars(objectGet(item, 'purchases')), \
+        tiDollars(objectGet(item, 'grants')), tiDollars(objectGet(item, 'optionGrants')))
     return tableRow
-endfunction
-
-
-# Get the index page's lines on the third sign: what insiders did
-function tiInsiderLines(meta):
-    insiderMeta = objectGet(meta, 'insider')
-    if insiderMeta == null:
-        return '3. **Insiders who are granted shares and sell them (P3).** Insider grants and sales are not measured in this build.'
-    endif
-    group = objectGet(insiderMeta, 'notCapitalLed')
-    count = objectGet(group, 'companies')
-    baseline = objectGet(insiderMeta, 'cashGenerative')
-    return [ \
-        '3. **Insiders who are granted shares and sell them (P3).** In ' + \
-            tiYears(objectGet(insiderMeta, 'firstYear'), objectGet(insiderMeta, 'lastYear')) + ', the officers and directors of ' + \
-            count + ' of these companies sold ' + tiDollars(objectGet(group, 'sales')) + ' of shares on the open market,', \
-        '   and were granted shares worth ' + tiDollars(objectGet(group, 'grants')) + ' and options over shares worth ' + \
-            tiDollars(objectGet(group, 'optionGrants')) + ' at the time. Over the same years those companies produced ' + \
-            tiDollars(objectGet(group, 'ownerCash')) + ' of owner cash.', \
-        '   At ' + objectGet(group, 'tookMore') + ' of the ' + count + ', insiders sold more than the business produced for its owners;' + \
-            ' among the cash-generative companies it was ' + objectGet(baseline, 'tookMore') + ' of ' + \
-            tiNumber(objectGet(baseline, 'companies'), 0) + '.' \
-    ]
 endfunction
 
 
@@ -982,7 +859,7 @@ function tiCompanyYears(meta, cik, company):
     # Render the yearly chart
     years = objectGet(company, 'years')
     chart = tiYearsChart(years, objectGet(thresholds, 'meaningful_margin'))
-    markdownPrint('', '## Year by year', '')
+    markdownPrint('', '## Year by Year', '')
     dataLineChart(objectGet(chart, 'data'), objectGet(chart, 'model'))
     clipped = objectGet(chart, 'clipped')
     markdownPrint(if(arrayLength(clipped), \
@@ -1056,7 +933,7 @@ function tiCompanyYears(meta, cik, company):
     shareGrowth = objectGet(row, 'shareGrowth')
     markdownPrint( \
         '', \
-        '## Notes on the data', \
+        '## Notes on the Data', \
         '', \
         '- Diluted share count: ' + if(shareGrowth != null, \
             'changed ' + if(shareGrowth > 0, '+', '') + tiPercent(shareGrowth) + ' a year over the period.', \
@@ -1065,7 +942,7 @@ function tiCompanyYears(meta, cik, company):
     flags = objectGet(row, 'flags')
     for note in tiNotes:
         flag = objectGet(note, 'flag')
-        if arrayIndexOf(flags, flag) != -1 || (flag == 'capital_led' && objectGet(row, 'capitalLed')):
+        if arrayIndexOf(flags, flag) != -1:
             markdownPrint('- ' + objectGet(note, 'text'))
         endif
     endfor
@@ -1124,34 +1001,30 @@ endfunction
 
 function tiTotalsPage(meta):
     totals = objectGet(meta, 'totals')
-    screened = objectGet(totals, 'screened')
-    rest = objectGet(totals, 'notCapitalLed')
     latest = objectGet(meta, 'latest')
     cost = objectGet(meta, 'cost')
-    count = objectGet(screened, 'companies')
-    line = tiPercent(objectGet(objectGet(meta, 'thresholds'), 'meaningful_margin'))
+    count = objectGet(totals, 'companies')
+    thresholds = objectGet(meta, 'thresholds')
+    line = tiPercent(objectGet(thresholds, 'meaningful_margin'))
 
-    documentSetTitle('Group totals - ' + tiTitle)
+    documentSetTitle('Group Totals - ' + tiTitle)
     totalRows = []
     for total in tiTotals:
-        key = objectGet(total, 'key')
-        arrayPush(totalRows, [objectGet(total, 'title'), tiBillions(objectGet(screened, key)), tiBillions(objectGet(rest, key))])
+        arrayPush(totalRows, [objectGet(total, 'title'), tiBillions(objectGet(totals, objectGet(total, 'key')))])
     endfor
     markdownPrint( \
         '', \
-        '# Group totals', \
+        '# Group Totals', \
         '', \
-        "The " + count + " companies that pass the screen, added together over each company's own history", \
-        '(about 2009 onward). ' + (count - objectGet(rest, 'companies')) + ' of them are capital-led: their capital spending', \
-        'is more than twice their stock pay, so their shortfall is mostly investment. The last column leaves them out.', \
+        "The " + count + " companies that pass the screen, added together over each company's own history (about 2009 onward).", \
         '', \
-        tiTable(['', 'All ' + count, 'Without the capital-led (' + objectGet(rest, 'companies') + ')'], ['l', 'r', 'r'], totalRows), \
+        tiTable(['', 'The ' + count + ' companies'], ['l', 'r'], totalRows), \
         '', \
         'Buybacks and dividends are cash paid out, shown for comparison; they are not scored.', \
-        tiTotalsBuybackLines(meta), \
         tiTotalsInsiderLines(meta), \
+        tiTotalsBuybackLines(meta), \
         '', \
-        '## Latest 12 months', \
+        '## Latest 12 Months', \
         '', \
         'Of the ' + count + ' companies:', \
         '', \
@@ -1159,115 +1032,17 @@ function tiTotalsPage(meta):
         '- Negative owner cash: ' + objectGet(latest, 'negative'), \
         '- The latest fiscal year stands in for the latest 12 months: ' + objectGet(latest, 'fiscalYearBasis'), \
         '', \
-        '## Operating costs', \
+        '## Operating Costs', \
         '', \
-        'Of the ' + count + ' companies, over the latest five fiscal years:', \
+        'Of the ' + count + ' companies, in the latest fiscal year:', \
         '', \
-        '- Flat or rising costs as a share of revenue (full P2b): ' + objectGet(cost, 'full'), \
-        '- Costs cut by ' + objectGet(objectGet(meta, 'thresholds'), 'p2b_zero_drop') + ' points of revenue or more (P2b of zero): ' + \
-            objectGet(cost, 'zero'), \
-        '- No usable cost line (unranked): ' + objectGet(cost, 'missing') \
+        '- Operating costs took all of gross profit or more: ' + objectGet(cost, 'allGross'), \
+        '- No usable cost line (no score): ' + objectGet(cost, 'missing') \
     )
 endfunction
 
 
-# Get the group totals page's lines on buybacks against the share count
-function tiTotalsBuybackLines(meta):
-    buybackShares = objectGet(meta, 'buybackShares')
-    rows = [ \
-        ['Companies that bought back shares, and whose share count can be followed'], ['...where the share count still rose'], \
-        ["Spent on buybacks and employees' vesting taxes"], ['...by the companies where the share count still rose'] \
-    ]
-    for name in ['screened', 'notCapitalLed', 'cashGenerative']:
-        group = objectGet(buybackShares, name)
-        arrayPush(arrayGet(rows, 0), tiNumber(objectGet(group, 'companies'), 0))
-        arrayPush(arrayGet(rows, 1), tiNumber(objectGet(group, 'rose'), 0))
-        arrayPush(arrayGet(rows, 2), tiDollars(objectGet(group, 'spent')))
-        arrayPush(arrayGet(rows, 3), tiDollars(objectGet(group, 'spentRose')))
-    endfor
-    return [ \
-        '', \
-        '## Buybacks against the share count, ' + tiFiveYears(meta), \
-        '', \
-        'A buyback returns cash to owners only if it leaves fewer shares. Where the share count still rose, the cash went to', \
-        'offsetting the shares granted. The count is the diluted weighted average; a company whose count jumps in one year (a', \
-        'split, or a conversion at listing) is left out.', \
-        '', \
-        tiTable(['', 'All', 'Without the capital-led', 'Cash-generative companies'], ['l', 'r', 'r', 'r'], rows) \
-    ]
-endfunction
-
-
-# Get the group totals page's insider lines
-function tiTotalsInsiderLines(meta):
-    insiderMeta = objectGet(meta, 'insider')
-    if insiderMeta == null:
-        return ''
-    endif
-    groups = [objectGet(insiderMeta, 'screened'), objectGet(insiderMeta, 'notCapitalLed'), objectGet(insiderMeta, 'cashGenerative')]
-    rows = [ \
-        ['Companies with insider filings'], ['...where insiders sold more than they were granted'], \
-        ['Owner cash those companies produced, same years'], ['...where insiders sold more than that owner cash'] \
-    ]
-    for header in tiInsiderHeaders:
-        arrayPush(rows, [header])
-    endfor
-    for group in groups:
-        arrayPush(arrayGet(rows, 0), tiNumber(objectGet(group, 'companies'), 0))
-        arrayPush(arrayGet(rows, 1), tiNumber(objectGet(group, 'soldMore'), 0))
-        arrayPush(arrayGet(rows, 2), tiDollars(objectGet(group, 'ownerCash')))
-        arrayPush(arrayGet(rows, 3), tiNumber(objectGet(group, 'tookMore'), 0))
-        for amount, ixAmount in ['sales', 'grants', 'optionGrants', 'withheld', 'toIssuer', 'purchases']:
-            arrayPush(arrayGet(rows, ixAmount + 4), tiDollars(objectGet(group, amount)))
-        endfor
-    endfor
-
-    # The insiders' sales beside the companies' buybacks, over the quarters for which the filings give buybacks
-    quarterRows = [ \
-        ["Quarters with the company's buybacks given"], ['...with a buyback'], ['Company buybacks in those quarters'], \
-        ['Insider open-market sales in those quarters'], ['...in the quarters with a buyback'] \
-    ]
-    shares = []
-    for group in groups:
-        arrayPush(arrayGet(quarterRows, 0), tiNumber(objectGet(group, 'quarters'), 0))
-        arrayPush(arrayGet(quarterRows, 1), tiNumber(objectGet(group, 'buybackQuarters'), 0))
-        arrayPush(arrayGet(quarterRows, 2), tiDollars(objectGet(group, 'buybacks')))
-        arrayPush(arrayGet(quarterRows, 3), tiDollars(objectGet(group, 'salesInQuarters')))
-        arrayPush(arrayGet(quarterRows, 4), tiDollars(objectGet(group, 'salesInBuybackQuarters')))
-        arrayPush(shares, [ \
-            tiPercent(if(objectGet(group, 'quarters'), objectGet(group, 'buybackQuarters') / objectGet(group, 'quarters'))), \
-            tiPercent(if(objectGet(group, 'salesInQuarters'), objectGet(group, 'salesInBuybackQuarters') / objectGet(group, 'salesInQuarters'))) \
-        ])
-    endfor
-    return [ \
-        '', \
-        '## Insiders, ' + tiYears(objectGet(insiderMeta, 'firstYear'), objectGet(insiderMeta, 'lastYear')), \
-        '', \
-        'What the officers and directors of these companies reported to the SEC over five calendar years. The last column', \
-        'is the baseline: the companies that pass the basic tests and do produce meaningful owner cash.', \
-        '', \
-        tiTable(['', 'All', 'Without the capital-led', 'Cash-generative companies'], ['l', 'r', 'r', 'r'], rows), \
-        '', \
-        'Grants are valued at the market price of the shares they cover on the grant date. That overstates options, and', \
-        'performance awards that may never vest: a single award can dominate the "stock granted" total.', \
-        '', \
-        '### Sales beside buybacks', \
-        '', \
-        "Each company's buybacks by quarter, where its filings give them, beside its insiders' open-market sales in the same", \
-        'quarter. If insiders sold mostly while their company was buying, the share of their sales that fell in buyback', \
-        'quarters would be well above the share of quarters that had a buyback.', \
-        '', \
-        tiTable(['', 'All', 'Without the capital-led', 'Cash-generative companies'], ['l', 'r', 'r', 'r'], quarterRows), \
-        '', \
-        'Without the capital-led companies, ' + arrayGet(arrayGet(shares, 1), 0) + ' of quarters had a buyback and ' + \
-            arrayGet(arrayGet(shares, 1), 1) + ' of insider sales fell in them. For the cash-generative companies it was ' + \
-            arrayGet(arrayGet(shares, 2), 0) + ' and ' + arrayGet(arrayGet(shares, 2), 1) + '.', \
-        'This shows timing only: shares a company buys on the open market cannot be traced to a seller.' \
-    ]
-endfunction
-
-
-# The group totals rows
+# The group totals table's rows
 tiTotals = [ \
     {'key': 'cumRevenue', 'title': 'Revenue'}, \
     {'key': 'cumFcf', 'title': 'Free cash flow'}, \
@@ -1280,149 +1055,96 @@ tiTotals = [ \
 ]
 
 
-#
-# The threshold explorer page
-#
+# The group columns of the totals page's tables: the companies that pass the screen, and the baseline
+tiTotalsHeaders = ['', 'Pass the screen', 'Cash-generative companies']
 
 
-function tiExplorePage(args, meta, index):
-    base = objectGet(meta, 'thresholds')
-    companies = if(index != null, objectGet(index, 'companies'), [])
-
-    # Compute the explorer thresholds
-    thresholds = objectCopy(base)
-    controlRows = []
-    for model in tiExploreThresholds:
-        arg = objectGet(model, 'arg')
-        key = objectGet(model, 'key')
-        baseValue = objectGet(base, key)
-        value = objectGet(args, arg, baseValue)
-        objectSet(thresholds, key, value)
-        isPercent = objectGet(model, 'percent')
-        links = []
-        for factor in [0.8, 1, 1.2]:
-            linkValue = mathRound(baseValue * factor * 1000000) / 1000000
-            linkText = if(factor == 1, 'definition', if(factor < 1, 'a fifth lower', 'a fifth higher'))
-            arrayPush(links, if(linkValue == value, linkText, argsLink(tiArguments, linkText, objectNew(arg, if(factor != 1, linkValue)))))
-        endfor
-        arrayPush(controlRows, [ \
-            objectGet(model, 'label'), \
-            if(isPercent, tiPercent(baseValue), '' + baseValue), \
-            if(isPercent, tiPercent(value), '' + value), \
-            arrayJoin(links, ' \\| ') \
-        ])
-    endfor
-
-    # Re-score and re-rank the companies
-    rescored = []
-    for company in companies:
-        result = tiRescore(company, thresholds)
-        if objectGet(result, 'type') == 'stock_pay' && objectGet(result, 'screenScore') != null:
-            arrayPush(rescored, result)
-        endif
-    endfor
-    arraySort(rescored, tiCompareRescored)
-    tableRows = []
-    for result, ixResult in rescored:
-        if ixResult >= tiExploreLimit:
-            break
-        endif
-        company = objectGet(result, 'company')
-        rank = objectGet(company, 'rank')
-        arrayPush(tableRows, [ \
-            '' + (ixResult + 1), \
-            if(rank != null, '' + rank, 'unranked'), \
-            argsLink(tiArguments, objectGet(company, 'name'), {'page': 'company', 'cik': objectGet(company, 'cik')}, true, argsTopHeaderId), \
-            tiScore(objectGet(result, 'screenScore')), \
-            tiScore(objectGet(company, 'screenScore')), \
-            tiScore(objectGet(result, 'p1')), \
-            tiScore(objectGet(result, 'p2b')) \
-        ])
-    endfor
-
-    documentSetTitle('Threshold explorer - ' + tiTitle)
-    markdownPrint( \
-        '', \
-        '# Threshold explorer', \
-        '', \
-        'The point scales are judgment. This page re-scores every company in your browser with a threshold moved, so you can', \
-        "see which ranks depend on it. The published index always uses the definition's values.", \
-        argsLink(tiArguments, 'Reset all', {'page': 'explore'}, true, argsTopHeaderId), \
-        '', \
-        tiTable(['Threshold', 'Definition', 'Now', 'Set to'], ['l', 'r', 'r', 'l'], controlRows), \
-        '', \
-        '## The top ' + tiExploreLimit + ' at these thresholds', \
-        '', \
-        arrayLength(rescored) + ' companies pass the screen and are ranked at these thresholds; ' + \
-            objectGet(objectGet(meta, 'funnel'), 'ranked') + ' are in the published index.', \
-        '', \
-        tiTable( \
-            ['Rank here', 'Published rank', 'Company', 'Screen score here', 'Published screen score', 'P1 here', 'P2b here'], \
-            ['r', 'r', 'l', 'r', 'r', 'r', 'r'], \
-            tableRows \
-        ), \
-        '', \
-        'Scores here are computed from rounded yearly margins, so they can differ from the published scores in the last digit.', \
-        'The basic tests (revenue, years of data, growth) and the five-year cost window cannot be moved here. The', \
-        argsLink(tiArguments, 'data and limits', {'page': 'data'}, true, argsTopHeaderId) + ' page reports how moving each of those changes the top ten.' \
-    )
-endfunction
-
-
-# The number of companies the explorer page lists
-tiExploreLimit = 25
-
-
-# Score points linearly between two values, capped at both ends
-function tiLin(value, zero, full, points):
-    return mathMax(0, mathMin(points, points * (zero - value) / (zero - full)))
-endfunction
-
-
-# Re-score a company at some thresholds
-function tiRescore(company, thresholds):
-    line = objectGet(thresholds, 'meaningful_margin')
-    margins = objectGet(company, 'margins')
-    lowYears = 0
-    for margin in margins:
-        if margin < line:
-            lowYears = lowYears + 1
-        endif
-    endfor
-    cumMargin = objectGet(company, 'cumMargin')
-    p1 = objectGet(thresholds, 'p1_years_points') * lowYears / arrayLength(margins) + \
-        tiLin(cumMargin, objectGet(thresholds, 'p1_cum_zero'), objectGet(thresholds, 'p1_cum_full'), objectGet(thresholds, 'p1_cum_points')) + \
-        tiLin(objectGet(company, 'latestMargin'), objectGet(thresholds, 'p1_latest_zero'), objectGet(thresholds, 'p1_latest_full'), \
-            objectGet(thresholds, 'p1_latest_points'))
-
-    # P2b and the screen score
-    costChange = objectGet(company, 'costChange')
-    p2bPoints = objectGet(thresholds, 'p2b_points')
-    p2b = if(costChange != null, tiLin(-costChange, objectGet(thresholds, 'p2b_zero_drop'), 0, p2bPoints))
-    screenScore = if(p2b != null, p1 + (p1 / 25) * (p2b * 25 / p2bPoints))
-
-    # The company type
-    fcf = objectGet(company, 'cumFcf')
-    sbc = objectGet(company, 'cumSbc')
-    sbcRevenueMin = objectGet(thresholds, 'sbc_revenue_min') * objectGet(company, 'cumRevenue')
-    if objectGet(company, 'excluded') != null:
-        type = 'excluded'
-    elif cumMargin >= line:
-        type = 'cash_generative'
-    elif fcf >= 0 && sbc >= sbcRevenueMin && sbc >= objectGet(thresholds, 'sbc_fcf_min') * fcf:
-        type = 'stock_pay'
-    else:
-        type = if(fcf < 0, 'cash_burner', 'thin_margin')
+# Get the totals page's lines on what insiders took out beside what owners got
+function tiTotalsInsiderLines(meta):
+    insiderMeta = objectGet(meta, 'insider')
+    if insiderMeta == null:
+        return ''
     endif
-
-    return {'company': company, 'type': type, 'p1': p1, 'p2b': p2b, 'screenScore': screenScore}
+    rows = [ \
+        ['Companies with insider filings'], ['Revenue'], ['Owner cash'], ['...as a share of revenue'], \
+        ['Cash insiders took out through stock'], ['...as a share of revenue'], \
+        ['Companies where insiders took out more than the owner cash'], ['Sold on the open market'], \
+        ['Withheld for taxes or sold to the company'], ['Bought on the open market'], ['Stock granted'], \
+        ['Options granted, at the price of the shares'] \
+    ]
+    timing = []
+    for name in ['screened', 'cashGenerative']:
+        group = objectGet(insiderMeta, name)
+        revenue = objectGet(group, 'revenue')
+        quarters = objectGet(group, 'quarters')
+        salesInQuarters = objectGet(group, 'salesInQuarters')
+        cells = [ \
+            tiNumber(objectGet(group, 'companies'), 0), \
+            tiDollars(revenue), \
+            tiDollars(objectGet(group, 'ownerCash')), \
+            tiPercent(if(revenue, objectGet(group, 'ownerCash') / revenue)), \
+            tiDollars(objectGet(group, 'cashOut')), \
+            tiPercent(if(revenue, objectGet(group, 'cashOut') / revenue)), \
+            tiNumber(objectGet(group, 'tookMore'), 0), \
+            tiDollars(objectGet(group, 'sales')), \
+            tiDollars(objectGet(group, 'withheld') + objectGet(group, 'toIssuer')), \
+            tiDollars(objectGet(group, 'purchases')), \
+            tiDollars(objectGet(group, 'grants')), \
+            tiDollars(objectGet(group, 'optionGrants')) \
+        ]
+        for cell, ixCell in cells:
+            arrayPush(arrayGet(rows, ixCell), cell)
+        endfor
+        arrayPush(timing, tiPercent(if(quarters, objectGet(group, 'buybackQuarters') / quarters)) + ' of quarters had a buyback and ' + \
+            tiPercent(if(salesInQuarters, objectGet(group, 'salesInBuybackQuarters') / salesInQuarters)) + \
+            " of insiders' open-market sales fell in them")
+    endfor
+    return [ \
+        '', \
+        '## Insiders Beside Owners, ' + tiYears(objectGet(insiderMeta, 'firstYear'), objectGet(insiderMeta, 'lastYear')), \
+        '', \
+        'What the officers and directors of these companies took out through stock over five calendar years, beside the owner', \
+        'cash the same companies produced. The last column is the baseline: the companies that pass the basic tests and do', \
+        'produce meaningful owner cash.', \
+        '', \
+        tiTable(tiTotalsHeaders, ['l', 'r', 'r'], rows), \
+        '', \
+        'Cash taken out is open-market sales, plus shares withheld for taxes or sold to the company, less open-market purchases.', \
+        'Grants are reported, not scored. They are valued at the market price of the shares they cover, which overstates options', \
+        'and performance awards that may never vest: a single award can dominate the total.', \
+        '', \
+        "**Sales beside the company's buybacks.** In the quarters for which the filings give the company's buybacks, " + \
+            arrayGet(timing, 0) + ' at the companies that pass the screen; ' + arrayGet(timing, 1) + ' at the cash-generative companies.', \
+        'If insiders sold mostly while their company was buying, the second figure would be well above the first. This shows', \
+        'timing only: shares a company buys on the open market cannot be traced to a seller.' \
+    ]
 endfunction
 
 
-# Compare two re-scored companies - by screen score, then name
-function tiCompareRescored(resultA, resultB):
-    compare = systemCompare(objectGet(resultB, 'screenScore'), objectGet(resultA, 'screenScore'))
-    return if(compare != 0, compare, systemCompare(objectGet(objectGet(resultA, 'company'), 'name'), objectGet(objectGet(resultB, 'company'), 'name')))
+# Get the totals page's lines on buybacks against the share count
+function tiTotalsBuybackLines(meta):
+    buybackShares = objectGet(meta, 'buybackShares')
+    rows = [ \
+        ['Companies that bought back shares, and whose share count can be followed'], ['...where the share count still rose'], \
+        ["Spent on buybacks and employees' vesting taxes"], ['...by the companies where the share count still rose'] \
+    ]
+    for name in ['screened', 'cashGenerative']:
+        group = objectGet(buybackShares, name)
+        arrayPush(arrayGet(rows, 0), tiNumber(objectGet(group, 'companies'), 0))
+        arrayPush(arrayGet(rows, 1), tiNumber(objectGet(group, 'rose'), 0))
+        arrayPush(arrayGet(rows, 2), tiDollars(objectGet(group, 'spent')))
+        arrayPush(arrayGet(rows, 3), tiDollars(objectGet(group, 'spentRose')))
+    endfor
+    return [ \
+        '', \
+        '## Buybacks Against the Share Count, ' + tiFiveYears(meta), \
+        '', \
+        'A buyback returns cash to owners only if it leaves fewer shares. Where the share count still rose, the cash went to', \
+        'offsetting the shares granted. The count is the diluted weighted average; a company whose count jumps in one year (a', \
+        'split, or a conversion at listing) is left out.', \
+        '', \
+        tiTable(tiTotalsHeaders, ['l', 'r', 'r'], rows) \
+    ]
 endfunction
 
 
@@ -1448,7 +1170,7 @@ function tiMethodPage(meta):
         '', \
         '# Methodology', \
         '', \
-        '## What the index measures', \
+        '## What the Index Measures', \
         '', \
         'Mature companies whose revenue growth has not become meaningful cash for outside owners because the cash goes out as', \
         'stock pay. It ranks how owners have been treated. It does not predict share prices, it is not a trading', \
@@ -1467,7 +1189,7 @@ function tiMethodPage(meta):
         'Annual figures come from the financial data companies file with the SEC. Where a figure was filed more than once,', \
         'the most recently filed value is used. Nothing is estimated; a figure that is not in the filings is shown as "n/a".', \
         '', \
-        '## Stage 1: the market screen', \
+        '## The Screen', \
         '', \
         'Every company in the SEC data is tested. A company is kept if all of these hold:', \
         '', \
@@ -1482,8 +1204,9 @@ function tiMethodPage(meta):
             ['Revenue up ' + tiPercent(objectGet(thresholds, 'growth_min')) + ' or more over those years', tiNumber(objectGet(funnel, 'growth'), 0)], \
             ['Not in an excluded industry', tiNumber(objectGet(funnel, 'industry'), 0)], \
             ['Cumulative owner-cash margin under ' + line, tiNumber(objectGet(funnel, 'lowMargin'), 0)], \
-            ['Stock pay is the cause', tiNumber(objectGet(funnel, 'stockPay'), 0)], \
-            ['...and both pillars of the screen score can be built (ranked)', tiNumber(objectGet(funnel, 'ranked'), 0)] \
+            ['Stock pay is the cause', tiNumber(objectGet(funnel, 'stockPayCause'), 0)], \
+            ['...and the company is not capital-led (passes the screen)', tiNumber(objectGet(funnel, 'stockPay'), 0)], \
+            ['...and all three signs can be built (ranked)', tiNumber(objectGet(funnel, 'ranked'), 0)] \
         ]), \
         '', \
         '**Excluded industries**, by SIC code: ' + arrayJoin(exclusions, '; ') + '. Their cash flows include customer money,', \
@@ -1495,14 +1218,14 @@ function tiMethodPage(meta):
         'dominated by distributors, retailers and companies that burn cash before any stock pay. Those are listed', \
         'separately, unranked, as "thin margin" and "cash burner".', \
         '', \
-        '**Capital-led** companies are flagged, not removed: their capital spending is more than ' + \
+        '**Capital-led** companies are listed separately and not ranked: their capital spending is more than ' + \
             objectGet(thresholds, 'capital_led_ratio') + ' times their stock pay, so their shortfall is mostly investment.', \
         '', \
-        '## The screen score (50 points)', \
+        '## The Score (75 Points)', \
         '', \
-        'Points are linear between the two values given, and capped.', \
+        'Three signs, 25 points each. Points are linear between the two values given, and capped.', \
         '', \
-        '**P1. No meaningful cash for owners (25 points)**', \
+        '**1. Owner cash that stays near zero (25 points)**', \
         '', \
         '- Share of years with an owner-cash margin under ' + line + ': 0 to ' + objectGet(thresholds, 'p1_years_points') + ' points.', \
         '- Cumulative owner-cash margin: 0 points at ' + tiPercent(objectGet(thresholds, 'p1_cum_zero')) + ', ' + \
@@ -1510,70 +1233,59 @@ function tiMethodPage(meta):
         '- Latest-12-month owner-cash margin: 0 points at ' + tiPercent(objectGet(thresholds, 'p1_latest_zero')) + ', ' + \
             objectGet(thresholds, 'p1_latest_points') + ' at ' + tiPercent(objectGet(thresholds, 'p1_latest_full')) + '.', \
         '  The latest 12 months are the latest fiscal year, plus the year-to-date period reported since, less the same', \
-        '  period a year earlier. If the quarterly figures are unusable, the latest fiscal year is used and the row is noted.', \
+        '  period a year earlier. If the quarterly figures are unusable, the latest fiscal year is used and the company page says so.', \
         '', \
         'Where inventory, lending or a discontinued business moved operating cash flow by more than ' + \
-            tiPercent(objectGet(thresholds, 'one_off_ocf_share')) + ' of revenue in a year, the company page shows P1 with and', \
+            tiPercent(objectGet(thresholds, 'one_off_ocf_share')) + ' of revenue in a year, the company page shows this sign with and', \
         'without those years. The ranking uses all years.', \
         '', \
-        '**P2b. Revenue that needs matching costs (' + objectGet(thresholds, 'p2b_points') + ' points, scaled to 25)**', \
+        '**2. Revenue held up by costs (25 points)**', \
         '', \
-        '- Operating expenses excluding cost of revenue, as a percent of revenue, compared between the first and last of the', \
-        '  latest ' + objectGet(thresholds, 'p2b_window_years') + ' fiscal years: ' + objectGet(thresholds, 'p2b_points') + \
-            ' points if flat or up, 0 if down ' + objectGet(thresholds, 'p2b_zero_drop') + ' points.', \
-        '- The cost line is built the same way in both years, by the first of these that works: ' + \
+        '- Operating expenses excluding cost of revenue, as a share of gross profit, in the latest fiscal year: 0 points at ' + \
+            tiPercent(objectGet(thresholds, 'cost_level_zero')) + ', 25 at ' + tiPercent(objectGet(thresholds, 'cost_level_full')) + ' or more.', \
+        '  These costs are mostly people: selling, research and administration. Where they take all of gross profit, the', \
+        '  revenue leaves nothing over once it has paid for itself.', \
+        '- The cost line is built by the first of these that works in both the first and the last of the latest ' + \
+            objectGet(thresholds, 'cost_window_years') + ' fiscal years: ' + \
             objectGet(costMethods, '1') + '; ' + objectGet(costMethods, '2') + '; ' + objectGet(costMethods, '3') + '.', \
-        '- If it cannot be built, the company has P1 alone and is unranked. Missing is not treated as zero.', \
+        '- If it cannot be built, the company has no score. Missing is not treated as zero.', \
         '', \
-        '**Screen score = P1 + (P1 / 25) x (P2b scaled to 25)**', \
+        '**3. Insiders who cash out (25 points)**', \
         '', \
-        'P2b counts only to the extent owners are getting no cash. Flat costs are common at cash-rich companies too, so on', \
-        'their own they say nothing.', \
+        '- The cash officers and directors took out through stock over the latest ' + objectGet(thresholds, 'insider_years') + \
+            " whole calendar years, as a share of the company's revenue in those years: 0 points at " + \
+            tiPercent(objectGet(thresholds, 'insider_zero')) + ', 25 at ' + tiPercent(objectGet(thresholds, 'insider_full')) + ' or more.', \
+        '- Cash taken out is open-market sales, plus shares withheld for taxes or sold to the company, less open-market purchases,', \
+        '  from SEC Forms 4 and 5.', \
+        '- The top of the scale is the line the index uses for owners. A company whose insiders take out ' + \
+            tiPercent(objectGet(thresholds, 'insider_full')) + ' of revenue has paid them what would count as meaningful cash had it gone to owners.', \
+        '- If the company has no insider filings, it has no score.', \
         '', \
-        '**Three-signs score (75 points) = P1 + (P1 / 25) x (costs + P3)**', \
+        '**Score = owner cash + (owner cash / 25) x (costs + insiders)**', \
         '', \
-        "The index page's default order, because the three signs together are what the index is looking for: no cash for", \
-        'owners (P1), revenue held up by costs, and insiders who are granted shares and sell them (P3, described below). Of the ' + \
-            objectGet(funnel, 'ranked') + ' ranked companies, ' + objectGet(funnel, 'rankedThree') + ' have all three.', \
+        'Costs and insider cash-out count only to the extent owners are getting no cash. High costs and steady insider selling are', \
+        'common at cash-rich companies too, so on their own they say nothing.', \
         '', \
-        'The **costs sign (25 points)** has two halves. One is P2b, scaled to 12.5: whether operating costs fell against revenue.', \
-        'The other is their level: operating costs excluding cost of revenue as a share of gross profit in the latest fiscal', \
-        'year, 0 points at ' + tiPercent(objectGet(thresholds, 'cost_level_zero')) + ' and 12.5 at ' + \
-            tiPercent(objectGet(thresholds, 'cost_level_full')) + ' or more. P2b alone gives nothing to a company whose', \
-        'spending is very high but falling; the level does. Among the companies that produce meaningful owner cash, operating', \
-        'costs typically take about two thirds of gross profit.', \
+        '## Why These Choices', \
         '', \
-        'The three-signs score is provisional. The costs level and P3 are new measures whose scales are untested judgment, and', \
-        "they are not part of the agreed definition's screen score. Each company page also reports sales and marketing,", \
-        'research and development, and general and administrative spending as a share of revenue where the company tags them;', \
-        'these are not scored.', \
+        '- **Cash taken out, not sales against grants.** Insiders settle the tax on vesting shares in two ways: some sell on the', \
+        '  market, some have the company withhold shares. Counting only market sales made the first kind look like heavier sellers.', \
+        '  Counting both treats them alike. Grants are not scored, because the filings do not value them consistently.', \
+        '- **The level of costs, not their change.** Whether costs fell against revenue over five years did not tell the companies', \
+        '  here apart from the ones that produce cash for owners. The share of gross profit that costs take did. The change is', \
+        '  still reported on each company page, with sales and marketing, research and development, and general and administrative', \
+        '  spending where the company tags them.', \
+        '- **Points scale with size** because hard cut-offs made ranks flip on small changes. The ' + \
+            argsLink(tiArguments, 'Data and Limits', {'page': 'data'}, true, argsTopHeaderId) + ' page shows which top-ten ranks still move', \
+        '  when a threshold moves by a fifth.', \
+        '- **The scales are judgment.** They were set from how the measures fall across the market, not from a theory, and', \
+        '  neighbouring ranks are close.', \
         '', \
-        '## Why these choices', \
+        '## Not Measured', \
         '', \
-        '- The cost test uses the latest five years because a full-history test rewards any company that listed young.', \
-        '- Points scale with size because hard cut-offs made ranks flip on small changes. The ' + \
-            argsLink(tiArguments, 'data and limits', {'page': 'data'}, true, argsTopHeaderId) + ' page shows which top-ten ranks still move', \
-        '  when a threshold moves by a fifth, and the ' + argsLink(tiArguments, 'threshold explorer', {'page': 'explore'}, true, argsTopHeaderId) + \
-            ' lets you move them.', \
-        '', \
-        '## Not in this release', \
-        '', \
-        'The full index (100 points) for the top 25 adds three pillars. No full score is published, and their point scales are', \
-        'untested judgment:', \
-        '', \
-        '- **P2a.** Real gross profit per employee, annual growth. Needs headcount from annual reports. Not measured.', \
-        '- **P3.** Insiders granting and selling, over the latest ' + objectGet(thresholds, 'p3_years') + ' calendar years: the share of', \
-        '  years with both new grants and open-market sales (0 to ' + objectGet(thresholds, 'p3_years_points') + ' points), and', \
-        '  open-market sales as a multiple of grants (0 points at ' + objectGet(thresholds, 'p3_ratio_zero') + ' times, ' + \
-            objectGet(thresholds, 'p3_ratio_points') + ' at ' + objectGet(thresholds, 'p3_ratio_full') + ' times).', \
-        '  **Measured, and shown on each company page as provisional.** The definition calls for the grant-date fair value of', \
-        '  grants, which the SEC data does not give consistently. Grants are valued instead at the market price of the shares', \
-        '  they cover, which overstates options and so understates the multiple.', \
-        '- **P4.** Headline numbers that leave out stock pay: stock pay as a share of adjusted profit in earnings releases.', \
-        '  Not measured.', \
-        '', \
-        'Also not done: confirming each company was founded ten or more years ago, combining predecessor companies,', \
-        'adjusting share counts for splits, valuation, and governance facts.', \
+        'Headcount and revenue per employee; how much of the adjusted profit in earnings releases is stock pay added back; whether', \
+        'each company was founded ten or more years ago; predecessor companies; share counts adjusted for splits; valuation; and', \
+        'governance facts.', \
         '', \
         '## Glossary', \
         '', \
@@ -1588,18 +1300,20 @@ function tiMethodPage(meta):
 endfunction
 
 
-# The glossary - each term and its meaning
+# The glossary
 tiGlossary = [ \
     ['Owner cash', 'Free cash flow less stock pay: the cash a year of business leaves for the people who own the shares.'], \
     ['Free cash flow', 'Cash from operations less capital spending. It does not subtract stock pay, because stock pay uses no cash.'], \
     ['Stock pay', "Stock-based compensation: wages paid in shares and options. It costs owners a share of the company, not the company's cash."], \
     ['Meaningful owner cash', 'Owner cash of at least the stated share of revenue.'], \
+    ['Gross profit', 'Revenue less the direct cost of what was sold.'], \
+    ['Operating costs', 'Operating expenses excluding cost of revenue: mostly selling, research and administration.'], \
     ['Capital-led', 'A company whose capital spending is more than twice its stock pay. Its shortfall is mostly investment.'], \
     ['Insider', 'An officer or director who must report trades in the company to the SEC.'], \
+    ['Insider cash-out', 'Open-market sales, plus shares withheld for taxes or sold to the company, less open-market purchases.'], \
     ['Grant', 'Shares, share units or options awarded to an insider as pay.'], \
-    ['Open-market sale', 'A sale on the exchange. It leaves out shares withheld for taxes, gifts, and shares sold back to the company.'], \
     ['Buyback', 'A company buying its own shares. It returns cash to owners only if it leaves fewer shares.'], \
-    ['Treadmill', 'The pattern the index looks for: no cash for owners, revenue held up by costs, and insiders who are granted shares and sell them, year after year.'], \
+    ['Treadmill', 'The pattern the index looks for: no cash for owners, revenue held up by costs, and insiders who are granted shares and turn them into cash, year after year.'], \
     ['Latest 12 months', 'The latest fiscal year, plus the part-year reported since, less the same part of the year before.'] \
 ]
 
@@ -1619,7 +1333,7 @@ endfunction
 #
 
 
-function tiDataPage(meta):
+function tiDataPage(meta, builds):
     sources = objectGet(meta, 'sources')
     companyfacts = objectGet(sources, 'companyfacts')
     types = objectGet(meta, 'types')
@@ -1642,7 +1356,7 @@ function tiDataPage(meta):
     unchanged = []
     for entry in objectGet(meta, 'sensitivity'):
         changes = []
-        for change in objectGet(entry, tiChangesKey(meta)):
+        for change in objectGet(entry, 'changes'):
             from = objectGet(change, 'from')
             to = objectGet(change, 'to')
             arrayPush(changes, markdownEscape(objectGet(change, 'name')) + ' ' + \
@@ -1657,10 +1371,20 @@ function tiDataPage(meta):
         endif
     endfor
 
-    documentSetTitle('Data and limits - ' + tiTitle)
+    # The builds
+    buildLines = []
+    for build in if(builds != null, builds, []):
+        dataDate = objectGet(build, 'dataDate')
+        buildDir = 'data/archive/' + dataDate + '/'
+        arrayPush(buildLines, '- Data as of **' + dataDate + '**, method version ' + objectGet(build, 'methodVersion') + ', ' + \
+            objectGet(build, 'ranked') + ' ranked: [index.csv](' + buildDir + 'index.csv), [index.json](' + buildDir + \
+            'index.json), [meta.json](' + buildDir + 'meta.json)')
+    endfor
+
+    documentSetTitle('Data and Limits - ' + tiTitle)
     markdownPrint( \
         '', \
-        '# Data and limits', \
+        '# Data and Limits', \
         '', \
         '## Sources', \
         '', \
@@ -1672,13 +1396,27 @@ function tiDataPage(meta):
         '- Method version ' + objectGet(meta, 'methodVersion') + '. A figure cited from this page can be reproduced from the same', \
         '  SEC file and the same method version.', \
         '', \
-        '## What is in the data', \
+        '## Downloads', \
+        '', \
+        '- [index.csv](data/index.csv): one row per company that passes the basic tests, with every input, score, type and flag.', \
+        "- [index.json](data/index.json): the same rows, plus each company's yearly owner-cash margins.", \
+        '- [meta.json](data/meta.json): the as-of date, source file hash, screen counts, every threshold, group totals and the', \
+        '  sensitivity test.', \
+        '- `data/company/<CIK>.json`: one file per company, with its yearly series and its insiders. Every figure carries the', \
+        '  accession number of the SEC filing it came from.', \
+        '', \
+        'Money is in US dollars. Margins and ratios are fractions (0.03 is 3%). An empty CSV cell, or a JSON null, means the', \
+        'figure is not in the filings. Each build is kept, so a figure cited from an earlier one can be found again:', \
+        '', \
+        if(arrayLength(buildLines), buildLines, 'No builds are listed.'), \
+        '', \
+        '## What Is in the Data', \
         '', \
         tiTable(['Type', 'Companies', 'Meaning'], ['l', 'r', 'l'], typeRows), \
         '', \
         'Excluded industries: ' + arrayJoin(excludedRows, ', ') + '.', \
         '', \
-        '## Known limits', \
+        '## Known Limits', \
         '', \
         "- **History starts about 2009.** The SEC has collected financial statements as data only since then. A company's", \
         '  "whole period" is the years it has in that data, which can be shorter than its life.', \
@@ -1688,37 +1426,44 @@ function tiDataPage(meta):
         '- **Capital spending** is purchases of property and equipment (or of productive assets) plus capitalized software.', \
         '  A year with neither tag counts as zero and is noted.', \
         '- **The cost line** cannot be built for ' + objectGet(cost, 'missingAll') + ' companies (' + objectGet(cost, 'missing') + \
-            ' of those that pass the screen) because of inconsistent tagging. They are unranked.', \
+            ' of those that pass the screen) because of inconsistent tagging. They have no score.', \
         '- **Latest 12 months** fall back to the latest fiscal year when a quarterly figure is missing or tagged differently.', \
         "- **Industry codes** are the SEC's and are coarse. Securities brokers are excluded along with asset managers, because", \
         '  they hold customer money. Insurance agents and brokers are not excluded: they are not insurers. Some real-estate and', \
         '  payment companies are not excluded.', \
         '- **Restated years.** Each year uses its most recently filed value. When a company restates recent years for a', \
         '  business it has left, older years are not restated, so the two can sit side by side.', \
-        '- **Foreign companies** that file financial data with the SEC in US dollars are included.', \
+        '- **Foreign companies** that file financial data with the SEC in US dollars are included, but have not had to file', \
+        '  insider transactions, so most have no score.', \
         '- **Predecessor companies** are not combined, and **share counts** are not adjusted for splits.', \
         '- **Founding dates** are not in the data. Some listed companies are less than ten years old.', \
-        '- **Capital-led companies** pass the screen but their shortfall is mostly capital spending. They are flagged.', \
         '- **Insiders** are officers and directors who file as people. A filing made with an entity counts only if one of', \
         "  its people is an officer, and an outside director's shares held through an entity are left out unless the filing", \
         '  says the holder is a trust, family or a retirement account. Some fund sales may still be counted, and some personal', \
         '  holdings left out.', \
-        '- **Insider grants** are valued at the market price of the shares they cover, not at their accounting fair value.', \
-        '  Options and performance awards are overstated. Amended insider filings are not used. A price far from the', \
-        "  company's other reported prices is treated as a filing error and left out.", \
+        '- **Insider cash-out** counts only what is on Forms 4 and 5: sales, shares withheld or sold to the company, and', \
+        '  purchases. It leaves out salary and cash bonuses, gifts of shares, and sales by people after they leave. Amended', \
+        "  insider filings are not used. A price far from the company's other reported prices is treated as a filing error", \
+        '  and left out.', \
+        '- **Insider years are calendar years; company years are fiscal years.** Insider cash-out is set against revenue for the', \
+        '  fiscal years with the same labels. Where the fiscal year does not end in December the two periods are up to eight', \
+        '  months apart, which overstates the share at a fast-growing company.', \
+        '- **Insider grants** are reported, not scored. They are valued at the market price of the shares they cover, not at', \
+        '  their accounting fair value, so options and performance awards are overstated.', \
         '', \
-        '## If a threshold moves by a fifth', \
+        '## If a Threshold Moves by a Fifth', \
         '', \
         'Each threshold was moved down and up by a fifth, one at a time, and the index rebuilt. These are the changes in the', \
-        'top ten by ' + if(tiChangesKey(meta) == 'changesThree', 'three-signs score', 'screen score') + '.', \
+        'top ten.', \
         '', \
-        tiTable(['Threshold moved', 'Value', 'Changes in the top ten'], ['l', 'l', 'l'], sensitivityRows), \
+        if(arrayLength(sensitivityRows), tiTable(['Threshold moved', 'Value', 'Changes in the top ten'], ['l', 'l', 'l'], sensitivityRows), \
+            'No test changed the top ten.'), \
         '', \
         'No change in the top ten: ' + if(arrayLength(unchanged), arrayJoin(unchanged, '; '), 'none') + '.', \
         '', \
-        "The thresholds, at the definition's values: " + tiThresholdList(thresholds) + '.', \
+        'The thresholds: ' + tiThresholdList(thresholds) + '.', \
         '', \
-        '## Change log', \
+        '## Change Log', \
         '', \
         tiChangeLines(), \
         '', \
@@ -1732,8 +1477,8 @@ endfunction
 
 # The method's change log, newest first
 tiChanges = [ \
-    ['1.0.0', 'First release. Stage 1 screen and screen score (P1 and P2b) from SEC financial data. Insider grants and sales ' + \
-        'from SEC Forms 4 and 5, with a provisional P3. A provisional three-signs score: P1, a costs sign, and P3.'] \
+    ['1.0.0', 'First release. The screen, and a score on three signs: owner cash from SEC financial data, operating costs ' + \
+        'as a share of gross profit, and insider cash-out as a share of revenue from SEC Forms 4 and 5.'] \
 ]
 
 
@@ -1755,16 +1500,15 @@ tiThresholdNames = { \
     'meaningful_margin': 'Meaningful owner cash', \
     'sbc_revenue_min': 'Least stock pay, share of revenue', \
     'sbc_fcf_min': 'Least stock pay, share of free cash flow', \
-    'p1_cum_zero': 'P1 cumulative margin that scores 0', \
-    'p1_cum_full': 'P1 cumulative margin that scores 8', \
-    'p1_latest_zero': 'P1 latest margin that scores 0', \
-    'p1_latest_full': 'P1 latest margin that scores 7', \
-    'p2b_window_years': 'P2b window, in years', \
-    'p2b_zero_drop': 'P2b cost fall that scores 0', \
+    'capital_led_ratio': 'Capital spending, as a multiple of stock pay, that makes a company capital-led', \
+    'p1_cum_zero': 'Cumulative owner-cash margin that scores 0', \
+    'p1_cum_full': 'Cumulative owner-cash margin that scores 8', \
+    'p1_latest_zero': 'Latest owner-cash margin that scores 0', \
+    'p1_latest_full': 'Latest owner-cash margin that scores 7', \
     'cost_level_zero': 'Costs as a share of gross profit that score 0', \
-    'cost_level_full': 'Costs as a share of gross profit that score in full', \
-    'p3_ratio_zero': 'P3 sales as a multiple of grants that score 0', \
-    'p3_ratio_full': 'P3 sales as a multiple of grants that score 13' \
+    'cost_level_full': 'Costs as a share of gross profit that score 25', \
+    'insider_zero': 'Insider cash-out as a share of revenue that scores 0', \
+    'insider_full': 'Insider cash-out as a share of revenue that scores 25' \
 }
 
 
@@ -1787,44 +1531,4 @@ function tiThresholdList(thresholds):
         arrayPush(items, '`' + key + '` = ' + objectGet(thresholds, key))
     endfor
     return arrayJoin(items, ', ')
-endfunction
-
-
-#
-# The downloads page
-#
-
-
-function tiDownloadsPage(builds):
-    buildLines = []
-    for build in if(builds != null, builds, []):
-        dataDate = objectGet(build, 'dataDate')
-        buildDir = 'data/archive/' + dataDate + '/'
-        arrayPush(buildLines, '- Data as of **' + dataDate + '**, method version ' + objectGet(build, 'methodVersion') + ', ' + \
-            objectGet(build, 'ranked') + ' ranked: [index.csv](' + buildDir + 'index.csv), [index.json](' + buildDir + \
-            'index.json), [meta.json](' + buildDir + 'meta.json)')
-    endfor
-
-    documentSetTitle('Downloads - ' + tiTitle)
-    markdownPrint( \
-        '', \
-        '# Downloads', \
-        '', \
-        '- [index.csv](data/index.csv): one row per company that passes the basic tests, with every input, score, type and flag.', \
-        "- [index.json](data/index.json): the same rows, plus each company's yearly owner-cash margins.", \
-        '- [meta.json](data/meta.json): the as-of date, source file hash, screen counts, every threshold, group totals and the', \
-        '  sensitivity test.', \
-        '- `data/company/<CIK>.json`: one file per company, with its yearly series. Every figure carries the accession number,', \
-        '  form and filing date of the SEC filing it came from.', \
-        '', \
-        'Money is in US dollars. Margins and ratios are fractions (0.03 is 3%). An empty CSV cell, or a JSON null, means the', \
-        'figure is not in the filings.', \
-        '', \
-        '## Every build', \
-        '', \
-        'Each build is kept, so a figure cited from an earlier one can be found again. Company files are kept only for the', \
-        'latest build.', \
-        '', \
-        if(arrayLength(buildLines), buildLines, 'No builds are listed.') \
-    )
 endfunction

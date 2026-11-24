@@ -77,7 +77,7 @@ def build(args):
     insider_years = None
     if insider_files:
         insiders = {}
-        insider_years = (last_year - THRESHOLDS['p3_years'] + 1, last_year)
+        insider_years = (last_year - THRESHOLDS['insider_years'] + 1, last_year)
         buybacks = {record['cik']: record['buybacks'] for record in records}
         for cik, cik_transactions in transactions.items():
             summary = insider_summary(cik_transactions, last_year, THRESHOLDS, buyback_quarters(buybacks[int(cik)]))

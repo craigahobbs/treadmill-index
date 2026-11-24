@@ -41,20 +41,23 @@ endfunction
 unittestRunTest('testDollars')
 
 
-function testTimes():
-    unittestEqual(tiTimes(null), 'n/a')
-    unittestEqual(tiTimes(0.405), '0.4x')
-    unittestEqual(tiTimes(56.722), '56.7x')
-endfunction
-unittestRunTest('testTimes')
-
-
 function testInsiderAmounts():
-    item = {'sales': 110200, 'grants': 110000, 'optionGrants': 300000, 'withheld': 5500, 'toIssuer': 0, 'purchases': 4000000}
-    unittestDeepEqual(tiInsiderAmounts(['2024'], item), ['2024', '$110K', '$110K', '$300K', '$6K', '$0', '$4.0M'])
+    item = { \
+        'cashOut': -3883760, 'sales': 110200, 'grants': 110000, 'optionGrants': 300000, 'withheld': 5500, 'toIssuer': 540, \
+        'purchases': 4000000 \
+    }
+    unittestDeepEqual(tiInsiderAmounts(['2024'], item), ['2024', '-$3.9M', '$110K', '$6K', '$4.0M', '$110K', '$300K'])
     unittestEqual(arrayLength(tiInsiderHeaders), 6)
 endfunction
 unittestRunTest('testInsiderAmounts')
+
+
+function testCashOut():
+    unittestEqual(tiCashOut(346022932), 'took $346.0M out through stock')
+    unittestEqual(tiCashOut(0), 'took $0 out through stock')
+    unittestEqual(tiCashOut(-30000), 'bought $30K more than they took out through stock')
+endfunction
+unittestRunTest('testCashOut')
 
 
 function testBillions():
@@ -69,6 +72,8 @@ function testPercent():
     unittestEqual(tiPercent(null), 'n/a')
     unittestEqual(tiPercent(0.03), '3.0%')
     unittestEqual(tiPercent(-0.07001), '-7.0%')
+    unittestEqual(tiPercent(-0.0000037), '0.0%')
+    unittestEqual(tiPercent(0), '0.0%')
 endfunction
 unittestRunTest('testPercent')
 
@@ -188,15 +193,14 @@ unittestRunTest('testFind')
 
 
 function testRowNotes():
-    unittestEqual(tiRowNotes({'flags': [], 'capitalLed': false}), '')
-    unittestEqual(tiRowNotes({'flags': [], 'capitalLed': true}), 'C')
-    unittestEqual(tiRowNotes({'flags': ['share_count_jump', 'one_off_years'], 'capitalLed': false}), 'O S')
+    unittestEqual(tiRowNotes({'flags': []}), '')
+    unittestEqual(tiRowNotes({'flags': ['share_count_jump', 'one_off_years']}), 'O')
     unittestEqual( \
-        tiRowNotes({ \
-            'flags': ['capex_missing', 'no_cost_line', 'latest_is_fiscal_year', 'one_off_years', 'gap_years', 'revenue_jump', 'share_count_jump'], \
-            'capitalLed': true \
-        }), \
-        'C O F N X G J S' \
+        tiRowNotes({'flags': [ \
+            'capex_missing', 'no_insider_filings', 'no_cost_line', 'latest_is_fiscal_year', 'one_off_years', 'gap_years', \
+            'revenue_jump', 'share_count_jump' \
+        ]}), \
+        'O N I' \
     )
 endfunction
 unittestRunTest('testRowNotes')
@@ -212,99 +216,6 @@ function testCompareRows():
     unittestEqual(tiCompareRows('p1', true, rowA, rowA), 0)
 endfunction
 unittestRunTest('testCompareRows')
-
-
-function testLin():
-    unittestEqual(tiLin(0.05, 0.05, -0.1, 8), 0)
-    unittestEqual(tiLin(0.2, 0.05, -0.1, 8), 0)
-    unittestEqual(tiLin(-0.1, 0.05, -0.1, 8), 8)
-    unittestEqual(tiLin(-0.5, 0.05, -0.1, 8), 8)
-    unittestEqual(mathRound(tiLin(-0.025, 0.05, -0.1, 8) * 1000000), 4000000)
-endfunction
-unittestRunTest('testLin')
-
-
-# Re-scoring every test company at the definition's thresholds gives the published type and scores
-async function testRescore():
-    data = objectGet(testData(['data/meta.json', 'data/index.json']), 'systemFetch')
-    thresholds = objectGet(jsonParse(objectGet(data, 'data/meta.json')), 'thresholds')
-    companies = objectGet(jsonParse(objectGet(data, 'data/index.json')), 'companies')
-    unittestEqual(arrayLength(companies), 9)
-    for company in companies:
-        result = tiRescore(company, thresholds)
-        name = objectGet(company, 'name')
-        unittestEqual(objectGet(result, 'type'), objectGet(company, 'type'), name)
-        unittestEqual(objectGet(objectGet(result, 'company'), 'cik'), objectGet(company, 'cik'), name)
-
-        # Excluded industries have no published scores
-        if objectGet(company, 'type') != 'excluded':
-            unittestEqual(tiScore(objectGet(result, 'p1')), tiScore(objectGet(company, 'p1')), name)
-            unittestEqual(tiScore(objectGet(result, 'p2b')), tiScore(objectGet(company, 'p2b')), name)
-            unittestEqual(tiScore(objectGet(result, 'screenScore')), tiScore(objectGet(company, 'screenScore')), name)
-        endif
-    endfor
-endfunction
-unittestRunTest('testRescore')
-
-
-function testRescoreMoved():
-    thresholds = { \
-        'meaningful_margin': 0.03, 'sbc_revenue_min': 0.02, 'sbc_fcf_min': 0.5, 'p1_years_points': 10, 'p1_cum_points': 8, \
-        'p1_cum_zero': 0.05, 'p1_cum_full': -0.1, 'p1_latest_points': 7, 'p1_latest_zero': 0.05, 'p1_latest_full': -0.05, \
-        'p2b_points': 13, 'p2b_zero_drop': 10 \
-    }
-    company = { \
-        'excluded': null, 'margins': [0.04, 0.025, 0.01, -0.02], 'cumMargin': 0.01, 'latestMargin': 0, 'costChange': -5, \
-        'cumFcf': 50, 'cumSbc': 40, 'cumRevenue': 1000 \
-    }
-
-    # The definition's thresholds: 3 of 4 low years
-    result = tiRescore(company, thresholds)
-    unittestEqual(objectGet(result, 'type'), 'stock_pay')
-    unittestEqual(tiScore(objectGet(result, 'p1')), tiScore(7.5 + 8 * 0.04 / 0.15 + 3.5))
-    unittestEqual(objectGet(result, 'p2b'), 6.5)
-    unittestEqual(tiScore(objectGet(result, 'screenScore')), tiScore((7.5 + 8 * 0.04 / 0.15 + 3.5) * 1.5))
-
-    # A lower line: 2 of 4 low years
-    result = tiRescore(company, objectAssign(objectCopy(thresholds), {'meaningful_margin': 0.02}))
-    unittestEqual(tiScore(objectGet(result, 'p1')), tiScore(5 + 8 * 0.04 / 0.15 + 3.5))
-
-    # A line under the cumulative margin
-    result = tiRescore(company, objectAssign(objectCopy(thresholds), {'meaningful_margin': 0.005}))
-    unittestEqual(objectGet(result, 'type'), 'cash_generative')
-
-    # Stock pay is not the cause
-    result = tiRescore(company, objectAssign(objectCopy(thresholds), {'sbc_revenue_min': 0.05}))
-    unittestEqual(objectGet(result, 'type'), 'thin_margin')
-    result = tiRescore(company, objectAssign(objectCopy(thresholds), {'sbc_fcf_min': 0.9}))
-    unittestEqual(objectGet(result, 'type'), 'thin_margin')
-
-    # Negative free cash flow
-    result = tiRescore(objectAssign(objectCopy(company), {'cumFcf': -1}), thresholds)
-    unittestEqual(objectGet(result, 'type'), 'cash_burner')
-
-    # An excluded industry
-    result = tiRescore(objectAssign(objectCopy(company), {'excluded': 'bank'}), thresholds)
-    unittestEqual(objectGet(result, 'type'), 'excluded')
-
-    # No cost line
-    result = tiRescore(objectAssign(objectCopy(company), {'costChange': null}), thresholds)
-    unittestEqual(objectGet(result, 'p2b'), null)
-    unittestEqual(objectGet(result, 'screenScore'), null)
-endfunction
-unittestRunTest('testRescoreMoved')
-
-
-function testCompareRescored():
-    resultA = {'screenScore': 30, 'company': {'name': 'A'}}
-    resultB = {'screenScore': 20, 'company': {'name': 'B'}}
-    resultC = {'screenScore': 20, 'company': {'name': 'C'}}
-    unittestEqual(tiCompareRescored(resultA, resultB), -1)
-    unittestEqual(tiCompareRescored(resultB, resultA), 1)
-    unittestEqual(tiCompareRescored(resultB, resultC), -1)
-    unittestEqual(tiCompareRescored(resultC, resultB), 1)
-endfunction
-unittestRunTest('testCompareRescored')
 
 
 function testThresholdList():

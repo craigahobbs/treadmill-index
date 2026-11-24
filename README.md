@@ -1,29 +1,31 @@
 # The Treadmill Index
 
 A public index of large, growing companies whose revenue growth has not become meaningful cash for outside
-owners, because the cash goes out as stock pay. It ranks how owners have been treated. It is not a short list,
-a price forecast or investment advice, and it makes no statement about any company's intent.
+owners, because the cash goes out as stock pay. It scores three signs together: owner cash that stays near
+zero, operating costs that take all of gross profit, and insiders who take cash out through stock. It ranks
+how owners have been treated. It is not a short list, a price forecast or investment advice, and it makes no
+finding about any one company's intent.
 
 The index is a statically hosted web application ([MarkdownUp](https://craigahobbs.github.io/markdown-up/) and
 [BareScript](https://craigahobbs.github.io/bare-script/)) fed by data files built from SEC filings. Every
 published figure links to the SEC filing it came from.
 
-- [docs/index-definition.md](docs/index-definition.md) is the definition of the index.
+- [docs/index-definition.md](docs/index-definition.md) is the definition of the index. Its amendment of
+  2026-11-24 is what is built.
 - [docs/findings.md](docs/findings.md) is the record of the first whole-market run with the prototype.
-- [docs/plan.md](docs/plan.md) is the plan for the web application.
+- [docs/plan.md](docs/plan.md) is the original plan for the web application.
 
 
-## What is built
+## What Is Built
 
 | Part | Where | State |
 | --- | --- | --- |
-| Build step: extract, screen, score, write data files | `src/treadmill_index/` | Stage 1, the screen score (P1 and P2b), insider grants and sales (P3), and a provisional three-signs score |
+| Build step: extract, screen, score, write data files | `src/treadmill_index/` | The screen, and one score (75) on three signs: owner cash, costs as a share of gross profit, insider cash-out as a share of revenue |
 | Data files | `data/` | `index.json`, `index.csv`, `meta.json`, `company/<CIK>.json`, `archive/` |
-| Web application | `index.html`, `treadmillIndex.md`, `treadmillIndex.bare` | Index ranked on the three signs, company pages with insider filings, group totals, threshold explorer, methodology and glossary, data and limits, downloads |
-| Full score (P2a, P3, P4) for the top 25 | | Not built. P2a and P4 need hand-checked data. |
+| Web application | `index.html`, `treadmillIndex.md`, `treadmillIndex.bare` | Index, company pages with insider filings, group totals, methodology and glossary, data and limits with downloads |
 
 
-## Building the data
+## Building the Data
 
 1. Download the SEC bulk file
    [companyfacts.zip](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip) (about 1.4 GB) to
@@ -52,8 +54,8 @@ SEC_USER_AGENT="Your Name you@example.com" make insider-data
 ~~~
 
 `make insider-data` downloads the SEC's quarterly insider-transaction data sets to `data/raw/insider/`. When they
-are there, `make data` adds each company's insider grants and sales, and a provisional P3, to the data files.
-Without them the build still runs and the pages say insiders are not measured.
+are there, `make data` adds what each company's insiders took out through stock, which is one of the three
+signs. Without them the build still runs, no company has a score, and the pages say so.
 
 `data/raw/` and `*.zip` are git-ignored. Everything else in `data/` is published.
 
@@ -71,7 +73,6 @@ make lint             # pylint, and static analysis of the web application
 make data             # build the data files
 make insider-data     # download the SEC insider-transaction data sets
 make test-data        # remake the web application's test data, test/data/
-make check-prototype  # check the build step reproduces the prototype's output
 make run              # serve the application at http://localhost:8080/
 ~~~
 

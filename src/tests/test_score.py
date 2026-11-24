@@ -2,10 +2,9 @@
 
 import unittest
 
-from treadmill_index.score import DEFAULT_OPTIONS, PROTOTYPE_OPTIONS, SENSITIVITY_KEYS, THRESHOLDS, company_series, \
-    cost_change, cost_line, costs_sign, evaluate, find_period, five_years, group_totals, latest_twelve_months, lin, \
-    loose_thresholds, low_run, one_off_years, pillar_one, pillar_three, run_screen, sensitivity, share_change, sic_exclusion, \
-    spending_change, year_label
+from treadmill_index.score import SENSITIVITY_KEYS, THRESHOLDS, company_series, cost_change, cost_line, costs_sign, evaluate, \
+    find_period, five_years, group_totals, insiders_sign, latest_twelve_months, lin, loose_thresholds, low_run, one_off_years, \
+    pillar_one, run_screen, sensitivity, share_change, sic_exclusion, spending_change, year_label
 
 from .helpers import DATA_DATE, REVENUE, annual, company_record, nine_months, unit
 
@@ -184,8 +183,7 @@ class TestScore(unittest.TestCase):
     def test_cost_line(self):
         annual_facts = company_record(tags={
             'CostsAndExpenses': annuals([value * 0.95 for value in REVENUE]),
-            'CostOfGoodsAndServicesSold': annuals([value * 0.4 for value in REVENUE]),
-            'OperatingExpenses': annuals([value * 0.56 for value in REVENUE])
+            'CostOfGoodsAndServicesSold': annuals([value * 0.4 for value in REVENUE])
         })['annual']
         end = '2025-12-31'
 
@@ -204,12 +202,8 @@ class TestScore(unittest.TestCase):
             ['RevenueFromContractWithCustomerExcludingAssessedTax', 'OperatingIncomeLoss', 'CostOfGoodsAndServicesSold']
         )
 
-        value, facts = cost_line(annual_facts, end, 0)
-        self.assertEqual(value, 1120e6)
-        self.assertEqual([fact[5] for fact in facts], ['OperatingExpenses'])
-
         # Missing figures
-        for method in (0, 1, 2, 3):
+        for method in (1, 2, 3):
             self.assertEqual(cost_line(annual_facts, '2030-12-31', method), (None, None))
         self.assertEqual(cost_line(company_record()['annual'], end, 2), (None, None))
         self.assertEqual(cost_line(company_record()['annual'], end, 3), (None, None))
@@ -219,7 +213,7 @@ class TestScore(unittest.TestCase):
         # The first method: costs fall from 55% of revenue in 2021 to 50% in 2025
         record = company_record(operating=[50, 55, 62.5, 70, 80, 90, 200])
         series = company_series(record)
-        cost = cost_change(record, series, THRESHOLDS, DEFAULT_OPTIONS)
+        cost = cost_change(record, series, THRESHOLDS)
         self.assertEqual(cost['method'], 1)
         self.assertEqual((cost['firstYear'], cost['firstCost'], cost['firstRatio']), ('2021', 687.5e6, 0.55))
         self.assertEqual((cost['lastYear'], cost['lastCost'], cost['lastRatio']), ('2025', 1000e6, 0.5))
@@ -229,61 +223,51 @@ class TestScore(unittest.TestCase):
         self.assertEqual([fact[1] for fact in cost['lastFacts']], ['0000000001-26-000010', '0000000001-26-000010'])
 
         # The cost line is built the same way in both years: gross profit is missing in the first year, so the second
-        # method is used
+        # method is used, and gross profit is revenue less cost of revenue
         record = company_record(tags={
             'GrossProfit': annuals([1200], first_year=2025),
             'CostsAndExpenses': annuals([value * 0.95 for value in REVENUE]),
             'CostOfRevenue': annuals([value * 0.35 for value in REVENUE])
         })
-        cost = cost_change(record, series, THRESHOLDS, DEFAULT_OPTIONS)
+        cost = cost_change(record, series, THRESHOLDS)
         self.assertEqual(cost['method'], 2)
         self.assertAlmostEqual(cost['change'], 0)
         self.assertAlmostEqual(cost['lastGross'], 1300e6)
 
-        # The third method
-        record = company_record(tags={'GrossProfit': None, 'CostOfRevenue': annuals([value * 0.35 for value in REVENUE])})
-        cost = cost_change(record, series, THRESHOLDS, DEFAULT_OPTIONS)
+        # The third method, with the other cost-of-revenue tag
+        record = company_record(tags={'GrossProfit': None, 'CostOfGoodsAndServicesSold': annuals([value * 0.35 for value in REVENUE])})
+        cost = cost_change(record, series, THRESHOLDS)
         self.assertEqual(cost['method'], 3)
         self.assertAlmostEqual(cost['firstRatio'], 0.6)
+        self.assertAlmostEqual(cost['lastGross'], 1300e6)
 
-        # The OperatingExpenses tag is used only with the prototype's options
-        record = company_record(tags={'GrossProfit': None, 'OperatingExpenses': annuals([value * 0.5 for value in REVENUE])})
-        self.assertIsNone(cost_change(record, series, THRESHOLDS, DEFAULT_OPTIONS))
-        cost = cost_change(record, series, THRESHOLDS, PROTOTYPE_OPTIONS)
-        self.assertEqual((cost['method'], cost['lastGross']), (0, None))
-
-        # A cost line that is not positive is not used
-        record = company_record(gross=0.04)
-        self.assertIsNone(cost_change(record, series, THRESHOLDS, DEFAULT_OPTIONS))
+        # No method works, and a cost line that is not positive
+        self.assertIsNone(cost_change(company_record(tags={'GrossProfit': None}), series, THRESHOLDS))
+        self.assertIsNone(cost_change(company_record(gross=0.04), series, THRESHOLDS))
 
         # Fewer years than the window
         record = company_record()
-        self.assertIsNone(cost_change(record, series[-4:], THRESHOLDS, DEFAULT_OPTIONS))
-        self.assertEqual(cost_change(record, series[-5:], THRESHOLDS, DEFAULT_OPTIONS)['firstYear'], '2021')
+        self.assertIsNone(cost_change(record, series[-4:], THRESHOLDS))
+        self.assertEqual(cost_change(record, series[-5:], THRESHOLDS)['firstYear'], '2021')
 
 
     def test_costs_sign(self):
         def cost(last_cost, last_gross):
             return {'lastCost': last_cost, 'lastGross': last_gross}
 
-        # No cost line, or no gross profit figure
-        self.assertIsNone(costs_sign(None, None, THRESHOLDS))
-        self.assertIsNone(costs_sign(cost(500, None), 13, THRESHOLDS))
+        # No cost line
+        self.assertIsNone(costs_sign(None, THRESHOLDS))
 
-        # Half is P2b; half is the share of gross profit operating costs take: 0 at 70%, 12.5 at 100%
-        def sign(level, change_points, level_points):
-            return {'level': level, 'changePoints': change_points, 'levelPoints': level_points, 'points': change_points + level_points}
-
-        self.assertEqual(costs_sign(cost(700, 1000), 13, THRESHOLDS), sign(0.7, 12.5, 0))
-        self.assertEqual(costs_sign(cost(400, 1000), 0, THRESHOLDS), sign(0.4, 0, 0))
-        costs = costs_sign(cost(850, 1000), 6.5, THRESHOLDS)
-        self.assertAlmostEqual(costs['levelPoints'], 6.25)
-        self.assertAlmostEqual(costs['points'], 12.5)
-        self.assertEqual(costs_sign(cost(1460, 1000), 0, THRESHOLDS), sign(1.46, 0, 12.5))
+        # The share of gross profit that operating costs take: 0 points at 70%, 25 at 100%
+        self.assertEqual(costs_sign(cost(700, 1000), THRESHOLDS), {'level': 0.7, 'points': 0})
+        self.assertEqual(costs_sign(cost(400, 1000), THRESHOLDS), {'level': 0.4, 'points': 0})
+        self.assertAlmostEqual(costs_sign(cost(850, 1000), THRESHOLDS)['points'], 12.5)
+        self.assertEqual(costs_sign(cost(1000, 1000), THRESHOLDS), {'level': 1, 'points': 25})
+        self.assertEqual(costs_sign(cost(1460, 1000), THRESHOLDS), {'level': 1.46, 'points': 25})
 
         # With no gross profit at all, operating costs take more than all of it
-        self.assertEqual(costs_sign(cost(500, -20), 13, THRESHOLDS), sign(None, 12.5, 12.5))
-        self.assertEqual(costs_sign(cost(500, 0), 0, THRESHOLDS)['levelPoints'], 12.5)
+        self.assertEqual(costs_sign(cost(500, -20), THRESHOLDS), {'level': None, 'points': 25})
+        self.assertEqual(costs_sign(cost(500, 0), THRESHOLDS), {'level': None, 'points': 25})
 
 
     def test_one_off_years(self):
@@ -340,7 +324,7 @@ class TestScore(unittest.TestCase):
         self.assertEqual(spending['sm']['lastFact'][0], 500e6)
 
         # A window of two years
-        spending = spending_change(record, series, {**THRESHOLDS, 'p2b_window_years': 2})
+        spending = spending_change(record, series, {**THRESHOLDS, 'cost_window_years': 2})
         self.assertEqual(sorted(spending), ['ga', 'sm'])
         self.assertAlmostEqual(spending['ga']['firstRatio'], 100 / 1800)
 
@@ -372,7 +356,7 @@ class TestScore(unittest.TestCase):
         five = five_years(record, series, 2025, THRESHOLDS)
         self.assertAlmostEqual(five.pop('ownerCash'), -161e6)
         self.assertAlmostEqual(five.pop('shareGrowth'), 0.1)
-        self.assertEqual(five, {'years': 5, 'buybacks': 250e6, 'withholding': 3e6})
+        self.assertEqual(five, {'years': 5, 'revenue': 8050e6, 'buybacks': 250e6, 'withholding': 3e6})
 
         # Years the company does not have, and too few years to follow the share count
         five = five_years(record, series, 2026, THRESHOLDS)
@@ -382,35 +366,26 @@ class TestScore(unittest.TestCase):
         self.assertEqual((five['years'], five['buybacks'], five['shareGrowth']), (1, 70e6, None))
         self.assertAlmostEqual(five['ownerCash'], -40e6)
         self.assertEqual(five_years(record, series, 2035, THRESHOLDS), {
-            'years': 0, 'ownerCash': 0, 'buybacks': 0, 'withholding': 0, 'shareGrowth': None
+            'years': 0, 'revenue': 0, 'ownerCash': 0, 'buybacks': 0, 'withholding': 0, 'shareGrowth': None
         })
 
         # A share count that cannot be followed
         self.assertIsNone(five_years(company_record(), series, 2025, THRESHOLDS)['shareGrowth'])
 
 
-    def test_pillar_three(self):
-        # No insider filings
-        self.assertIsNone(pillar_three(None, THRESHOLDS))
+    def test_insiders_sign(self):
+        five = {'revenue': 1000e6}
 
-        # Grants and sales in three of five years; sales of 1.0 times grants
-        insider = {'bothYears': 3, 'salesToGrants': 1.0, 'grantShares': 1000, 'sales': 500}
-        self.assertEqual(pillar_three(insider, THRESHOLDS), {'yearsPoints': 7.2, 'ratioPoints': 6.5, 'p3': 13.7})
+        # No insider filings, and no revenue in the years
+        self.assertIsNone(insiders_sign(None, five, THRESHOLDS))
+        self.assertIsNone(insiders_sign({'cashOut': 5e6}, {'revenue': 0}, THRESHOLDS))
 
-        # The ratio scores 0 at 0.5 times and 13 at 1.5 times
-        for ratio, points in ((0, 0), (0.5, 0), (0.75, 3.25), (1.5, 13), (56.7, 13)):
-            insider = {'bothYears': 5, 'salesToGrants': ratio, 'grantShares': 1000, 'sales': 500}
-            self.assertEqual(pillar_three(insider, THRESHOLDS), {'yearsPoints': 12, 'ratioPoints': points, 'p3': 12 + points})
-
-        # Sales with no grants at all score the ratio in full; no sales and no grants score nothing
-        insider = {'bothYears': 0, 'salesToGrants': None, 'grantShares': 0, 'sales': 500}
-        self.assertEqual(pillar_three(insider, THRESHOLDS), {'yearsPoints': 0, 'ratioPoints': 13, 'p3': 13})
-        insider = {'bothYears': 0, 'salesToGrants': None, 'grantShares': 0, 'sales': 0}
-        self.assertEqual(pillar_three(insider, THRESHOLDS), {'yearsPoints': 0, 'ratioPoints': 0, 'p3': 0})
-
-        # Grants that cannot be valued: no ratio and no P3
-        insider = {'bothYears': 5, 'salesToGrants': None, 'grantShares': 1000, 'sales': 500}
-        self.assertEqual(pillar_three(insider, THRESHOLDS), {'yearsPoints': 12, 'ratioPoints': None, 'p3': None})
+        # The cash insiders took out as a share of revenue: 0 points at 0.5%, 25 at 3%
+        for cash_out, share, points in ((5e6, 0.005, 0), (30e6, 0.03, 25), (270e6, 0.27, 25), (0, 0, 0), (-10e6, -0.01, 0)):
+            self.assertEqual(insiders_sign({'cashOut': cash_out}, five, THRESHOLDS), {'share': share, 'points': points})
+        sign = insiders_sign({'cashOut': 17.5e6}, five, THRESHOLDS)
+        self.assertAlmostEqual(sign['share'], 0.0175)
+        self.assertAlmostEqual(sign['points'], 12.5)
 
 
     def test_share_change(self):
@@ -449,7 +424,6 @@ class TestScore(unittest.TestCase):
         self.assertEqual(cost['method'], 1)
         self.assertAlmostEqual(p1['p1'], 10 + 8 * 0.07 / 0.15 + 4.9)
         self.assertEqual(ttm['end'], '2026-09-30')
-        self.assertAlmostEqual(result.pop('screenScore'), 2 * (10 + 8 * 0.07 / 0.15 + 4.9))
         self.assertAlmostEqual(result.pop('cumFcfMargin'), 0.1)
         self.assertAlmostEqual(result.pop('sbcRevenue'), 0.12)
         self.assertAlmostEqual(result.pop('capexToSbc'), 1 / 6)
@@ -457,10 +431,10 @@ class TestScore(unittest.TestCase):
         self.assertAlmostEqual(result.pop('latestMargin'), -0.02)
         costs = result.pop('costs')
         self.assertAlmostEqual(costs['level'], 1100 / 1200)
-        self.assertAlmostEqual(costs['points'], 12.5 + 12.5 * (1100 / 1200 - 0.7) / 0.3)
+        self.assertAlmostEqual(costs['points'], 25 * (1100 / 1200 - 0.7) / 0.3)
         five = result.pop('five')
         self.assertAlmostEqual(five.pop('ownerCash'), -161e6)
-        self.assertEqual(five, {'years': 5, 'buybacks': 0, 'withholding': 0, 'shareGrowth': None})
+        self.assertEqual(five, {'years': 5, 'revenue': 8050e6, 'buybacks': 0, 'withholding': 0, 'shareGrowth': None})
         self.assertEqual(result, {
             'stage': 'scored',
             'cik': 5,
@@ -488,14 +462,11 @@ class TestScore(unittest.TestCase):
             'ttmReason': None,
             'oneOffs': {},
             'p1Ex': None,
-            'p2b': 13,
             'insider': None,
-            'p3': None,
-            'threeScore': None,
-            'threeRank': None,
+            'insiders': None,
+            'score': None,
             'lowRun': 7,
             'spending': {},
-            'capexMissingYears': 0,
             'shareGrowth': None,
             'shareReason': 'share count missing for the first or last year',
             'flags': [],
@@ -511,8 +482,6 @@ class TestScore(unittest.TestCase):
         # The latest fiscal year is too old
         self.assertEqual(evaluate(company_record(), None, '2027-07-03'), {'stage': 'not_current'})
         self.assertEqual(evaluate(company_record(), None, '2027-07-02')['stage'], 'scored')
-        options = {**DEFAULT_OPTIONS, 'still_filing_cutoff': '2026-01-01'}
-        self.assertEqual(evaluate(company_record(), None, DATA_DATE, None, options), {'stage': 'not_current'})
 
         # Latest revenue under $1B
         self.assertEqual(evaluate(company_record(revenue=(500, 600, 700, 800, 999)), None, DATA_DATE), {'stage': 'small'})
@@ -539,7 +508,6 @@ class TestScore(unittest.TestCase):
         result = evaluate(company_record(sbc=0.02), None, DATA_DATE)
         self.assertEqual((result['type'], result['excluded'], result['sic']), ('cash_generative', None, None))
         self.assertAlmostEqual(result['p1']['p1'], 0)
-        self.assertAlmostEqual(result['screenScore'], 0)
 
         # Stock pay is the cause - and is not when it is under 2% of revenue or under half of free cash flow
         self.assertEqual(evaluate(company_record(ocf=0.045, sbc=0.02), None, DATA_DATE)['type'], 'stock_pay')
@@ -550,10 +518,16 @@ class TestScore(unittest.TestCase):
         # Negative free cash flow before stock pay
         self.assertEqual(evaluate(company_record(ocf=0.01), None, DATA_DATE)['type'], 'cash_burner')
 
-        # Capital-led
+        # Capital-led: stock pay would be the cause, but capital spending is more than twice it
         result = evaluate(company_record(ocf=0.4, capex=0.3), None, DATA_DATE)
-        self.assertEqual((result['type'], result['capitalLed']), ('stock_pay', True))
+        self.assertEqual((result['type'], result['capitalLed']), ('capital_led', True))
         self.assertAlmostEqual(result['capexToSbc'], 2.5)
+        thresholds = {**THRESHOLDS, 'capital_led_ratio': 2.5}
+        self.assertEqual(evaluate(company_record(ocf=0.4, capex=0.3), None, DATA_DATE, thresholds)['type'], 'stock_pay')
+
+        # A cash-generative company with heavy capital spending keeps its type
+        result = evaluate(company_record(ocf=0.5, capex=0.3, sbc=0.02), None, DATA_DATE)
+        self.assertEqual((result['type'], result['capitalLed']), ('cash_generative', True))
 
         # No stock pay
         result = evaluate(company_record(sbc=0), None, DATA_DATE)
@@ -561,18 +535,29 @@ class TestScore(unittest.TestCase):
 
 
     def test_evaluate_scores(self):
-        # Costs fall five points of revenue: half of P2b
-        result = evaluate(company_record(operating=[50, 55, 62.5, 70, 80, 90, 200]), None, DATA_DATE)
+        # The three signs: P1, costs at 91.7% of gross profit, and insiders who took out 1.75% of five years' revenue
         p1 = 10 + 8 * 0.07 / 0.15 + 4.9
-        self.assertAlmostEqual(result['p2b'], 6.5)
-        self.assertAlmostEqual(result['screenScore'], p1 + (p1 / 25) * 12.5)
+        costs = 25 * (1100 / 1200 - 0.7) / 0.3
+        insider = {'cashOut': 0.0175 * 8050e6}
+        result = evaluate(company_record(), None, DATA_DATE, insider=insider)
+        self.assertIs(result['insider'], insider)
+        self.assertAlmostEqual(result['insiders']['share'], 0.0175)
+        self.assertAlmostEqual(result['insiders']['points'], 12.5)
+        self.assertAlmostEqual(result['score'], p1 + (p1 / 25) * (costs + 12.5))
 
-        # No cost line: P1 alone, no screen score
-        result = evaluate(company_record(tags={'GrossProfit': None}), None, DATA_DATE)
+        # Costs and insider selling count only to the extent owners are getting no cash
+        result = evaluate(company_record(sbc=0.02), None, DATA_DATE, insider=insider)
+        self.assertAlmostEqual(result['score'], 0)
+
+        # No cost line or no insider filings: no score
+        result = evaluate(company_record(tags={'GrossProfit': None}), None, DATA_DATE, insider=insider)
         self.assertAlmostEqual(result['p1']['p1'], p1)
-        self.assertIsNone(result['p2b'])
-        self.assertIsNone(result['screenScore'])
+        self.assertIsNone(result['costs'])
+        self.assertIsNone(result['score'])
         self.assertEqual(result['flags'], ['no_cost_line'])
+        result = evaluate(company_record(), None, DATA_DATE)
+        self.assertIsNone(result['insiders'])
+        self.assertIsNone(result['score'])
 
         # The latest fiscal year stands in for the latest 12 months
         result = evaluate(company_record(quarters=False), None, DATA_DATE)
@@ -580,10 +565,6 @@ class TestScore(unittest.TestCase):
         self.assertEqual(result['ttmReason'], 'no quarterly report since the latest fiscal year')
         self.assertIsNone(result['ttm'])
         self.assertEqual(result['flags'], ['latest_is_fiscal_year'])
-
-        # The prototype's options: no latest 12 months, and no flag for it
-        result = evaluate(company_record(), None, DATA_DATE, None, PROTOTYPE_OPTIONS)
-        self.assertEqual((result['latestBasis'], result['ttmReason'], result['flags']), ('fy', 'not computed', []))
 
         # The latest 12 months differ from the latest fiscal year
         result = evaluate(company_record(tags={
@@ -608,7 +589,6 @@ class TestScore(unittest.TestCase):
             }
         ), None, DATA_DATE)
         self.assertEqual(result['flags'], ['capex_missing', 'one_off_years', 'revenue_jump', 'share_count_jump'])
-        self.assertEqual(result['capexMissingYears'], 7)
         self.assertEqual((result['buybacks'], result['dividends'], result['withholding']), (30e6, 6e6, 9e6))
         self.assertEqual(sorted(result['oneOffs']), ['2019'])
 
@@ -648,21 +628,27 @@ class TestScore(unittest.TestCase):
             company_record(cik=10, name='Short Co', revenue=(1000, 1200, 1400, 1600)),
             company_record(cik=11, name='Small Co', revenue=(500, 600, 700, 800, 900)),
             company_record(cik=12, name='Old Co', revenue=(1000, 1200, 1400, 1600, 1800), last_year=2021),
-            company_record(cik=13, name='No Data Co', tags={'NetCashProvidedByUsedInOperatingActivities': None})
+            company_record(cik=13, name='No Data Co', tags={'NetCashProvidedByUsedInOperatingActivities': None}),
+            company_record(cik=14, name='Capital Co', ocf=0.4, capex=0.3)
         ]
-        results, funnel = run_screen(records, {5: 6021, 1: 7372}, DATA_DATE)
+        insider = {'cashOut': 0.0175 * 8050e6}
+        insiders = {1: insider, 2: insider, 3: insider, 4: insider, 14: insider}
+        results, funnel = run_screen(records, {5: 6021, 1: 7372}, DATA_DATE, insiders=insiders)
         self.assertEqual(funnel, {
-            'prefilter': 13,
-            'current': 11,
-            'revenue': 10,
-            'years': 9,
-            'growth': 8,
-            'industry': 7,
-            'lowMargin': 6,
+            'prefilter': 14,
+            'current': 12,
+            'revenue': 11,
+            'years': 10,
+            'growth': 9,
+            'industry': 8,
+            'lowMargin': 7,
+            'stockPayCause': 5,
             'stockPay': 4,
-            'ranked': 3,
-            'rankedThree': 0
+            'ranked': 3
         })
+
+        # Ranked by score, then name; then the rest by P1; then the excluded industries. A capital-led company and a
+        # company without one of the signs are not ranked.
         self.assertEqual(
             [(result['rank'], result['name'], result['type']) for result in results],
             [
@@ -671,42 +657,29 @@ class TestScore(unittest.TestCase):
                 (3, 'Better Stock Pay Co', 'stock_pay'),
                 (None, 'Burner Co', 'cash_burner'),
                 (None, 'No Cost Line Co', 'stock_pay'),
+                (None, 'Capital Co', 'capital_led'),
                 (None, 'Thin Co', 'thin_margin'),
                 (None, 'Cash Co', 'cash_generative'),
                 (None, 'Bank Co', 'excluded')
             ]
         )
-        self.assertEqual(results[0]['sic'], None)
-        self.assertEqual(results[1]['sic'], 7372)
-        self.assertEqual(results[7]['sic'], 6021)
+        self.assertEqual([result['sic'] for result in results[:3]], [None, 7372, None])
+        self.assertEqual(results[8]['sic'], 6021)
+        self.assertAlmostEqual(results[0]['score'], results[1]['score'])
+        self.assertGreater(results[1]['score'], results[2]['score'])
+        self.assertIsNone(results[4]['score'])
+        self.assertIsNotNone(results[5]['score'])
 
+        # With insider data, a company without a summary is flagged
         self.assertEqual([result['flags'] for result in results[:3]], [[], [], []])
-        self.assertEqual([(result['insider'], result['p3']) for result in results[:3]], [(None, None)] * 3)
+        self.assertEqual(results[3]['flags'], ['no_insider_filings'])
+        self.assertEqual(results[4]['flags'], ['no_cost_line'])
 
-        # The prototype's options
-        _, funnel = run_screen(records, {}, DATA_DATE, None, PROTOTYPE_OPTIONS)
-        self.assertEqual(funnel['industry'], 8)
-
-        # With insider data, a company's summary is scored and a company without one is flagged
-        insider = {'bothYears': 5, 'salesToGrants': 1.0, 'grantShares': 1000, 'sales': 500}
-        results, _ = run_screen(records[:2], {}, DATA_DATE, insiders={2: insider})
-        self.assertEqual([(result['cik'], result['flags']) for result in results], [(1, ['no_insider_filings']), (2, [])])
-        self.assertIsNone(results[0]['p3'])
-        self.assertIs(results[1]['insider'], insider)
-        self.assertEqual(results[1]['p3'], {'yearsPoints': 12, 'ratioPoints': 6.5, 'p3': 18.5})
-
-        # The three-signs score is P1, plus the costs sign and P3 to the extent of P1, and has its own rank
-        self.assertAlmostEqual(
-            results[1]['threeScore'],
-            results[1]['p1']['p1'] + (results[1]['p1']['p1'] / 25) * (results[1]['costs']['points'] + 18.5)
-        )
-        self.assertEqual([(result['rank'], result['threeRank'], result['threeScore'] is None) for result in results],
-                         [(1, None, True), (2, 1, False)])
-        results, funnel = run_screen(records[:3], {}, DATA_DATE, insiders={
-            1: {**insider, 'salesToGrants': 0.6}, 2: insider, 3: {**insider, 'salesToGrants': None}, 4: insider
-        })
-        self.assertEqual([(result['cik'], result['rank'], result['threeRank']) for result in results], [(3, 1, None), (1, 2, 2), (2, 3, 1)])
-        self.assertEqual((funnel['ranked'], funnel['rankedThree']), (3, 2))
+        # With no insider data, no company has the third sign, so none is ranked - and none is flagged
+        results, funnel = run_screen(records, {}, DATA_DATE)
+        self.assertEqual((funnel['industry'], funnel['stockPay'], funnel['ranked']), (9, 5, 0))
+        self.assertEqual([result['rank'] for result in results], [None] * 9)
+        self.assertEqual([result['flags'] for result in results if result['name'] == 'Burner Co'], [[]])
 
 
     def test_group_totals(self):
@@ -748,9 +721,10 @@ class TestScore(unittest.TestCase):
             # Leaves when the meaningful-cash line falls to 2.4%
             company_record(cik=4, name='Marginal Co', sbc=0.074)
         ]
-        results, _ = run_screen(records, {}, DATA_DATE)
+        insiders = dict.fromkeys((1, 2, 3, 4), {'cashOut': 0.0175 * 8050e6})
+        results, _ = run_screen(records, {}, DATA_DATE, insiders=insiders)
         self.assertEqual([(result['rank'], result['cik']) for result in results], [(1, 1), (2, 2), (3, 4)])
-        report = sensitivity(records, {}, DATA_DATE, results)
+        report = sensitivity(records, {}, DATA_DATE, results, insiders)
         self.assertEqual([(entry['threshold'], entry['factor']) for entry in report],
                          [(key, factor) for key in SENSITIVITY_KEYS for factor in (0.8, 1.2)])
         by_key = {(entry['threshold'], entry['factor']): entry for entry in report}
@@ -768,16 +742,7 @@ class TestScore(unittest.TestCase):
         self.assertEqual(by_key[('meaningful_margin', 0.8)]['changes'], [
             {'cik': 4, 'name': 'Marginal Co', 'from': 3, 'to': None}
         ])
-        self.assertEqual([entry['changesThree'] for entry in report], [[]] * len(report))
 
-        # With insider data, the three-signs ranks are tested too: the costs level reorders the first two
-        insider = {'bothYears': 5, 'salesToGrants': 1.0, 'grantShares': 1000, 'sales': 500}
-        insiders = {1: insider, 2: insider, 4: insider}
-        results, _ = run_screen(records, {}, DATA_DATE, insiders=insiders)
-        self.assertEqual([(result['threeRank'], result['cik']) for result in results], [(1, 1), (2, 2), (3, 4)])
-        report = sensitivity(records, {}, DATA_DATE, results, insiders)
-        by_key = {(entry['threshold'], entry['factor']): entry for entry in report}
-        self.assertEqual(by_key[('meaningful_margin', 0.8)]['changesThree'], [
-            {'cik': 4, 'name': 'Marginal Co', 'from': 3, 'to': None}
-        ])
-        self.assertEqual(by_key[('p3_ratio_zero', 1.2)]['changesThree'], [])
+        # With no insider data no company is ranked, so nothing changes
+        results, _ = run_screen(records, {}, DATA_DATE)
+        self.assertEqual([entry['changes'] for entry in sensitivity(records, {}, DATA_DATE, results)], [[]] * len(report))

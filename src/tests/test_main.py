@@ -56,7 +56,7 @@ class TestMain(unittest.TestCase):
             self.assertEqual(stdout.getvalue().splitlines(), [
                 f'Extracting {zip_path} ...',
                 '{"inFile": 4, "prefilter": 3, "current": 3, "revenue": 3, "years": 3, "growth": 3, "industry": 2, "lowMargin": 1, '
-                '"stockPay": 1, "ranked": 1, "rankedThree": 0}',
+                '"stockPayCause": 1, "stockPay": 1, "ranked": 0}',
                 f'Wrote 3 companies to "{out_dir}" - data as of 2026-11-05'
             ])
             self.assertEqual(stderr.getvalue(), '')
@@ -70,7 +70,7 @@ class TestMain(unittest.TestCase):
             self.assertEqual(
                 [(row['rank'], row['name'], row['type'], row['ticker'], row['sic']) for row in index['companies']],
                 [
-                    (1, 'Stock Pay Co', 'stock_pay', 'TEST', 7372),
+                    (None, 'Stock Pay Co', 'stock_pay', 'TEST', 7372),
                     (None, 'Cash Co', 'cash_generative', 'TEST', 7372),
                     (None, 'Bank Co', 'excluded', 'TEST', 6021)
                 ]
@@ -87,7 +87,7 @@ class TestMain(unittest.TestCase):
                 'files': []
             })
             self.assertIsNone(meta['insider'])
-            self.assertEqual(len(meta['sensitivity']), 32)
+            self.assertEqual(len(meta['sensitivity']), 30)
             self.assertEqual([row['flags'] for row in index['companies']], [[], [], []])
 
 
@@ -117,35 +117,28 @@ class TestMain(unittest.TestCase):
             with open(os.path.join(out_dir, 'index.json'), 'r', encoding='utf-8') as index_file:
                 index = json.load(index_file)
             self.assertEqual(
-                [(row['name'], row['insiderSales'], row['insiderGrants'], row['salesToGrants'], row['p3'], row['flags'])
+                [(row['rank'], row['name'], row['cashOut'], row['insiderGrants'], row['insiders'], row['score'], row['flags'])
                  for row in index['companies']],
                 [
-                    ('Stock Pay Co', 50000, 50000, 1.0, 8.9, []),
-                    ('Cash Co', None, None, None, None, ['no_insider_filings']),
-                    ('Bank Co', None, None, None, None, ['no_insider_filings'])
+                    (1, 'Stock Pay Co', 50000, 50000, 0.0, 32.09, []),
+                    (None, 'Cash Co', None, None, None, None, ['no_insider_filings']),
+                    (None, 'Bank Co', None, None, None, None, ['no_insider_filings'])
                 ]
-            )
-            self.assertEqual(
-                [(row['rank'], row['threeRank'], row['screenScore'], row['threeScore'], row['buybacksFive']) for row in index['companies']],
-                [(1, 1, 37.27, 41.31, 0), (None, None, 0.0, None, 0), (None, None, None, None, 0)]
             )
             with open(os.path.join(out_dir, 'meta.json'), 'r', encoding='utf-8') as meta_file:
                 meta = json.load(meta_file)
             self.assertEqual(meta['sources']['insider']['files'], ['2025q1_form345.zip'])
             self.assertEqual((meta['insider']['firstYear'], meta['insider']['lastYear']), (2021, 2025))
             self.assertEqual(meta['insider']['screened'], {
-                'companies': 1, 'soldMore': 0, 'ownerCash': -161000000, 'tookMore': 1, 'quarters': 2, 'buybackQuarters': 1,
-                'sales': 50000, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 50000, 'optionGrants': 0, 'buybacks': 20000000,
-                'salesInQuarters': 50000, 'salesInBuybackQuarters': 50000
+                'companies': 1, 'revenue': 8050000000, 'ownerCash': -161000000, 'tookMore': 1, 'quarters': 2, 'buybackQuarters': 1,
+                'cashOut': 50000, 'sales': 50000, 'withheld': 0, 'toIssuer': 0, 'purchases': 0, 'grants': 50000, 'optionGrants': 0,
+                'buybacks': 20000000, 'salesInQuarters': 50000, 'salesInBuybackQuarters': 50000
             })
-            self.assertEqual(meta['funnel']['rankedThree'], 1)
+            self.assertEqual(meta['funnel']['ranked'], 1)
             with open(os.path.join(out_dir, 'company', '1.json'), 'r', encoding='utf-8') as company_file:
                 company = json.load(company_file)
             self.assertEqual(company['insider']['people'][0]['name'], 'Doe Jane')
-            self.assertEqual(company['insider']['quarters'], [
-                {'start': '2025-01-01', 'end': '2025-03-31', 'buybacks': 20000000, 'accn': '0000000001-26-000001', 'sales': 50000},
-                {'start': '2025-04-01', 'end': '2025-06-30', 'buybacks': 0, 'accn': '0000000001-26-000001', 'sales': 0}
-            ])
+            self.assertEqual(company['insider']['cashOut'], 50000)
 
 
     def test_main_download_insider(self):

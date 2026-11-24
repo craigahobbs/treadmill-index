@@ -1,5 +1,7 @@
 # Web app plan
 
+Status, 2026-11-24: phases 1 to 3 and the build archive are built. The scoring was then simplified to one score on three signs (see the amendment in index-definition.md), which drops phase 4 (curated pillars and a full score), the two-tier scores, the curated data files and the threshold explorer. The rest of this plan is the original, kept as the record.
+
 Goal: a statically hosted page that shows the Treadmill Index, explains every computation, and traces every figure to its SEC filing.
 
 ## Architecture
@@ -54,6 +56,6 @@ Investigator: every number links to its filing; insider ledger linking each Form
 ## Open decisions for the owner
 
 - Update cadence (quarterly suggested).
-- Whether pillar 3 is in the first release.
+- Whether pillar 3 is in the first release. (Settled 2026-11-24: insider cash-out is one of the three signs.)
 - Show all 1,100 companies or only the stock-pay group, with the rest downloadable.
 - Whether and how to pursue 20-30 years of history (see index-definition.md).

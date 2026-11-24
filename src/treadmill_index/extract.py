@@ -10,7 +10,7 @@ import zipfile
 
 
 # The extract cache version - bump when the extracted record changes
-EXTRACT_VERSION = 3
+EXTRACT_VERSION = 4
 
 # Companies that never reported this much annual revenue are dropped at extraction. This is a speed filter that
 # sits below the definition's $1B revenue test (and below that test moved down by a fifth).
@@ -32,7 +32,6 @@ CONCEPTS = {
     'sw': ['PaymentsToDevelopSoftware'],
     'sbc': ['ShareBasedCompensation'],
     'sbc2': ['AllocatedShareBasedCompensationExpense'],
-    'opex': ['OperatingExpenses'],
     'gp': ['GrossProfit'],
     'opinc': ['OperatingIncomeLoss'],
     'cae': ['CostsAndExpenses'],

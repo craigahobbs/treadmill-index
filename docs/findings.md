@@ -1,6 +1,6 @@
 # Findings so far
 
-All figures below came from prototype/ run on SEC companyfacts.zip downloaded 2026-11-23. Regenerate before quoting; treat as a check for the new build, not as publishable numbers.
+All figures below came from the prototype scripts run on SEC companyfacts.zip downloaded 2026-11-23. Regenerate before quoting; treat as a check for the build, not as publishable numbers. The prototype was removed from the tree on 2026-11-24 (it is in git history up to commit cbb881f), and the scoring has since been simplified: see the amendment at the top of index-definition.md.
 
 ## Whole-market screen (stage 1)
 

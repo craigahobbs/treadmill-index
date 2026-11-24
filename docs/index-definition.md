@@ -1,6 +1,35 @@
 # The Treadmill Index: definition
 
-This is the agreed definition, verbatim. Stage 1 has been run on the whole market. Stage 2 (P2a, P3, P4) has never been scored with real data; its point scales are untested judgment.
+This is the agreed definition, verbatim, with one amendment. Read the amendment first: it is what is built and published. The text below it is the original definition, kept as the record.
+
+## Amendment of 2026-11-24: one score on three signs
+
+Agreed with the owner on 2026-11-24, after the first build on real data. The aim was fewer, simpler measures, each of which tells the screened companies apart from the ones that produce cash for owners.
+
+**Score (75) = P1 + (P1 / 25) x (costs + insiders).** There is one score and one rank. A company is ranked if it passes the screen and all three signs can be built.
+
+- **P1, owner cash that stays near zero (25).** Unchanged from the definition below.
+- **Costs (25).** Operating expenses excluding cost of revenue, as a share of gross profit, in the latest fiscal year: 0 points at 70%, 25 at 100% or more (25 when gross profit is not positive). The cost line is built as in P2b below. This replaces P2a and P2b.
+- **Insiders (25).** Net cash officers and directors took out through stock over the latest five whole calendar years, as a share of the company's revenue in the fiscal years with the same labels: 0 points at 0.5%, 25 at 3% or more. Cash taken out = open-market sales + shares withheld for taxes + shares sold to the company - open-market purchases. This replaces P3.
+
+Other changes:
+
+- Capital-led companies (capital spending more than twice stock pay) are a separate, unranked type instead of a flag on ranked companies.
+- Dropped: P2a (headcount), P2b as a scored measure, P3's "years with both grants and sales" and "sales / grants", P4, the screen score and full score as separate tiers, stage 2, and the threshold explorer. The five-year change in the cost ratio and the value of grants are still reported on company pages, unscored.
+
+Why, from the 2026-11-20 data (screened companies against cash-generative ones):
+
+- P2b pointed the wrong way: costs were flat or rising against revenue at 28% of screened companies and 57% of cash-generative ones.
+- Costs as a share of gross profit separate them: median 93% against 67%.
+- "Years with both grants and sales" did not separate them: 77% against 73%.
+- "Sold more than they were granted" was partly an artifact of how insiders settle vesting taxes. Some sell on the market, some have the company withhold shares; counting only market sales made the first kind look like heavier sellers. Grant values are also not consistently available.
+- Insider cash-out as a share of revenue separates them strongly: median 2.9% against 0.4%, and at or above 3% at 49% against 6%.
+
+The 70%/100% and 0.5%/3% scales are judgment set from those distributions. The owner approved the plan; he has not reviewed the scales number by number.
+
+## The original definition
+
+Stage 1 has been run on the whole market. Stage 2 (P2a, P3, P4) has never been scored with real data; its point scales are untested judgment.
 
 ## What it measures
 

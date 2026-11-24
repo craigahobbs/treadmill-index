@@ -12,21 +12,20 @@ The three parts must hold together: owner cash persistently near zero (P1), reve
 
 ## Read first
 
-- docs/index-definition.md: the index, verbatim. Do not change scoring without the owner's agreement.
-- docs/findings.md: results of the first whole-market run, how the prototype differs from the definition, known data problems.
-- docs/plan.md: app architecture, reader needs, phases, open decisions.
-- prototype/: extract.py, score.py, classify.py and their output. Superseded by src/treadmill_index/, which reproduces the prototype's output exactly (`make check-prototype`); kept as the record of the first run.
+- docs/index-definition.md: the index. The amendment of 2026-11-24 at the top is what is built; the original definition is kept below it. Do not change scoring without the owner's agreement.
+- docs/findings.md: results of the first whole-market run with the prototype, and known data problems. The prototype is no longer in the tree (git history up to cbb881f).
+- docs/plan.md: the original app architecture, reader needs and phases, with a status note.
 
 ## Start here
 
-Phases 1 to 3 of docs/plan.md are built, with the threshold explorer and build archive from phase 5. Next is phase 4 (curated pillars and the full score), which waits on the owner: see "Waiting on the owner" below.
+The index is built: one score on three signs, five pages (index, company, group totals, methodology, data and limits). The owner asked on 2026-11-24 for fewer, simpler measures and no work that would not be insightful; hold new work to that. What remains needs the owner: see "Waiting on the owner" below.
 
 ## Layout
 
-- src/treadmill_index/: the build step. extract.py reads companyfacts.zip; score.py is the screen, the screen score and P3, with every threshold in THRESHOLDS; sec.py fetches industry codes and tickers; insider.py downloads, reads and summarizes the SEC insider-transaction data sets; output.py writes data/ and runs the pre-publish checks; main.py is the command line.
+- src/treadmill_index/: the build step. extract.py reads companyfacts.zip; score.py is the screen and the score, with every threshold in THRESHOLDS; sec.py fetches industry codes and tickers; insider.py downloads, reads and summarizes the SEC insider-transaction data sets; output.py writes data/ and runs the pre-publish checks; main.py is the command line.
 - data/: the published data files (index.json, index.csv, meta.json, company/<CIK>.json, archive/). data/raw/ holds the SEC bulk file and caches and is git-ignored.
-- treadmillIndex.bare, treadmillIndex.md, index.html: the MarkdownUp application. All view state is in URL arguments.
-- test/: the application's unit tests. test/data/ is made by `make test-data` from the made-up companies in test/makeTestData.py; test/testTreadmillIndexPages.bare holds the expected render of every page state.
+- treadmillIndex.bare, treadmillIndex.md, index.html: the MarkdownUp application. All view state is in URL arguments. Headings, page titles and menu entries are title case, as in the owner's other projects.
+- test/: the application's unit tests. test/data/ is made by `make test-data` from the made-up companies in test/makeTestData.py; test/testTreadmillIndexPages.bare holds the expected render of every page state. It is generated: capture each page's render log and write it out as the expected value, then read the result before trusting it.
 
 ## python-build
 
@@ -38,35 +37,39 @@ Local Makefile:
 - `test` and `lint` also run `test-app` (`bare -d -m test/runTests.bare`; `TEST_APP=` is an exact BareScript test name) and `lint-app`. The application's suite fails under 100% coverage, like `make cover` for the Python.
 - `data` - build data/ from data/raw/companyfacts.zip. Python runs with `-I` because it reads downloaded files.
 - `test-data` - remake test/data/. Run it after any change to the content of the data files, then update the expected renders.
-- `check-prototype` - reproduce prototype/treadmill_market_screen.csv. Holds only against the companyfacts.zip of 2026-11-23.
 
-## How the build differs from the prototype
+## The score as built (owner approved the plan on 2026-11-24: "Proceed")
 
-- Latest 12 months are computed (fiscal year + year-to-date - prior year-to-date, one tag for all three periods); the latest fiscal year is the fallback and is flagged.
-- A missing cost line leaves the company unranked with P1 alone. The cost line uses the definition's three methods only; the prototype's fourth (the OperatingExpenses tag) is used only by `PROTOTYPE_OPTIONS`.
-- Industries are excluded by SIC code (score.py SIC_EXCLUSIONS). Securities brokers (62xx) are excluded with asset managers because they hold customer money. Insurance agents and brokers (6411) are not excluded: they are not insurers. The owner left both calls to the assistant on 2026-11-24.
-- Averaging the cost change over four-, five- and six-year windows was tested on 2026-11-24 and did not steady the top ten (names replaced across the 24 threshold moves: 18 with one window, 17 averaged), so P2b is unchanged. Ranks 3 to 14 sit within about four points; the index page says to read ranks as rough positions.
-- Excluded industries have inputs but no scores in the data files.
-- Capital-led flag, one-off-year P1, sensitivity test, group totals and pre-publish checks are implemented.
+- Score (75) = P1 + (P1 / 25) x (costs + insiders). One score, one rank. Ranked = passes the screen and has all three signs.
+- P1 (25), owner cash that stays near zero: as in the original definition. Latest 12 months are computed (fiscal year + year-to-date - prior year-to-date, one tag for all three periods); the latest fiscal year is the fallback and is flagged.
+- Costs (25): operating costs excluding cost of revenue as a share of gross profit in the latest fiscal year, 0 points at 70% and 25 at 100% (score.py `costs_sign`). The cost line uses the definition's three methods. A missing cost line means no score.
+- Insiders (25): net cash officers and directors took out through stock over the latest five whole calendar years (open-market sales + shares withheld for taxes + shares sold to the company - open-market purchases), as a share of revenue in the fiscal years with the same labels, 0 points at 0.5% and 25 at 3% (score.py `insiders_sign`, insider.py `insider_summary`). No insider filings means no score.
+- The owner approved the plan and the measures. He has not reviewed the 70%/100% and 0.5%/3% scales number by number.
+- Capital-led companies (capital spending more than twice stock pay) are their own unranked type, `capital_led`, not a flag on ranked companies.
+- Reported, not scored: the five-year change in the cost ratio; sales and marketing, R&D and G&A shares of revenue where tagged; the value of grants (stock at the nearest price insiders reported within 90 days, options at exercise price, which overstates them); insider sales beside the company's buybacks by quarter (one group line on the totals page).
+- Industries are excluded by SIC code (score.py SIC_EXCLUSIONS). Securities brokers (62xx) are excluded with asset managers because they hold customer money. Insurance agents and brokers (6411) are not excluded: they are not insurers. The owner left both calls to the assistant on 2026-11-24. Excluded industries have inputs but no scores in the data files.
 - "Still filing" is the latest fiscal year ending within 548 days of the latest filing date in the data, not a fixed date.
+- Insiders are officers and directors who file as people. A joint filing with an entity counts only if one of its people is an officer. An outside director's indirect holdings are left out unless the nature of ownership names a trust, family or a retirement account (insider.py `filing_insider`, `_RE_PERSONAL`). Forms 4 and 5; amended filings are not used.
 
-## The three-signs score (added 2026-11-24, on the owner's "proceed as you see fit")
+## Why the measures were simplified (data of 2026-11-20, screened against cash-generative companies)
 
-- Three-signs score (75) = P1 + (P1 / 25) x (costs + P3), in the definition's own form. It is the index page's default order; the definition's screen score and its rank stay beside it, unchanged. It is provisional.
-- The costs sign (25) is half P2b (scaled to 12.5) and half a level: operating costs excluding cost of revenue as a share of gross profit in the latest year, 0 points at 70% and 12.5 at 100% (score.py `costs_sign`). The level was added because the owner's goal says "propped up by high costs" and P2b only measures change. Basis for the scale: the median is 93% at screened companies and 67% at cash-generative ones. The owner said "finish what's left" after being told this was a scoring change; he has not reviewed the scale.
-- The sensitivity test covers both ranks. With insider data the index and data pages report the three-signs top ten.
-- Each company page has a "Which way the numbers point" table: what each sign looks like for a growth bet paying off and for a treadmill, with the company's own figures. It states facts and leaves the reading to the reader.
-- Group figures on the index page (2021-2025, screened companies without the capital-led): owner cash of -$5.8B against insider sales of $32.8B; insiders sold more than the business produced for owners at 47 of 59 (cash-generative: 18 of 566); of 44 that bought back shares, the share count still rose at 36 (cash-generative: 115 of 475).
-- Sales and marketing, R&D and G&A shares of revenue are reported on company pages (not scored) where tagged: 44, 51 and 49 of the 70 screened companies.
+- P2b (cost ratio flat or rising over five years) pointed the wrong way: 28% against 57%. Averaging its window did not steady ranks either. Dropped from the score.
+- Costs as a share of gross profit separate the groups: median 93.6% against 67.0%.
+- "Years with both grants and sales" had no signal: 77% against 73%. Dropped.
+- "Sold more than they were granted" was partly an artifact: insiders settle vesting taxes either by selling on the market or by having shares withheld, and counting only market sales made the first kind look like heavier sellers. Counting both is why cash-out includes shares withheld. Grant fair values are also unavailable for most companies.
+- Insider cash-out as a share of revenue separates the groups: median 2.9% against 0.4%; at or above 3% at 49% against 6%.
+- Insider sales are not concentrated in buyback quarters (65% of quarters had a buyback, 64% of sales fell in them). The pages say this shows timing only.
+- Dropped as not worth the work: headcount (P2a), earnings-release measures (P4), the full score and stage 2, curated data, the threshold explorer, the separate downloads page.
 
-## Pillar 3 as built (provisional; not agreed with the owner)
+## Current results (recompute before quoting)
 
-- Source: SEC insider-transaction data sets, Forms 4 and 5, latest five whole calendar years. Amended filings are not used.
-- Insiders: officers and directors who file as people. A joint filing with an entity counts only if one of its people is an officer. An outside director's indirect holdings are left out unless the nature of ownership names a trust, family or a retirement account (insider.py `filing_insider`, `_RE_PERSONAL`).
-- Grant value departs from the definition. The definition says grant-date value; the SEC financial data gives a usable stock-award fair value for only 7 of the 70 screened companies and an option fair value for 21 of the 39 that grant options to insiders. So every grant is valued at the market price of the shares it covers: a stock award at the nearest price insiders reported within 90 days, an option at its exercise price. This overstates options and performance awards and so understates sales / grants. Tesla's 2025 CEO award alone is about $180B on this basis.
-- P3 is shown on company pages as provisional and is not part of any published score. The owner has not reviewed the valuation choice or the fund rules.
+- Funnel: 20,609 in the file; 1,097 pass the basic tests; 902 after industries; 301 under the line; 70 with stock pay as the cause; 64 after the capital-led; 50 ranked.
+- Top ten: Cloudflare, Snowflake, Procore, Hims & Hers, MongoDB, Zscaler, Axon, Zillow, Klaviyo, Unity. Moving one threshold by a fifth changes the top ten in 16 of 30 tests; only two other names (Five9, Inspire Medical) ever enter.
+- 2021-2025, the 59 screened companies with insider filings: insiders took out $34.6B, 4.0% of revenue; owners got -$5.8B, -0.7%. Cash-generative (566): 0.5% and 12.3%. Insiders took out more than the owner cash at 47 of 59 against 19 of 566.
+- Of 44 screened companies that bought back shares, the share count still rose at 36 (cash-generative: 115 of 475).
+- What cuts the other way: 45 of the 64 had owner cash of 3% of revenue or more in their latest 12 months.
 - Check on real data: Zillow's co-founder sales of about $30M in August 2025 (docs/findings.md) appear as $29.8M filed 2025-08-18.
-- Sales beside buybacks: insider.py `buyback_quarters` splits each company's year-to-date buybacks into quarters, and each insider sale is put in the quarter it fell in. The company page and the group totals page show both. First result, 2021-2025, screened companies without the capital-led: 65% of quarters had a buyback and 64% of insider sales fell in them, so insiders did not sell more heavily while their company was buying. The pages say this shows timing only.
+- Known distortion: insider years are calendar years and revenue is by fiscal-year label, so the two can be up to eight months apart. Credo Technology's 78.6% is overstated by this; it does not change its points. The data page states the limit.
 
 ## Rules that matter
 
@@ -75,32 +78,29 @@ Local Makefile:
 - The index page states the owner's view that some companies keep the pattern going on purpose, at shareholders' expense (owner's decision, 2026-11-24, over the assistant's weaker wording). That view is about the pattern. It is never attached to a named company, and a company page never says or implies it.
 - Every published figure must trace to an SEC filing (accession number). Compute in code; never estimate; show missing as missing.
 - Include what cuts the other way: recent improvement, one-off causes, targets met.
-- Keep screen scores and full scores separate.
 - Recompute before quoting any number from findings.md.
 - Never put the owner's email address, or any real contact address, in a file. SEC requests take their User-Agent from the `SEC_USER_AGENT` environment variable only; there is no default, and a step that needs the SEC fails without it. The owner sets it for the one command.
 
 ## Why key choices were made
 
-- P1 gates the other pillars (score = P1 + P1/25 x rest) because steady insider selling and flat costs are common at cash-rich companies too. Salesforce's founder would otherwise max pillar 3.
+- P1 gates the other signs (score = P1 + P1/25 x rest) because steady insider selling and high costs are common at cash-rich companies too. Salesforce's founder would otherwise max the insiders sign.
 - "Meaningful" cash means 3% of revenue, not zero, and points scale with size. Hard cut-offs made rankings flip on small changes.
-- The cost test uses the latest five years because full history rewards any company that listed young.
+- The top of the insiders scale is the same 3% of revenue: insiders taking out what would count as meaningful cash had it gone to owners.
 - The stock-pay-cause rule exists because the unfiltered screen is dominated by distributors, retailers and cash-burners.
-- P3 scores insiders as a group because the largest sellers are often not the founder.
-- P4 scores framing (how much of adjusted profit is stock pay added back), because a search for broken promises found targets were mostly met on the companies' own measures.
+- Insiders are scored as a group because the largest sellers are often not the founder.
 
 ## Status
 
-- Tested on real data: stage 1 (P1 and P2b) across the market, including SIC exclusions, the capital-led flag, latest-12-month figures and the sensitivity test; and P3 as described above.
-- Never run: P2a, P4, founding-age check, predecessor combining, split adjustment, long history. Their point scales, and P3's, are judgment and will need tuning.
-- The index and company pages have been checked as static renders (`bare -l` output, screenshot of the HTML file). The live application in MarkdownUp (navigation, the find box) has not been looked at in a browser.
+- Tested on real data: the whole build, on companyfacts.zip with a latest filing of 2026-11-20 and the insider data sets for 2021 Q1 to 2026 Q3.
+- Never done: founding-age check, predecessor combining, split adjustment, history before 2009.
+- The pages have been checked as static renders (`bare -l` output, screenshot of the HTML file). The live application in MarkdownUp (navigation, the find box) has not been looked at in a browser.
 
 ## Waiting on the owner
 
-- A review of pillar 3's grant valuation and fund rules (see "Pillar 3 as built").
 - Refreshing the insider-transaction data sets each quarter: the owner runs `SEC_USER_AGENT="..." make insider-data` himself. www.sec.gov refuses these without a User-Agent that gives a contact address. The 23 files for 2021 Q1 to 2026 Q3 are in data/raw/insider/ (git-ignored).
-- The open decisions in docs/plan.md.
-- Curated data for phase 4 (headcount, earnings-release measures, founding years). Each item needs a date and a source.
-- A license, a corrections contact, and a lawyer's read of the methodology page before launch.
+- Publishing: the GitHub repository and Pages. The data page's corrections link points at github.com/craigahobbs/treadmill-index, which does not exist yet.
+- A license, and a lawyer's read of the index page's headline paragraph and the methodology page before launch.
+- Update cadence (quarterly suggested).
 
 ## Data
 

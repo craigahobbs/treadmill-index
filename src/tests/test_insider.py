@@ -129,7 +129,7 @@ TRANSACTIONS = [
     transaction('gift', '2025-03-01', 5, accn='C1', filed='2025-03-03', owner=1003, name='Poe Pat', title='Director')
 ]
 
-THRESHOLDS = {'p3_years': 5, 'p3_price_days': 90, 'p3_unvalued_max': 0.05}
+THRESHOLDS = {'insider_years': 5, 'grant_price_days': 90}
 
 
 class TestInsiderRead(unittest.TestCase):
@@ -347,13 +347,15 @@ class TestInsiderSummary(unittest.TestCase):
 
     def test_insider_summary(self):
         def amounts(**kwargs):
-            return {'sales': 0, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 0, 'optionGrants': 0, **kwargs}
+            return {'cashOut': 0, 'sales': 0, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 0, 'optionGrants': 0, **kwargs}
 
         def year(value, **kwargs):
             return {'year': value, 'grantShares': 0, 'giftShares': 0, **amounts(**kwargs)}
 
+        # Cash-out is sales, shares withheld for taxes and shares sold to the company, less purchases
         summary = insider_summary(TRANSACTIONS, 2025, THRESHOLDS)
         self.assertEqual(summary, {
+            'cashOut': 112240,
             'sales': 110200,
             'purchases': 4000,
             'withheld': 5500,
@@ -366,18 +368,14 @@ class TestInsiderSummary(unittest.TestCase):
                 year(2021),
                 year(2022),
                 year(2023),
-                year(2024, grantShares=7000, giftShares=300, sales=102000, withheld=5500, toIssuer=540, grants=110000, optionGrants=300000),
-                year(2025, giftShares=5, sales=8200, purchases=4000)
+                year(2024, grantShares=7000, giftShares=300, cashOut=108040, sales=102000, withheld=5500, toIssuer=540, grants=110000,
+                     optionGrants=300000),
+                year(2025, giftShares=5, cashOut=4200, sales=8200, purchases=4000)
             ],
-            'bothYears': 1,
-            'salesToGrants': 110200 / 410000,
-            'salesToStockGrants': 110200 / 110000,
-            'ratioReason': None,
-            'unvaluedShares': 0,
             'oddPrices': 1,
             'insiders': 3,
             'sellers': 2,
-            'quarters': [],
+            'quarters': 0,
             'buybacks': 0,
             'buybackQuarters': 0,
             'salesInQuarters': 0,
@@ -387,21 +385,22 @@ class TestInsiderSummary(unittest.TestCase):
                     'cik': 1001,
                     'name': 'Doe Jane',
                     'title': 'Executive Chair',
-                    **amounts(sales=102000, purchases=4000, withheld=5500, toIssuer=540, grants=110000, optionGrants=300000),
+                    **amounts(cashOut=104040, sales=102000, purchases=4000, withheld=5500, toIssuer=540, grants=110000,
+                              optionGrants=300000),
                     'filings': [
-                        {'accn': 'A1', 'filed': '2024-03-18', **amounts(sales=102000)},
-                        {'accn': 'A2', 'filed': '2024-03-21', **amounts(withheld=5500)},
+                        {'accn': 'A1', 'filed': '2024-03-18', **amounts(cashOut=102000, sales=102000)},
+                        {'accn': 'A2', 'filed': '2024-03-21', **amounts(cashOut=5500, withheld=5500)},
                         {'accn': 'A3', 'filed': '2024-03-25', **amounts(grants=110000, optionGrants=300000)},
-                        {'accn': 'A5', 'filed': '2024-05-03', **amounts(toIssuer=540)},
-                        {'accn': 'A6', 'filed': '2025-02-03', **amounts(purchases=4000)}
+                        {'accn': 'A5', 'filed': '2024-05-03', **amounts(cashOut=540, toIssuer=540)},
+                        {'accn': 'A6', 'filed': '2025-02-03', **amounts(cashOut=-4000, purchases=4000)}
                     ]
                 },
                 {
                     'cik': 1002,
                     'name': 'Roe Rich',
                     'title': 'Director',
-                    **amounts(sales=8200),
-                    'filings': [{'accn': 'B1', 'filed': '2025-02-04', **amounts(sales=8200)}]
+                    **amounts(cashOut=8200, sales=8200),
+                    'filings': [{'accn': 'B1', 'filed': '2025-02-04', **amounts(cashOut=8200, sales=8200)}]
                 }
             ]
         })
@@ -409,8 +408,7 @@ class TestInsiderSummary(unittest.TestCase):
         # Other years
         summary = insider_summary(TRANSACTIONS, 2021, THRESHOLDS)
         self.assertEqual([year['year'] for year in summary['years']], [2017, 2018, 2019, 2020, 2021])
-        self.assertEqual((summary['sales'], summary['insiders'], summary['bothYears']), (30000, 1, 0))
-        self.assertEqual((summary['salesToGrants'], summary['salesToStockGrants'], summary['ratioReason']), (None, None, 'no grants'))
+        self.assertEqual((summary['sales'], summary['cashOut'], summary['insiders'], summary['grants']), (30000, 30000, 1, 0))
 
         # No insider reported a transaction in the years
         self.assertIsNone(insider_summary(TRANSACTIONS, 2019, THRESHOLDS))
@@ -462,21 +460,17 @@ class TestInsiderSummary(unittest.TestCase):
         ]
         summary = insider_summary(transactions, 2025, THRESHOLDS, quarters)
 
-        # The quarters wholly inside the five years, with the open-market sales in each; other sales are in no quarter
-        self.assertEqual(summary['quarters'], [
-            {'start': '2024-01-01', 'end': '2024-03-31', 'buybacks': 10e6, 'accn': 'Q1', 'sales': 102000},
-            {'start': '2024-04-01', 'end': '2024-06-30', 'buybacks': 0, 'accn': 'Q2', 'sales': 0},
-            {'start': '2025-01-01', 'end': '2025-03-31', 'buybacks': 0, 'accn': 'Q5', 'sales': 8200}
-        ])
+        # Three quarters are wholly inside the five years, and one of them has a buyback. The open-market sales in
+        # each are counted; other sales are in no quarter.
         self.assertEqual(summary['sales'], 120200)
-        self.assertEqual((summary['buybacks'], summary['buybackQuarters']), (10e6, 1))
+        self.assertEqual((summary['quarters'], summary['buybacks'], summary['buybackQuarters']), (3, 10e6, 1))
         self.assertEqual((summary['salesInQuarters'], summary['salesInBuybackQuarters']), (110200, 102000))
         self.assertEqual(quarters[1], {'start': '2024-01-01', 'end': '2024-03-31', 'buybacks': 10e6, 'accn': 'Q1'})
 
 
     def test_insider_summary_unvalued(self):
         # An option with no exercise price is valued at the nearest share price; a grant with no price within 90 days
-        # is not valued
+        # is left out of the value of grants
         transactions = [
             transaction('sale', '2024-03-15', 1000, 50),
             transaction('option', '2024-03-18', 100),
@@ -484,24 +478,14 @@ class TestInsiderSummary(unittest.TestCase):
             transaction('grant', '2024-06-14', 10),
             transaction('option', '2022-01-10', 10)
         ]
-        summary = insider_summary(transactions, 2025, {**THRESHOLDS, 'p3_unvalued_max': 0.05})
-        self.assertEqual((summary['grants'], summary['optionGrants']), (15000, 5000))
-        self.assertEqual((summary['grantShares'], summary['unvaluedShares']), (420, 20))
-        self.assertEqual(summary['salesToGrants'], 2.5)
-        self.assertAlmostEqual(summary['salesToStockGrants'], 50000 / 15000)
+        summary = insider_summary(transactions, 2025, THRESHOLDS)
+        self.assertEqual((summary['grants'], summary['optionGrants'], summary['grantShares']), (15000, 5000, 420))
         self.assertEqual([year['grantShares'] for year in summary['years']], [0, 10, 0, 410, 0])
         self.assertEqual(summary['people'][0]['filings'], [{
-            'accn': 'A1', 'filed': '2024-03-18', 'sales': 50000, 'purchases': 0, 'withheld': 0, 'toIssuer': 0, 'grants': 15000,
-            'optionGrants': 5000
+            'accn': 'A1', 'filed': '2024-03-18', 'cashOut': 50000, 'sales': 50000, 'purchases': 0, 'withheld': 0, 'toIssuer': 0,
+            'grants': 15000, 'optionGrants': 5000
         }])
 
-        # With too many granted shares unvalued, there is no ratio
-        summary = insider_summary(transactions, 2025, {**THRESHOLDS, 'p3_unvalued_max': 0.04})
-        self.assertEqual(summary['unvaluedShares'], 20)
-        self.assertIsNone(summary['salesToGrants'])
-        self.assertEqual(summary['ratioReason'], 'too many granted shares have no reported share price near the grant date')
-
-        # Grants that are all unvalued, and no sales
-        summary = insider_summary([transaction('grant', '2024-06-14', 10)], 2025, THRESHOLDS)
-        self.assertEqual((summary['grantShares'], summary['unvaluedShares'], summary['sellers'], summary['people']), (10, 10, 0, []))
-        self.assertEqual(summary['ratioReason'], 'too many granted shares have no reported share price near the grant date')
+        # An insider who only bought, or only received grants, took nothing out
+        summary = insider_summary([transaction('purchase', '2024-06-14', 10, 50), transaction('grant', '2024-06-15', 10)], 2025, THRESHOLDS)
+        self.assertEqual((summary['cashOut'], summary['grants'], summary['sellers'], summary['people']), (-500, 500, 0, []))

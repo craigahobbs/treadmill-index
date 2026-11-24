@@ -76,19 +76,25 @@ COMPANIES = [
         {'sic': '7372', 'sicDescription': 'Services-Prepackaged Software', 'tickers': ['SLOW'], 'exchanges': ['Nasdaq']}
     ),
     (
-        {'cik': 10, 'name': 'Marginal Co', 'sbc': 0.074},
+        {'cik': 10, 'name': 'Marginal Co', 'sbc': 0.074, 'tags': {
+            'WeightedAverageNumberOfDilutedSharesOutstanding': [annual(2019 + index, 100 * 0.98 ** index) for index in range(7)]
+        }},
         {'sic': '7372', 'sicDescription': 'Services-Prepackaged Software', 'tickers': ['MARG'], 'exchanges': ['Nasdaq']}
+    ),
+    (
+        {'cik': 11, 'name': 'No Gross Profit Co', 'sbc': 0.15, 'gross': -0.01, 'operating': [-200, -220, -250, -280, -320, -360, -400]},
+        {'sic': '7372', 'sicDescription': 'Services-Prepackaged Software', 'tickers': ['NGP'], 'exchanges': ['Nasdaq']}
     )
 ]
 
 
-# The made-up insider filings. Company 2 has none.
+# The made-up insider filings. Companies 2, 3, 7 and 8 have none.
 DIRECTOR = ('0000001002', 'Roe Rich', 'Director', '')
 INSIDER_FILINGS = [
-    # Company 1: grants and sales by two insiders
+    # Company 1: grants and sales by two insiders, who took out 1.3% of revenue
     insider_filing('0000000001-24-000101', cik=1, filed='18-MAR-2024', nonderiv=[
-        ('15-MAR-2024', 'S', 'D', '1000.0', '50.0', 'D'),
-        ('15-MAR-2024', 'S', 'D', '1000.0', '52.0', 'D')
+        ('15-MAR-2024', 'S', 'D', '1000000.0', '50.0', 'D'),
+        ('15-MAR-2024', 'S', 'D', '1000000.0', '52.0', 'D')
     ]),
     insider_filing('0000000001-24-000102', cik=1, filed='25-MAR-2024', nonderiv=[
         ('20-MAR-2024', 'F', 'D', '100.0', '55.0', 'D'),
@@ -102,7 +108,7 @@ INSIDER_FILINGS = [
     insider_filing('0000000001-25-000104', cik=1, filed='4-FEB-2025', owners=[DIRECTOR],
                    nonderiv=[('3-FEB-2025', 'S', 'D', '200.0', '41.0', 'D')]),
 
-    # Company 6: a grant with no share price near it, so no ratio
+    # Company 6: a small sale, and a grant with no share price near it
     insider_filing('0000000006-23-000101', cik=6, filed='16-MAR-2023', nonderiv=[('15-MAR-2023', 'S', 'D', '100.0', '40.0', 'D')]),
     insider_filing('0000000006-25-000102', cik=6, filed='3-JUN-2025', nonderiv=[('1-JUN-2025', 'A', 'A', '500.0', '0.0', 'D')]),
 
@@ -110,7 +116,16 @@ INSIDER_FILINGS = [
     insider_filing('0000000004-22-000101', cik=4, filed='16-MAR-2022', nonderiv=[('15-MAR-2022', 'S', 'D', '50000000.0', '30.0', 'D')]),
 
     # Company 5, in an excluded industry
-    insider_filing('0000000005-22-000101', cik=5, filed='16-MAR-2022', nonderiv=[('15-MAR-2022', 'S', 'D', '40000.0', '30.0', 'D')])
+    insider_filing('0000000005-22-000101', cik=5, filed='16-MAR-2022', nonderiv=[('15-MAR-2022', 'S', 'D', '40000.0', '30.0', 'D')]),
+
+    # Company 9, which passes the growth test only if it is moved down by a fifth
+    insider_filing('0000000009-23-000101', cik=9, filed='16-MAR-2023', nonderiv=[('15-MAR-2023', 'S', 'D', '9000000.0', '30.0', 'D')]),
+
+    # Company 10: a purchase and no sale, so nobody took cash out
+    insider_filing('0000000010-23-000101', cik=10, filed='16-MAR-2023', nonderiv=[('15-MAR-2023', 'P', 'A', '1000.0', '30.0', 'D')]),
+
+    # Company 11: sales of 4% of revenue
+    insider_filing('0000000011-24-000101', cik=11, filed='16-MAR-2024', nonderiv=[('15-MAR-2024', 'S', 'D', '8000000.0', '40.0', 'D')])
 ]
 
 

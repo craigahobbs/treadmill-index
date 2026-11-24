@@ -1,5 +1,5 @@
 """
-The stage-1 market screen and the screen score, as defined in docs/index-definition.md
+The market screen and the three signs of the index, as set out in docs/index-definition.md
 """
 
 import datetime
@@ -11,9 +11,13 @@ from .extract import F_ACCN, F_START, F_TAG, F_VAL, parse_date
 METHOD_VERSION = '1.0.0'
 
 
-# Every threshold in the definition
+# Each of the three signs is scored out of this many points
+SIGN_POINTS = 25
+
+
+# Every threshold of the index
 THRESHOLDS = {
-    # Stage 1
+    # The screen
     'still_filing_days': 548,       # the latest fiscal year ended within this many days of the data date
     'revenue_min': 1e9,             # latest annual revenue
     'years_min': 5,                 # years of data
@@ -21,10 +25,10 @@ THRESHOLDS = {
     'meaningful_margin': 0.03,      # owner cash under this share of revenue is not "meaningful"
     'sbc_revenue_min': 0.02,        # stock pay is the cause: SBC is at least this share of revenue ...
     'sbc_fcf_min': 0.5,             # ... and at least this share of free cash flow
-    'capital_led_ratio': 2.0,       # capital spending above this multiple of SBC is "capital-led"
+    'capital_led_ratio': 2.0,       # capital spending above this multiple of SBC is "capital-led": listed, not ranked
     'one_off_ocf_share': 0.25,      # inventory, lending or discontinued operations moved cash by this share of revenue
 
-    # P1 (25 points)
+    # Sign 1, owner cash that stays near zero (P1): three parts
     'p1_years_points': 10,
     'p1_cum_points': 8,
     'p1_cum_zero': 0.05,
@@ -33,32 +37,25 @@ THRESHOLDS = {
     'p1_latest_zero': 0.05,
     'p1_latest_full': -0.05,
 
-    # P2b (13 points, scaled to 25 for the screen score)
-    'p2b_points': 13,
-    'p2b_window_years': 5,
-    'p2b_zero_drop': 10.0,
-
-    # The costs sign of the three-signs score (25 points): half P2b, half how much of gross profit operating costs take
+    # Sign 2, revenue held up by costs: operating costs as a share of gross profit in the latest fiscal year
     'cost_level_zero': 0.7,
     'cost_level_full': 1.0,
+    'cost_window_years': 5,         # the cost ratio's change over these years is reported, not scored
 
-    # P3 (25 points) - not part of the screen score
-    'p3_years': 5,                  # the latest calendar years
-    'p3_years_points': 12,
-    'p3_ratio_points': 13,
-    'p3_ratio_zero': 0.5,           # sales / grants
-    'p3_ratio_full': 1.5,
-    'p3_price_days': 90,            # a stock award is valued at a reported share price within this many days
-    'p3_unvalued_max': 0.05         # with more than this share of granted shares unvalued, there is no ratio
+    # Sign 3, insiders cashing out: the cash insiders took out through stock, as a share of revenue
+    'insider_years': 5,             # the latest whole calendar years
+    'insider_zero': 0.005,
+    'insider_full': 0.03,
+    'grant_price_days': 90          # a stock award is valued, for display, at a reported share price within this many days
 }
 
 # The thresholds the sensitivity test moves by a fifth
 SENSITIVITY_KEYS = (
-    'revenue_min', 'years_min', 'growth_min', 'meaningful_margin', 'sbc_revenue_min', 'sbc_fcf_min',
-    'p1_cum_zero', 'p1_cum_full', 'p1_latest_zero', 'p1_latest_full', 'p2b_window_years', 'p2b_zero_drop',
-    'cost_level_zero', 'cost_level_full', 'p3_ratio_zero', 'p3_ratio_full'
+    'revenue_min', 'years_min', 'growth_min', 'meaningful_margin', 'sbc_revenue_min', 'sbc_fcf_min', 'capital_led_ratio',
+    'p1_cum_zero', 'p1_cum_full', 'p1_latest_zero', 'p1_latest_full', 'cost_level_zero', 'cost_level_full',
+    'insider_zero', 'insider_full'
 )
-INTEGER_THRESHOLDS = ('years_min', 'p2b_window_years')
+INTEGER_THRESHOLDS = ('years_min',)
 
 
 # The industries the definition leaves out, by SIC code: (first code, last code, group)
@@ -75,19 +72,12 @@ SIC_EXCLUSIONS = (
 )
 
 
-# The ways to build operating expenses excluding cost of revenue, in the order tried. Method 0 is not in the
-# definition; the prototype used it and it is kept only to reproduce the prototype's output.
+# The ways to build operating expenses excluding cost of revenue, in the order tried
 COST_METHODS = {
     1: 'gross profit - operating income',
     2: 'total costs - cost of revenue',
-    3: 'revenue - operating income - cost of revenue',
-    0: 'the OperatingExpenses tag'
+    3: 'revenue - operating income - cost of revenue'
 }
-
-
-# The scoring options. PROTOTYPE_OPTIONS reproduces prototype/score.py.
-DEFAULT_OPTIONS = {'ttm': True, 'opex_tag_fallback': False, 'still_filing_cutoff': None}
-PROTOTYPE_OPTIONS = {'ttm': False, 'opex_tag_fallback': True, 'still_filing_cutoff': '2025-06-30'}
 
 
 def lin(value, zero, full, points):
@@ -279,43 +269,36 @@ def cost_line(annual, end, method):
     if method == 3 and end in annual['opinc'] and cost_of_revenue is not None:
         value = annual['rev'][end][F_VAL] - annual['opinc'][end][F_VAL] - cost_of_revenue[F_VAL]
         return value, [annual['rev'][end], annual['opinc'][end], cost_of_revenue]
-    if method == 0 and end in annual['opex']:
-        return annual['opex'][end][F_VAL], [annual['opex'][end]]
     return None, None
 
 
-def cost_change(record, series, thresholds, options):
+def cost_change(record, series, thresholds):
     """
-    Compute the change in operating expenses (excluding cost of revenue) as a percent of revenue over the
-    latest fiscal years, with the cost line built the same way in both years
+    Build operating expenses excluding cost of revenue for the first and last of the latest fiscal years, the same
+    way in both, with the gross profit of the last year. The level in the last year is scored; the change is reported.
 
     :param dict record: The company record
     :param list(dict) series: The company's yearly series
     :param dict thresholds: The thresholds
-    :param dict options: The scoring options
-    :returns: The cost change dict, or None if no method works for both years
+    :returns: The cost dict, or None if no method works for both years
     """
 
-    window = thresholds['p2b_window_years']
+    window = thresholds['cost_window_years']
     if len(series) < window:
         return None
     first = series[-window]
     last = series[-1]
-    for method in ((1, 2, 3, 0) if options['opex_tag_fallback'] else (1, 2, 3)):
-        first_value, first_facts = cost_line(record['annual'], first['end'], method)
-        last_value, last_facts = cost_line(record['annual'], last['end'], method)
+    annual = record['annual']
+    for method in COST_METHODS:
+        first_value, first_facts = cost_line(annual, first['end'], method)
+        last_value, last_facts = cost_line(annual, last['end'], method)
         if first_value is not None and last_value is not None and first_value > 0 and last_value > 0:
             first_ratio = first_value / first['rev'][F_VAL]
             last_ratio = last_value / last['rev'][F_VAL]
-
-            # Gross profit in the last year, to see how much of it operating costs take
-            annual = record['annual']
-            cost_of_revenue = annual['cor'].get(last['end']) or annual['cogs'].get(last['end'])
-            gross = None
             if method == 1:
                 gross = annual['gp'][last['end']][F_VAL]
-            elif cost_of_revenue is not None:
-                gross = last['rev'][F_VAL] - cost_of_revenue[F_VAL]
+            else:
+                gross = last['rev'][F_VAL] - (annual['cor'].get(last['end']) or annual['cogs'][last['end']])[F_VAL]
             return {
                 'method': method,
                 'firstYear': first['fy'],
@@ -332,26 +315,24 @@ def cost_change(record, series, thresholds, options):
     return None
 
 
-def costs_sign(cost, p2b, thresholds):
+def costs_sign(cost, thresholds):
     """
-    Score the costs sign of the three-signs score, "revenue held up by costs" (25 points): half is P2b, whether
-    operating costs fell against revenue; half is their level, how much of gross profit they take
+    Score the second sign, "revenue held up by costs": how much of gross profit operating costs take in the latest
+    fiscal year. Operating costs are mostly people, and have to go on for the revenue to go on.
 
-    :param dict cost: The cost change dict, or None
-    :param float p2b: The P2b points, or None
+    :param dict cost: The cost dict, or None
     :param dict thresholds: The thresholds
-    :returns: The dict of "level" (operating costs / gross profit), "changePoints", "levelPoints" and "points", or
-        None if the cost line or the gross profit cannot be built
+    :returns: The dict of "level" (operating costs / gross profit, or None if gross profit is not positive) and
+        "points", or None if the cost line cannot be built
     """
 
-    if cost is None or cost['lastGross'] is None:
+    if cost is None:
         return None
     gross = cost['lastGross']
     level = cost['lastCost'] / gross if gross > 0 else None
-    change_points = 12.5 * p2b / thresholds['p2b_points']
     # With no gross profit at all, operating costs take more than all of it
-    level_points = 12.5 if level is None else lin(level, thresholds['cost_level_zero'], thresholds['cost_level_full'], 12.5)
-    return {'level': level, 'changePoints': change_points, 'levelPoints': level_points, 'points': change_points + level_points}
+    points = SIGN_POINTS if level is None else lin(level, thresholds['cost_level_zero'], thresholds['cost_level_full'], SIGN_POINTS)
+    return {'level': level, 'points': points}
 
 
 def one_off_years(record, series, thresholds):
@@ -427,7 +408,7 @@ def spending_change(record, series, thresholds):
         the company does not tag in both years is left out.
     """
 
-    window = thresholds['p2b_window_years']
+    window = thresholds['cost_window_years']
     spending = {}
     if len(series) >= window:
         first = series[-window]
@@ -471,16 +452,17 @@ def five_years(record, series, last_year, thresholds):
     :param list(dict) series: The company's yearly series
     :param int last_year: The last calendar year
     :param dict thresholds: The thresholds
-    :returns: The dict of "years" (the fiscal years counted), "ownerCash", "buybacks", "withholding" and
+    :returns: The dict of "years" (the fiscal years counted), "revenue", "ownerCash", "buybacks", "withholding" and
         "shareGrowth" - the annualized change in the diluted share count, or None if it cannot be followed
     """
 
-    first_year = last_year - thresholds['p3_years'] + 1
+    first_year = last_year - thresholds['insider_years'] + 1
     years = [year for year in series if first_year <= int(year['fy']) <= last_year]
     ends = {year['end'] for year in years}
     annual = record['annual']
     return {
         'years': len(years),
+        'revenue': sum(year['rev'][F_VAL] for year in years),
         'ownerCash': sum(year['ownerCash'] for year in years),
         'buybacks': sum(abs(fact[F_VAL]) for end, fact in annual['bb'].items() if end in ends),
         'withholding': sum(abs(fact[F_VAL]) for end, fact in annual['wh'].items() if end in ends),
@@ -488,28 +470,22 @@ def five_years(record, series, last_year, thresholds):
     }
 
 
-def pillar_three(insider, thresholds):
+def insiders_sign(insider, five, thresholds):
     """
-    Score P3, "insiders granting and selling", from a company's insider summary. P3 is not part of the screen score.
+    Score the third sign, "insiders cashing out": the cash insiders took out through stock over the calendar years,
+    as a share of the company's revenue over the same years - the yardstick the index uses for owner cash
 
     :param dict insider: The company's insider summary, or None if it has no insider filings
+    :param dict five: The company's five-year totals
     :param dict thresholds: The thresholds
-    :returns: The dict of the two parts and the total, or None with no insider filings. The ratio part and the
-        total are None when the ratio of sales to grants cannot be built.
+    :returns: The dict of "share" (cash-out / revenue) and "points", or None with no insider filings or no revenue
+        in those years
     """
 
-    if insider is None:
+    if insider is None or five['revenue'] <= 0:
         return None
-    years_points = thresholds['p3_years_points'] * insider['bothYears'] / thresholds['p3_years']
-    ratio = insider['salesToGrants']
-    if ratio is not None:
-        ratio_points = lin(ratio, thresholds['p3_ratio_zero'], thresholds['p3_ratio_full'], thresholds['p3_ratio_points'])
-    elif insider['grantShares'] == 0:
-        # Sales with no grants at all are beyond any multiple of grants
-        ratio_points = thresholds['p3_ratio_points'] if insider['sales'] > 0 else 0.0
-    else:
-        return {'yearsPoints': years_points, 'ratioPoints': None, 'p3': None}
-    return {'yearsPoints': years_points, 'ratioPoints': ratio_points, 'p3': years_points + ratio_points}
+    share = insider['cashOut'] / five['revenue']
+    return {'share': share, 'points': lin(share, thresholds['insider_zero'], thresholds['insider_full'], SIGN_POINTS)}
 
 
 def share_change(record, series):
@@ -534,32 +510,27 @@ def share_change(record, series):
     return (counts[-1][1] / counts[0][1]) ** (1 / span) - 1, None
 
 
-def evaluate(record, sic, data_date, thresholds=None, options=None, insider=None):
+def evaluate(record, sic, data_date, thresholds=None, insider=None):
     """
-    Apply the stage-1 screen and the screen score to one company
+    Apply the screen and score the three signs for one company
 
     :param dict record: The company record
     :param int sic: The company's SIC code, or None if unknown
     :param str data_date: The date of the latest filing in the data
     :param dict thresholds: The thresholds (default is THRESHOLDS)
-    :param dict options: The scoring options (default is DEFAULT_OPTIONS)
     :param dict insider: The company's insider summary, or None if it has no insider filings
     :returns: A dict with "stage", how far the company got through the basic tests: "no_data", "not_current",
         "small", "short", "slow_growth" or "scored". A "scored" company's dict has every input and score.
     """
 
     thresholds = thresholds or THRESHOLDS
-    options = options or DEFAULT_OPTIONS
     series = company_series(record)
     if not series:
         return {'stage': 'no_data'}
 
     # The basic tests
     last = series[-1]
-    cutoff = options['still_filing_cutoff']
-    if cutoff is None:
-        cutoff = (parse_date(data_date) - datetime.timedelta(days=thresholds['still_filing_days'])).isoformat()
-    if last['end'] < cutoff:
+    if last['end'] < (parse_date(data_date) - datetime.timedelta(days=thresholds['still_filing_days'])).isoformat():
         return {'stage': 'not_current'}
     if last['rev'][F_VAL] < thresholds['revenue_min']:
         return {'stage': 'small'}
@@ -577,41 +548,36 @@ def evaluate(record, sic, data_date, thresholds=None, options=None, insider=None
     annual = record['annual']
     ends = {year['end'] for year in series}
     totals = {name: sum(abs(fact[F_VAL]) for end, fact in annual[name].items() if end in ends) for name in ('bb', 'div', 'wh')}
+    five = five_years(record, series, int(data_date[:4]) - 1, thresholds)
 
     # The latest-12-month owner-cash margin (the latest fiscal year if the quarterly data is unusable)
-    ttm, ttm_reason = latest_twelve_months(record, last) if options['ttm'] else (None, 'not computed')
+    ttm, ttm_reason = latest_twelve_months(record, last)
     latest_margin = ttm['margin'] if ttm else last['margin']
 
-    # P1 - and P1 without the years moved by inventory, lending or discontinued operations
+    # Sign 1 - and without the years moved by inventory, lending or discontinued operations
     p1 = pillar_one(series, latest_margin, thresholds)
     one_offs = one_off_years(record, series, thresholds)
     series_ex = [year for year in series if year['fy'] not in one_offs]
     p1_ex = pillar_one(series_ex, latest_margin, thresholds) if one_offs and series_ex else None
 
-    # P2b and the screen score - with no cost line the company has P1 alone
-    cost = cost_change(record, series, thresholds, options)
-    p2b = None
-    screen_score = None
-    if cost is not None:
-        p2b = lin(-cost['change'], thresholds['p2b_zero_drop'], 0, thresholds['p2b_points'])
-        screen_score = p1['p1'] + (p1['p1'] / 25) * (p2b * 25 / thresholds['p2b_points'])
-
-    # The three-signs score, in the form of the definition's full score. It is the goal of the index in one number:
-    # no cash for owners (P1), revenue held up by costs (the costs sign), and insiders granting and selling (P3).
-    p3 = pillar_three(insider, thresholds)
-    costs = costs_sign(cost, p2b, thresholds)
-    three_score = None
-    if costs is not None and p3 is not None and p3['p3'] is not None:
-        three_score = p1['p1'] + (p1['p1'] / 25) * (costs['points'] + p3['p3'])
+    # Signs 2 and 3, and the score. Costs and insider selling count only to the extent owners are getting no cash.
+    # A sign that cannot be built leaves the company without a score: missing is not treated as zero.
+    cost = cost_change(record, series, thresholds)
+    costs = costs_sign(cost, thresholds)
+    insiders = insiders_sign(insider, five, thresholds)
+    score = None
+    if costs is not None and insiders is not None:
+        score = p1['p1'] + (p1['p1'] / SIGN_POINTS) * (costs['points'] + insiders['points'])
 
     # The company type
     excluded = sic_exclusion(sic)
+    capital_led = sbc > 0 and capex > thresholds['capital_led_ratio'] * sbc
     if excluded:
         company_type = 'excluded'
     elif p1['cumMargin'] >= thresholds['meaningful_margin']:
         company_type = 'cash_generative'
     elif fcf >= 0 and sbc >= thresholds['sbc_revenue_min'] * revenue and sbc >= thresholds['sbc_fcf_min'] * fcf:
-        company_type = 'stock_pay'
+        company_type = 'capital_led' if capital_led else 'stock_pay'
     elif fcf < 0:
         company_type = 'cash_burner'
     else:
@@ -622,7 +588,7 @@ def evaluate(record, sic, data_date, thresholds=None, options=None, insider=None
     flag_tests = (
         ('capex_missing', any(year['capexMissing'] for year in series)),
         ('no_cost_line', cost is None),
-        ('latest_is_fiscal_year', options['ttm'] and ttm is None),
+        ('latest_is_fiscal_year', ttm is None),
         ('one_off_years', bool(one_offs)),
         ('gap_years', int(last['fy']) - int(series[0]['fy']) + 1 != len(series)),
         ('revenue_jump', any(after['rev'][F_VAL] > 3 * before['rev'][F_VAL] for before, after in zip(series, series[1:]))),
@@ -655,7 +621,7 @@ def evaluate(record, sic, data_date, thresholds=None, options=None, insider=None
         'dividends': totals['div'],
         'withholding': totals['wh'],
         'capexToSbc': capex / sbc if sbc > 0 else None,
-        'capitalLed': sbc > 0 and capex > thresholds['capital_led_ratio'] * sbc,
+        'capitalLed': capital_led,
         'fyMargin': last['margin'],
         'latestMargin': latest_margin,
         'latestBasis': 'ttm' if ttm else 'fy',
@@ -666,17 +632,13 @@ def evaluate(record, sic, data_date, thresholds=None, options=None, insider=None
         'oneOffs': one_offs,
         'p1Ex': p1_ex,
         'cost': cost,
-        'p2b': p2b,
-        'screenScore': screen_score,
-        'insider': insider,
-        'p3': p3,
         'costs': costs,
-        'threeScore': three_score,
-        'threeRank': None,
+        'insider': insider,
+        'insiders': insiders,
+        'score': score,
         'lowRun': low_run(series, thresholds),
-        'five': five_years(record, series, int(data_date[:4]) - 1, thresholds),
+        'five': five,
         'spending': spending_change(record, series, thresholds),
-        'capexMissingYears': sum(1 for year in series if year['capexMissing']),
         'shareGrowth': share_growth,
         'shareReason': share_reason,
         'flags': [flag for flag, test in flag_tests if test],
@@ -684,7 +646,7 @@ def evaluate(record, sic, data_date, thresholds=None, options=None, insider=None
     }
 
 
-def run_screen(records, sics, data_date, thresholds=None, options=None, insiders=None):
+def run_screen(records, sics, data_date, thresholds=None, insiders=None):
     """
     Screen and score every company
 
@@ -692,7 +654,6 @@ def run_screen(records, sics, data_date, thresholds=None, options=None, insiders
     :param dict sics: The dict of CIK to SIC code
     :param str data_date: The date of the latest filing in the data
     :param dict thresholds: The thresholds (default is THRESHOLDS)
-    :param dict options: The scoring options (default is DEFAULT_OPTIONS)
     :param dict insiders: The dict of CIK to insider summary, or None if there is no insider data
     :returns: The tuple of the "scored" results - the ranked companies, then the rest by P1, then the excluded
         industries - and the funnel: the count of companies left after each step of the screen
@@ -701,26 +662,18 @@ def run_screen(records, sics, data_date, thresholds=None, options=None, insiders
     stage_counts = dict.fromkeys(('no_data', 'not_current', 'small', 'short', 'slow_growth', 'scored'), 0)
     results = []
     for record in records:
-        result = evaluate(record, sics.get(record['cik']), data_date, thresholds, options, (insiders or {}).get(record['cik']))
+        result = evaluate(record, sics.get(record['cik']), data_date, thresholds, (insiders or {}).get(record['cik']))
         stage_counts[result['stage']] += 1
         if result['stage'] == 'scored':
             if insiders is not None and result['insider'] is None:
                 result['flags'].append('no_insider_filings')
             results.append(result)
 
-    # Rank the stock-pay companies that have a screen score
-    ranked = [result for result in results if result['type'] == 'stock_pay' and result['screenScore'] is not None]
-    ranked.sort(key=lambda result: (-result['screenScore'], result['name'], result['cik']))
+    # Rank the companies that pass the screen and have all three signs
+    ranked = [result for result in results if result['type'] == 'stock_pay' and result['score'] is not None]
+    ranked.sort(key=lambda result: (-result['score'], result['name'], result['cik']))
     for rank, result in enumerate(ranked, 1):
         result['rank'] = rank
-
-    # Rank the same companies that also have P3 by the three-pillar score
-    ranked_three = sorted(
-        (result for result in ranked if result['threeScore'] is not None),
-        key=lambda result: (-result['threeScore'], result['name'], result['cik'])
-    )
-    for rank, result in enumerate(ranked_three, 1):
-        result['threeRank'] = rank
     results.sort(key=lambda result: (
         result['rank'] is None, result['rank'] or 0, result['type'] == 'excluded', -result['p1']['p1'], result['name'], result['cik']
     ))
@@ -734,9 +687,9 @@ def run_screen(records, sics, data_date, thresholds=None, options=None, insiders
     included = [result for result in results if result['type'] != 'excluded']
     funnel['industry'] = len(included)
     funnel['lowMargin'] = sum(1 for result in included if result['type'] != 'cash_generative')
+    funnel['stockPayCause'] = sum(1 for result in included if result['type'] in ('stock_pay', 'capital_led'))
     funnel['stockPay'] = sum(1 for result in included if result['type'] == 'stock_pay')
     funnel['ranked'] = len(ranked)
-    funnel['rankedThree'] = len(ranked_three)
     return results, funnel
 
 
@@ -776,14 +729,13 @@ def sensitivity(records, sics, data_date, base_results, insiders=None):
     :param list(dict) records: The company records
     :param dict sics: The dict of CIK to SIC code
     :param str data_date: The date of the latest filing in the data
-    :param list(dict) base_results: The scored results at the definition's thresholds
+    :param list(dict) base_results: The scored results at the index's thresholds
     :param dict insiders: The dict of CIK to insider summary, or None if there is no insider data
-    :returns: The list of {threshold, factor, value, changes, changesThree}: the changes in the top ten by screen
-        rank and by three-signs rank. Each is empty when its top ten is unchanged.
+    :returns: The list of {threshold, factor, value, changes}. "changes" is empty when the top ten is unchanged.
     """
 
-    def top_ten(results, rank='rank'):
-        return {result['cik']: result[rank] for result in results if result[rank] is not None and result[rank] <= 10}
+    def top_ten(results):
+        return {result['cik']: result['rank'] for result in results if result['rank'] is not None and result['rank'] <= 10}
 
     def rank_changes(base, moved, names):
         return [
@@ -794,19 +746,14 @@ def sensitivity(records, sics, data_date, base_results, insiders=None):
 
     names = {result['cik']: result['name'] for result in base_results}
     base = top_ten(base_results)
-    base_three = top_ten(base_results, 'threeRank')
     report = []
     for key in SENSITIVITY_KEYS:
         for factor in (0.8, 1.2):
             thresholds = dict(THRESHOLDS)
             thresholds[key] = round(THRESHOLDS[key] * factor, None if key in INTEGER_THRESHOLDS else 6)
-            results, _ = run_screen(records, sics, data_date, thresholds, insiders=insiders)
+            results, _ = run_screen(records, sics, data_date, thresholds, insiders)
             names.update((result['cik'], result['name']) for result in results)
             report.append({
-                'threshold': key,
-                'factor': factor,
-                'value': thresholds[key],
-                'changes': rank_changes(base, top_ten(results), names),
-                'changesThree': rank_changes(base_three, top_ten(results, 'threeRank'), names)
+                'threshold': key, 'factor': factor, 'value': thresholds[key], 'changes': rank_changes(base, top_ten(results), names)
             })
     return report

@@ -9,34 +9,28 @@ import os
 import shutil
 
 from .extract import F_ACCN, F_FILED, F_FORM, F_START, F_TAG, F_VAL, PREFILTER_REVENUE
-from .score import COST_METHODS, METHOD_VERSION, SIC_EXCLUSIONS, THRESHOLDS, group_totals
+from .score import COST_METHODS, METHOD_VERSION, SIC_EXCLUSIONS, SIGN_POINTS, THRESHOLDS, group_totals
 
 
 # The index.csv columns
 CSV_FIELDS = (
-    'rank', 'threeRank', 'name', 'ticker', 'cik', 'type', 'excluded', 'sic', 'sicDescription', 'screenScore', 'threeScore', 'p1',
-    'p1Years', 'p1Cum', 'p1Latest', 'p2b', 'p1Ex', 'years', 'firstYear', 'lastYear', 'lastEnd', 'revenue', 'growth', 'lowYears',
-    'cumMargin', 'cumMarginEx', 'fyMargin', 'latestMargin', 'latestBasis', 'latestEnd', 'cumRevenue', 'cumFcf', 'cumSbc', 'cumCapex',
+    'rank', 'name', 'ticker', 'cik', 'type', 'excluded', 'sic', 'sicDescription', 'score', 'p1', 'p1Years', 'p1Cum', 'p1Latest',
+    'p1Ex', 'costs', 'insiders', 'years', 'firstYear', 'lastYear', 'lastEnd', 'revenue', 'growth', 'lowYears', 'lowRun', 'cumMargin',
+    'cumMarginEx', 'fyMargin', 'latestMargin', 'latestBasis', 'latestEnd', 'cumRevenue', 'cumFcf', 'cumSbc', 'cumCapex',
     'cumOwnerCash', 'cumFcfMargin', 'sbcRevenue', 'buybacks', 'dividends', 'withholding', 'capexToSbc', 'capitalLed',
-    'shareGrowth', 'costChange', 'costMethod', 'costFirst', 'costLast', 'costLevel', 'costs', 'costsChange', 'costsLevel', 'p3',
-    'p3Years', 'p3Ratio', 'insiderSales',
-    'insiderGrants', 'insiderOptionGrants', 'insiderPurchases', 'salesToGrants', 'salesToStockGrants', 'insiderBothYears',
-    'lowRun', 'ownerCashFive', 'buybacksFive', 'withholdingFive', 'shareGrowthFive', 'flags'
+    'shareGrowth', 'costLevel', 'costChange', 'costMethod', 'costFirst', 'costLast', 'cashOut', 'cashOutRevenue', 'insiderSales',
+    'insiderGrants', 'insiderOptionGrants', 'revenueFive', 'ownerCashFive', 'ownerMarginFive', 'buybacksFive', 'withholdingFive',
+    'shareGrowthFive', 'flags'
 )
-
 
 # The files copied to the archive of each build
 ARCHIVE_FILES = ('index.json', 'index.csv', 'meta.json')
 
-
-# The index.json row's scores
-SCORE_FIELDS = (
-    'screenScore', 'threeScore', 'p1', 'p1Years', 'p1Cum', 'p1Latest', 'p1Ex', 'p2b', 'costs', 'costsChange', 'costsLevel', 'p3',
-    'p3Years', 'p3Ratio'
-)
+# The index.json row's scores - a company in an excluded industry has none
+SCORE_FIELDS = ('score', 'p1', 'p1Years', 'p1Cum', 'p1Latest', 'p1Ex', 'costs', 'insiders')
 
 # The insider summary's dollar amounts, and its amounts over the quarters that have the company's buybacks
-INSIDER_AMOUNTS = ('sales', 'purchases', 'withheld', 'toIssuer', 'grants', 'optionGrants')
+INSIDER_AMOUNTS = ('cashOut', 'sales', 'withheld', 'toIssuer', 'purchases', 'grants', 'optionGrants')
 INSIDER_QUARTER_AMOUNTS = ('buybacks', 'salesInQuarters', 'salesInBuybackQuarters')
 
 
@@ -165,9 +159,9 @@ def other_way(result, thresholds):
         text = f'In {years}, {causes} moved operating cash flow by more than {percent(thresholds["one_off_ocf_share"])} of revenue.'
         if result['p1Ex']:
             text += f' Without those years the cumulative owner-cash margin is {percent(result["p1Ex"]["cumMargin"])}' \
-                f' and P1 is {result["p1Ex"]["p1"]:.1f} instead of {result["p1"]["p1"]:.1f}.'
+                f' and the owner-cash sign scores {result["p1Ex"]["p1"]:.1f} instead of {result["p1"]["p1"]:.1f}.'
         items.append({'kind': 'one_off', 'text': text})
-    if result['capitalLed']:
+    if result['type'] == 'capital_led':
         items.append({
             'kind': 'capital_led',
             'text': f'Capital spending was {result["capexToSbc"]:.1f} times stock pay. The shortfall is mostly investment, '
@@ -202,10 +196,11 @@ def index_row(result, info):
 
     p1 = result['p1']
     p1_ex = result['p1Ex'] or {}
-    p3 = result['p3'] or {}
     costs = result['costs'] or {}
+    insiders = result['insiders'] or {}
     insider = result['insider'] or {}
     cost = result['cost'] or {}
+    five = result['five']
     tickers = info.get('tickers') or [None]
     exchanges = info.get('exchanges') or [None]
     row = {
@@ -218,24 +213,20 @@ def index_row(result, info):
         'type': result['type'],
         'excluded': result['excluded'],
         'rank': result['rank'],
-        'threeRank': result['threeRank'],
-        'screenScore': ratio(result['screenScore'], 2),
-        'threeScore': ratio(result['threeScore'], 2),
+        'score': ratio(result['score'], 2),
         'p1': ratio(p1['p1'], 2),
         'p1Years': ratio(p1['yearsPoints'], 2),
         'p1Cum': ratio(p1['cumPoints'], 2),
         'p1Latest': ratio(p1['latestPoints'], 2),
         'p1Ex': ratio(p1_ex.get('p1'), 2),
         'cumMarginEx': ratio(p1_ex.get('cumMargin')),
-        'p2b': ratio(result['p2b'], 2),
+        'costs': ratio(costs.get('points'), 2),
+        'insiders': ratio(insiders.get('points'), 2),
+        'costLevel': ratio(costs.get('level')),
         'costChange': ratio(cost.get('change'), 2),
         'costMethod': cost.get('method'),
         'costFirst': ratio(cost.get('firstRatio')),
         'costLast': ratio(cost.get('lastRatio')),
-        'costLevel': ratio(costs.get('level')),
-        'costs': ratio(costs.get('points'), 2),
-        'costsChange': ratio(costs.get('changePoints'), 2),
-        'costsLevel': ratio(costs.get('levelPoints'), 2),
         'years': result['years'],
         'firstYear': result['firstYear'],
         'lastYear': result['lastYear'],
@@ -243,6 +234,7 @@ def index_row(result, info):
         'revenue': result['revenue'],
         'growth': ratio(result['growth'], 3),
         'lowYears': p1['lowYears'],
+        'lowRun': result['lowRun'],
         'cumMargin': ratio(p1['cumMargin']),
         'fyMargin': ratio(result['fyMargin']),
         'latestMargin': ratio(result['latestMargin']),
@@ -261,21 +253,17 @@ def index_row(result, info):
         'capexToSbc': ratio(result['capexToSbc'], 3),
         'capitalLed': result['capitalLed'],
         'shareGrowth': ratio(result['shareGrowth']),
-        'p3': ratio(p3.get('p3'), 2),
-        'p3Years': ratio(p3.get('yearsPoints'), 2),
-        'p3Ratio': ratio(p3.get('ratioPoints'), 2),
+        'cashOut': dollars(insider.get('cashOut')),
+        'cashOutRevenue': ratio(insiders.get('share')),
         'insiderSales': dollars(insider.get('sales')),
         'insiderGrants': dollars(insider.get('grants')),
         'insiderOptionGrants': dollars(insider.get('optionGrants')),
-        'insiderPurchases': dollars(insider.get('purchases')),
-        'salesToGrants': ratio(insider.get('salesToGrants'), 3),
-        'salesToStockGrants': ratio(insider.get('salesToStockGrants'), 3),
-        'insiderBothYears': insider.get('bothYears'),
-        'lowRun': result['lowRun'],
-        'ownerCashFive': dollars(result['five']['ownerCash']),
-        'buybacksFive': dollars(result['five']['buybacks']),
-        'withholdingFive': dollars(result['five']['withholding']),
-        'shareGrowthFive': ratio(result['five']['shareGrowth']),
+        'revenueFive': dollars(five['revenue']),
+        'ownerCashFive': dollars(five['ownerCash']),
+        'ownerMarginFive': ratio(five['ownerCash'] / five['revenue']) if five['revenue'] > 0 else None,
+        'buybacksFive': dollars(five['buybacks']),
+        'withholdingFive': dollars(five['withholding']),
+        'shareGrowthFive': ratio(five['shareGrowth']),
         'flags': result['flags'],
         'margins': [ratio(year['margin'], 4) for year in result['series']]
     }
@@ -286,7 +274,7 @@ def index_row(result, info):
 
 def insider_json(insider):
     """
-    Build a company file's insider section: the yearly amounts, and the largest sellers with their filings
+    Build a company file's insider section: the yearly amounts, and the insiders who took out the most with their filings
 
     :param dict insider: The company's insider summary, or None
     :rtype: dict
@@ -299,14 +287,7 @@ def insider_json(insider):
         return {**{key: item[key] for key in keys}, **{amount: dollars(item[amount]) for amount in INSIDER_AMOUNTS}}
 
     return {
-        **amounts(insider, ('grantShares', 'giftShares', 'bothYears', 'ratioReason', 'unvaluedShares', 'oddPrices', 'insiders', 'sellers')),
-        'salesToGrants': ratio(insider['salesToGrants'], 3),
-        'salesToStockGrants': ratio(insider['salesToStockGrants'], 3),
-        'buybackQuarters': insider['buybackQuarters'],
-        **{amount: dollars(insider[amount]) for amount in INSIDER_QUARTER_AMOUNTS},
-        'quarters': [
-            {**quarter, 'buybacks': dollars(quarter['buybacks']), 'sales': dollars(quarter['sales'])} for quarter in insider['quarters']
-        ],
+        **amounts(insider, ('grantShares', 'giftShares', 'oddPrices', 'insiders', 'sellers')),
         'years': [amounts(year, ('year', 'grantShares', 'giftShares')) for year in insider['years']],
         'people': [
             {
@@ -364,6 +345,7 @@ def company_json(result, info, thresholds):
         'cost': cost and {
             **cost,
             'methodText': COST_METHODS[cost['method']],
+            'level': ratio(result['costs']['level']),
             'firstRatio': ratio(cost['firstRatio']),
             'firstFacts': [fact_json(fact) for fact in cost['firstFacts']],
             'lastRatio': ratio(cost['lastRatio']),
@@ -405,32 +387,32 @@ def check_output(rows, funnel, infos):
         if row['cik'] not in infos:
             problems.append(f'{label}: no SEC company information, so the industry test was not applied')
         if row['p1'] is not None and not 0 <= row['p1'] <= 25:
-            problems.append(f'{label}: P1 is out of range')
-        if row['screenScore'] is not None and not 0 <= row['screenScore'] <= 50:
-            problems.append(f'{label}: the screen score is out of range')
-        if row['rank'] is not None and (row['type'] != 'stock_pay' or row['screenScore'] is None):
+            problems.append(f'{label}: the owner-cash sign is out of range')
+        if row['score'] is not None and not 0 <= row['score'] <= 75:
+            problems.append(f'{label}: the score is out of range')
+        if row['rank'] is not None and (row['type'] != 'stock_pay' or row['score'] is None):
             problems.append(f'{label}: ranked without passing the screen')
     return problems
 
 
 def insider_totals(results):
     """
-    Total the insiders' amounts of a group of scored companies
+    Total the insiders' amounts of a group of scored companies, beside what the companies produced for their owners
 
     :param list(dict) results: The scored results
-    :returns: The dict of the count of companies with insider filings, the count whose insiders sold more than they
-        were granted, the companies' owner cash over the same years and the count whose insiders sold more than
-        that, the counts of quarters with the company's buybacks given and with a buyback, and the total of each amount
+    :returns: The dict of the count of companies with insider filings, their revenue and owner cash over the same
+        years, the count whose insiders took out more than that owner cash, the total of each insider amount, and
+        the insiders' sales beside the companies' buybacks by quarter
     """
 
     with_insiders = [result for result in results if result['insider'] is not None]
     insiders = [result['insider'] for result in with_insiders]
     return {
         'companies': len(insiders),
-        'soldMore': sum(1 for insider in insiders if insider['salesToGrants'] is not None and insider['salesToGrants'] > 1),
+        'revenue': dollars(sum(result['five']['revenue'] for result in with_insiders)),
         'ownerCash': dollars(sum(result['five']['ownerCash'] for result in with_insiders)),
-        'tookMore': sum(1 for result in with_insiders if result['insider']['sales'] > result['five']['ownerCash']),
-        'quarters': sum(len(insider['quarters']) for insider in insiders),
+        'tookMore': sum(1 for result in with_insiders if result['insider']['cashOut'] > result['five']['ownerCash']),
+        'quarters': sum(insider['quarters'] for insider in insiders),
         'buybackQuarters': sum(insider['buybackQuarters'] for insider in insiders),
         **{amount: dollars(sum(insider[amount] for insider in insiders)) for amount in (*INSIDER_AMOUNTS, *INSIDER_QUARTER_AMOUNTS)}
     }
@@ -497,12 +479,9 @@ def build_meta(results, funnel, companies_in_file, sources, sensitivity_report, 
     :rtype: dict
     """
 
+    # The screened group, and the companies that do produce meaningful owner cash as the baseline
     screened = [result for result in results if result['type'] == 'stock_pay']
-    groups = {
-        'screened': screened,
-        'notCapitalLed': [result for result in screened if not result['capitalLed']],
-        'cashGenerative': [result for result in results if result['type'] == 'cash_generative']
-    }
+    groups = {'screened': screened, 'cashGenerative': [result for result in results if result['type'] == 'cash_generative']}
     types = {}
     excluded = {}
     for result in results:
@@ -516,14 +495,11 @@ def build_meta(results, funnel, companies_in_file, sources, sensitivity_report, 
         'sources': sources,
         'thresholds': {**THRESHOLDS, 'prefilter_revenue': PREFILTER_REVENUE},
         'sicExclusions': [{'first': first, 'last': last, 'group': group} for first, last, group in SIC_EXCLUSIONS],
-        'costMethods': {str(method): text for method, text in COST_METHODS.items() if method},
+        'costMethods': {str(method): text for method, text in COST_METHODS.items()},
         'funnel': {'inFile': companies_in_file, **funnel},
         'types': types,
         'excluded': excluded,
-        'totals': {
-            'screened': group_totals(screened),
-            'notCapitalLed': group_totals(groups['notCapitalLed'])
-        },
+        'totals': group_totals(screened),
         'insider': None if insider_years is None else {
             'firstYear': insider_years[0],
             'lastYear': insider_years[1],
@@ -540,11 +516,9 @@ def build_meta(results, funnel, companies_in_file, sources, sensitivity_report, 
             'fiscalYearBasis': sum(1 for result in screened if result['latestBasis'] == 'fy')
         },
         'cost': {
-            'full': sum(1 for result in screened if result['p2b'] is not None and result['p2b'] >= THRESHOLDS['p2b_points']),
-            'zero': sum(1 for result in screened if result['p2b'] == 0),
-            'missing': sum(1 for result in screened if result['p2b'] is None),
-            'allGross': sum(1 for result in screened if result['costs'] is not None and result['costs']['levelPoints'] >= 12.5),
-            'missingAll': sum(1 for result in results if result['p2b'] is None)
+            'allGross': sum(1 for result in screened if result['costs'] is not None and result['costs']['points'] >= SIGN_POINTS),
+            'missing': sum(1 for result in screened if result['costs'] is None),
+            'missingAll': sum(1 for result in results if result['costs'] is None)
         },
         'sensitivity': sensitivity_report
     }

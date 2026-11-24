@@ -409,11 +409,14 @@ def insider_summary(transactions, last_year, thresholds, quarters=()):
     """
     Summarize a company's insiders' grants and sales over the latest calendar years
 
-    Sales, purchases and tax withholdings are valued at the price reported for each. A grant is valued at the
-    market value of the shares it covers: for a stock award, the company's nearest reported price; for an option,
-    its exercise price. An option is worth less than the shares it covers, so this overstates option grants, and
-    "salesToGrants" is the least the insiders' sales can be as a multiple of their grants. "salesToStockGrants"
-    counts options as worth nothing and is the most it can be.
+    Sales, purchases and tax withholdings are valued at the price reported for each. "cashOut" is what the insiders
+    took out through stock: open-market sales, shares withheld for taxes and shares sold to the company, less
+    open-market purchases. Shares withheld count because some companies have insiders sell on the market to cover
+    the same taxes; counting both makes companies comparable.
+
+    Grants are not scored. For display, a grant is valued at the market value of the shares it covers: a stock
+    award at the company's nearest reported price, an option at its exercise price. An option is worth less than
+    the shares it covers, so this overstates option grants. A grant with no reported price near it is left out.
 
     :param list(dict) transactions: The company's transactions
     :param int last_year: The last calendar year
@@ -423,7 +426,7 @@ def insider_summary(transactions, last_year, thresholds, quarters=()):
     :returns: The summary dict, or None if no insider reported a transaction in those years
     """
 
-    first_year = last_year - thresholds['p3_years'] + 1
+    first_year = last_year - thresholds['insider_years'] + 1
     quarters = [
         {**quarter, 'sales': 0} for quarter in quarters
         if quarter['start'] >= f'{first_year}-01-01' and quarter['end'] <= f'{last_year}-12-31'
@@ -433,7 +436,6 @@ def insider_summary(transactions, last_year, thresholds, quarters=()):
              for year in range(first_year, last_year + 1)}
     series = price_series(transactions)
     people = {}
-    unvalued_shares = 0
     odd_prices = 0
     for transaction in sorted(transactions, key=lambda transaction: (transaction['filed'] or '', transaction['accn'])):
         year = years.get(int(transaction['date'][:4]))
@@ -456,9 +458,8 @@ def insider_summary(transactions, last_year, thresholds, quarters=()):
         if kind in ('grant', 'option'):
             year['grantShares'] += shares
             if kind == 'grant' or price is None:
-                price = nearest_price(series, day, thresholds['p3_price_days'])
+                price = nearest_price(series, day, thresholds['grant_price_days'])
             if price is None:
-                unvalued_shares += shares
                 continue
         elif price is None:
             # Shares returned to the company for nothing are a forfeit, not a sale
@@ -485,35 +486,29 @@ def insider_summary(transactions, last_year, thresholds, quarters=()):
     if not people:
         return None
 
-    # The totals, and the ratio of sales to grants
-    summary = {amount: sum(year[amount] for year in years.values()) for amount in ('grantShares', 'giftShares', *_AMOUNTS.values())}
-    grants = summary['grants'] + summary['optionGrants']
-    ratio = None
-    ratio_reason = None
-    if summary['grantShares'] and unvalued_shares > thresholds['p3_unvalued_max'] * summary['grantShares']:
-        ratio_reason = 'too many granted shares have no reported share price near the grant date'
-    elif grants > 0:
-        ratio = summary['sales'] / grants
-    else:
-        ratio_reason = 'no grants'
+    # The totals, and what each year, insider and filing took out
+    def cash_out(item):
+        return item['sales'] + item['withheld'] + item['toIssuer'] - item['purchases']
 
-    # The largest sellers, with their filings
-    sellers = sorted((person for person in people.values() if person['sales'] > 0), key=lambda person: (-person['sales'], person['name']))
+    summary = {amount: sum(year[amount] for year in years.values()) for amount in ('grantShares', 'giftShares', *_AMOUNTS.values())}
+    filings = [filing for person in people.values() for filing in person['filings'].values()]
+    for item in (summary, *years.values(), *people.values(), *filings):
+        item['cashOut'] = cash_out(item)
+
+    # The insiders who took out the most, with their filings
+    sellers = sorted(
+        (person for person in people.values() if person['cashOut'] > 0), key=lambda person: (-person['cashOut'], person['name'])
+    )
     for person in sellers[:5]:
         person['filings'] = sorted(person['filings'].values(), key=lambda filing: (filing['filed'], filing['accn']))
     return {
         **summary,
         'years': list(years.values()),
-        'bothYears': sum(1 for year in years.values() if year['grantShares'] > 0 and year['sales'] > 0),
-        'salesToGrants': ratio,
-        'salesToStockGrants': summary['sales'] / summary['grants'] if ratio is not None and summary['grants'] > 0 else None,
-        'ratioReason': ratio_reason,
-        'unvaluedShares': unvalued_shares,
         'oddPrices': odd_prices,
         'insiders': len(people),
         'sellers': len(sellers),
         'people': sellers[:5],
-        'quarters': quarters,
+        'quarters': len(quarters),
         'buybacks': sum(quarter['buybacks'] for quarter in quarters),
         'buybackQuarters': sum(1 for quarter in quarters if quarter['buybacks'] > 0),
         'salesInQuarters': sum(quarter['sales'] for quarter in quarters),

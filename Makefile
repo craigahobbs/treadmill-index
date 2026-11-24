@@ -20,7 +20,7 @@ TESTS_REQUIRE := bare-script
 
 
 help:
-	@echo "            [check-prototype|data|insider-data|lint-app|run|test-app|test-data]"
+	@echo "            [data|insider-data|lint-app|run|test-app|test-data]"
 
 
 clean:
@@ -56,13 +56,6 @@ data: $(DEFAULT_VENV_BUILD)
 .PHONY: insider-data
 insider-data: $(DEFAULT_VENV_BUILD)
 	$(DEFAULT_VENV_PYTHON) -I -m treadmill_index --download-insider
-
-
-# Check that the build step, with the prototype's options, reproduces prototype/treadmill_market_screen.csv.
-# This only holds against the SEC companyfacts.zip of 2026-11-23.
-.PHONY: check-prototype
-check-prototype: $(DEFAULT_VENV_BUILD)
-	$(DEFAULT_VENV_PYTHON) prototype/compare.py
 
 
 # Make the web application's unit test data, test/data/, from the made-up companies in test/makeTestData.py
